@@ -750,7 +750,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   <div class="modal-card">
     <div class="modal-poster-mini"><img id="modalPoster" src="" alt=""></div>
     <h3 id="modalTitle">Note ce film</h3>
-    <p class="modal-sub">Ta note personnelle — indépendante de TMDB</p>
+    <p class="modal-sub">Ta note personnelle sur 10 — indépendante de TMDB</p>
     <div class="star-rating" id="starRating"></div>
     <div class="rating-value-label" id="ratingValueLabel">Choisis une note</div>
     <div class="modal-actions">
@@ -1108,9 +1108,13 @@ async function getRecommendation(){
     .map(m => ({ movie: m, score: calculateRecommendationScore(m) }))
     .sort((a,b) => b.score - a.score);
 
-  // The very top of the current pool defines "this tier" for the UI notice.
-  // Compare against the highest tier ever shown to detect an automatic downgrade.
-  lastTierRating = scored[0].movie.vote_average;
+  const topTierSize = Math.max(1, Math.min(5, Math.ceil(scored.length * 0.25)));
+  const topTier = scored.slice(0, topTierSize);
+  const chosen = topTier[Math.floor(Math.random() * topTier.length)].movie;
+
+  // The note actually shown to the user is what defines "this tier" — never
+  // the pool's top score, since the chosen film can be anyone in topTier.
+  lastTierRating = chosen.vote_average;
   const peak = movieAppData.settings.peakRatingSeen;
   tierPeakBeforePick = peak;
   tierWasDowngraded = peak != null && lastTierRating < peak - 0.05;
@@ -1118,10 +1122,6 @@ async function getRecommendation(){
     movieAppData.settings.peakRatingSeen = lastTierRating;
     saveData();
   }
-
-  const topTierSize = Math.max(1, Math.min(5, Math.ceil(scored.length * 0.25)));
-  const topTier = scored.slice(0, topTierSize);
-  const chosen = topTier[Math.floor(Math.random() * topTier.length)].movie;
 
   // remove chosen from pool
   candidatePool = candidatePool.filter(m => m.id !== chosen.id);
@@ -1264,7 +1264,7 @@ async function renderMovie(movie){
 
   document.getElementById("todayContent").innerHTML = `
     <div class="hero-eyebrow">Ton film du jour</div>
-    <div class="tier-badge"><span class="star">★</span> Sélection actuelle : ${lastTierRating.toFixed(1)}+</div>
+    <div class="tier-badge"><span class="star">★</span> Palier du moment : ${lastTierRating.toFixed(1)}</div>
     ${tierWasDowngraded ? `
     <div class="tier-notice">
       Palier ${tierPeakBeforePick.toFixed(1)} épuisé — sélection élargie à ${lastTierRating.toFixed(1)}+
@@ -1413,7 +1413,7 @@ function renderStarFill(){
 function updateRatingLabel(){
   const label = document.getElementById("ratingValueLabel");
   label.innerHTML = pendingRatingValue > 0
-    ? `<b>${pendingRatingValue}</b> / 5`
+    ? `<b>${toTen(pendingRatingValue)}</b> / 10 <span style="color:var(--ink-faint);">(${pendingRatingValue}★)</span>`
     : "Choisis une note";
 }
 
@@ -1498,7 +1498,7 @@ function renderHistoryCard(m){
         <div class="history-year">${year}</div>
         <div class="history-ratings">
           <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
-          <span class="history-mine">${m.myRating != null ? `★ ${m.myRating}` : "Non noté"}</span>
+          <span class="history-mine">${m.myRating != null ? `★ ${toTen(m.myRating)}` : "Non noté"}</span>
         </div>
         <div class="history-date">Vu le ${watchedDate}</div>
         <div class="history-actions">
@@ -1544,8 +1544,8 @@ async function renderStats(){
   }
 
   const rated = watched.filter(m => m.myRating != null);
-  const avgRating = rated.length ? (rated.reduce((s,m) => s + m.myRating, 0) / rated.length) : 0;
-  const fiveStars = rated.filter(m => m.myRating === 5).length;
+  const avgRatingTen = rated.length ? (rated.reduce((s,m) => s + (m.myRating * 2), 0) / rated.length) : 0;
+  const perfectScores = rated.filter(m => m.myRating === 5).length;
   const topMovie = rated.slice().sort((a,b) => b.myRating - a.myRating)[0];
 
   // genre breakdown
@@ -1568,12 +1568,12 @@ async function renderStats(){
         <div class="stat-label">Films vus</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${avgRating.toFixed(1)}<span class="unit">★</span></div>
+        <div class="stat-value">${avgRatingTen.toFixed(1)}<span class="unit">★</span></div>
         <div class="stat-label">Moyenne de mes notes</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${fiveStars}</div>
-        <div class="stat-label">Films notés 5 / 5</div>
+        <div class="stat-value">${perfectScores}</div>
+        <div class="stat-label">Films notés 10 / 10</div>
       </div>
       <div class="stat-card">
         <div class="stat-value">${rated.length}</div>
@@ -1587,7 +1587,7 @@ async function renderStats(){
       <div>
         <div class="label">Mon film le mieux noté</div>
         <div class="title">${escapeHtml(topMovie.title)}</div>
-        <div class="rating">★ ${topMovie.myRating} / 5</div>
+        <div class="rating">★ ${toTen(topMovie.myRating)} / 10</div>
       </div>
     </div>` : ""}
 
@@ -1651,6 +1651,12 @@ function applySettingsToUI(){
 /* ----------------------------------------------------------------
    13. UTILITIES
    ---------------------------------------------------------------- */
+// La saisie reste en étoiles (0.5–5, plus intuitif à cliquer), mais on
+// affiche toujours le résultat sur 10 pour rester cohérent avec TMDB.
+function toTen(fiveScaleRating){
+  return (fiveScaleRating * 2).toFixed(1);
+}
+
 function escapeHtml(str){
   if(str == null) return "";
   const div = document.createElement("div");
