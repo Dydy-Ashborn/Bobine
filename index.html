@@ -277,6 +277,17 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .poster-rating-badge .star{ color:var(--gold); }
 
+.poster-share-btn{
+  position:absolute; top:14px; right:14px;
+  width:38px; height:38px; border-radius:50%;
+  background: rgba(10,10,11,0.72); backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,0.14);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:var(--ink);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.poster-share-btn:hover{ background:rgba(184,33,63,0.35); border-color:var(--bordeaux); transform:scale(1.06); }
+
 /* Perforated "ticket" divider — signature element */
 .ticket-divider{
   display:none;
@@ -336,7 +347,14 @@ main{ max-width:1280px; margin:0 auto; }
 .crew-item .label{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px; }
 .crew-item .value{ font-size:14px; color:var(--ink); line-height:1.5; }
 
-.action-row{ display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px; }
+.action-row{
+  grid-column: 2; /* aligné sous la colonne d'infos, pas sous le poster */
+  display:flex; flex-wrap:wrap; gap:14px;
+  margin-top:28px; margin-bottom:16px;
+}
+@media (max-width: 900px){
+  .action-row{ grid-column: 1; }
+}
 .btn-secondary{
   display:inline-flex; align-items:center; gap:9px;
   border:1px solid var(--line-strong); color:var(--ink);
@@ -345,6 +363,16 @@ main{ max-width:1280px; margin:0 auto; }
   transition: border-color 0.22s, background 0.22s, transform 0.22s;
 }
 .btn-secondary:hover{ background:rgba(255,255,255,0.06); border-color:var(--ink-dim); transform:translateY(-2px); }
+.btn-secondary:disabled{ opacity:0.5; cursor:default; }
+.btn-secondary:disabled:hover{ background:none; transform:none; }
+.btn-skip{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:52px; height:52px; flex-shrink:0;
+  border:1px solid var(--line-strong); border-radius:50%;
+  color:var(--ink-faint); font-size:17px;
+  transition: border-color 0.22s, background 0.22s, color 0.22s, transform 0.22s;
+}
+.btn-skip:hover{ background:rgba(224,90,112,0.1); border-color:#e05a70; color:#e05a70; transform:translateY(-2px); }
 .btn-tertiary{
   display:inline-flex; align-items:center; gap:7px;
   font-size:13px; font-weight:500; color:var(--ink-faint);
@@ -358,12 +386,9 @@ main{ max-width:1280px; margin:0 auto; }
   padding: 10px 4px;
   border-bottom:1px solid transparent;
   transition: color 0.2s, border-color 0.2s;
+  margin-top:22px;
 }
 .btn-tmdb-link:hover{ color:var(--ink); border-color:var(--ink-faint); }
-
-.secondary-links-row{
-  display:flex; flex-wrap:wrap; align-items:center; gap:20px;
-}
 
 /* Loader */
 .loader-wrap{
@@ -534,6 +559,21 @@ main{ max-width:1280px; margin:0 auto; }
 .search-box input::placeholder{ color:var(--ink-faint); }
 .search-box .icon{ position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--ink-faint); font-size:14px; }
 
+/* Sous-onglets partagés : type de média pour Parcourir, filtre pour l'historique */
+.browse-type-tabs, .history-filter-tabs{
+  display:flex; gap:6px; margin-bottom:24px;
+  background: rgba(255,255,255,0.03); border:1px solid var(--line);
+  border-radius:999px; padding:4px; width:fit-content;
+}
+.browse-type-tab, .history-filter-tab{
+  font-size:13px; font-weight:600; letter-spacing:0.02em;
+  padding:9px 18px; border-radius:999px; color:var(--ink-dim);
+  transition: color 0.25s var(--ease), background 0.25s var(--ease);
+  white-space:nowrap;
+}
+.browse-type-tab.active, .history-filter-tab.active{ background:var(--bordeaux); color:#fff; }
+.browse-type-tab:not(.active):hover, .history-filter-tab:not(.active):hover{ color:var(--ink); }
+
 .history-grid{
   display:grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 22px;
@@ -552,6 +592,13 @@ main{ max-width:1280px; margin:0 auto; }
 .history-poster{ aspect-ratio:2/3; overflow:hidden; position:relative; background:var(--bg-raised); }
 .history-poster img{ width:100%; height:100%; object-fit:cover; transition: transform 0.4s var(--ease); }
 .history-card:hover .history-poster img{ transform: scale(1.06); }
+.history-type-badge{
+  position:absolute; top:8px; left:8px; z-index:2;
+  font-size:10px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+  background: rgba(10,10,11,0.75); backdrop-filter: blur(6px);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:999px; padding:4px 9px; color:var(--ink);
+}
 .history-body{ padding:14px; }
 .history-title{ font-weight:600; font-size:14px; line-height:1.3; margin-bottom:4px;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
@@ -569,6 +616,102 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .icon-btn-sm:hover{ color:var(--ink); border-color:var(--line-strong); background:rgba(255,255,255,0.04); }
 .icon-btn-sm.danger:hover{ color:#e05a70; border-color:#e05a70; }
+
+/* ================================================================
+   PARCOURIR — deck swipe façon Tinder
+   ================================================================ */
+.swipe-deck{
+  position:relative;
+  width:min(360px, 100%);
+  aspect-ratio: 2/3;
+  margin: 0 auto 32px;
+  touch-action: pan-y; /* laisse le scroll vertical de la page tout en captant le drag horizontal */
+}
+.swipe-card{
+  position:absolute; inset:0;
+  border-radius: var(--radius-lg);
+  overflow:hidden;
+  background: var(--bg-card);
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--line-strong);
+  cursor: grab;
+  user-select: none;
+  will-change: transform;
+}
+.swipe-card:active{ cursor: grabbing; }
+.swipe-card-poster{ position:relative; width:100%; height:100%; }
+.swipe-card-poster img{ width:100%; height:100%; object-fit:cover; pointer-events:none; }
+.swipe-card-gradient{
+  position:absolute; inset:0;
+  background: linear-gradient(0deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.35) 42%, transparent 65%);
+}
+.swipe-card-info{
+  position:absolute; left:0; right:0; bottom:0; padding: 22px 22px 26px;
+}
+.swipe-card-title{
+  font-family:var(--font-display); font-weight:600; font-size:24px;
+  line-height:1.1; margin-bottom:8px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.swipe-card-meta{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-dim); }
+
+.swipe-stamp{
+  position:absolute; top:28px; padding:8px 16px; border-radius:8px;
+  font-family:var(--font-display); font-weight:700; font-size:20px; letter-spacing:0.06em;
+  border:3px solid; opacity:0; pointer-events:none; transition: opacity 0.1s;
+}
+.swipe-stamp-no{ left:20px; color:#e05a70; border-color:#e05a70; transform:rotate(-12deg); background:rgba(10,10,11,0.5); }
+.swipe-stamp-yes{ right:20px; color:var(--success); border-color:var(--success); transform:rotate(12deg); background:rgba(10,10,11,0.5); }
+
+.swipe-actions{
+  display:flex; align-items:center; justify-content:center; gap:20px;
+}
+.swipe-btn{
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; border:1px solid var(--line-strong);
+  transition: transform 0.2s var(--ease), border-color 0.2s, background 0.2s, color 0.2s;
+  color:var(--ink);
+}
+.swipe-btn-no{ width:58px; height:58px; font-size:22px; color:#e05a70; }
+.swipe-btn-no:hover{ background:rgba(224,90,112,0.1); border-color:#e05a70; transform:scale(1.08); }
+.swipe-btn-yes{ width:58px; height:58px; font-size:22px; color:var(--success); }
+.swipe-btn-yes:hover{ background:rgba(79,157,110,0.12); border-color:var(--success); transform:scale(1.08); }
+.swipe-btn-info{ width:46px; height:46px; font-size:17px; color:var(--ink-dim); }
+.swipe-btn-info:hover{ background:rgba(255,255,255,0.06); border-color:var(--ink-dim); transform:scale(1.06); }
+
+/* Fiche détail — overlay au tap sur une carte */
+.browse-detail-overlay{
+  position:fixed; inset:0; z-index:160;
+  background: rgba(10,10,11,0.78); backdrop-filter: blur(8px);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition: opacity 0.3s var(--ease);
+}
+.browse-detail-overlay.show{ opacity:1; pointer-events:auto; }
+.browse-detail-card{
+  position:relative;
+  background: var(--bg-raised); border:1px solid var(--line-strong);
+  border-radius: var(--radius-lg); overflow:hidden;
+  max-width: 420px; width:100%; max-height:85vh; overflow-y:auto;
+  transform: translateY(16px) scale(0.97); transition: transform 0.35s var(--ease);
+}
+.browse-detail-overlay.show .browse-detail-card{ transform: translateY(0) scale(1); }
+.browse-detail-close{
+  position:absolute; top:14px; right:14px; z-index:2;
+  width:36px; height:36px; border-radius:50%;
+  background: rgba(10,10,11,0.72); backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,0.14); color:var(--ink);
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+}
+.browse-detail-close:hover{ background:rgba(184,33,63,0.35); border-color:var(--bordeaux); }
+.browse-detail-poster{ width:100%; aspect-ratio:16/9; overflow:hidden; }
+.browse-detail-poster img{ width:100%; height:100%; object-fit:cover; object-position: center 20%; }
+.browse-detail-body{ padding: 22px 24px 26px; }
+.browse-detail-body h3{ font-family:var(--font-display); font-weight:600; font-size:24px; margin-bottom:12px; }
+.browse-detail-overview{ font-size:14.5px; line-height:1.7; color:var(--ink-dim); margin: 16px 0 18px; }
+
+@media (max-width: 640px){
+  .swipe-deck{ width: min(320px, 88vw); }
+  .swipe-card-title{ font-size:21px; }
+}
 
 /* ================================================================
    STATISTIQUES
@@ -697,8 +840,9 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   }
   .bottom-nav button{
     display:flex; flex-direction:column; align-items:center; gap:4px;
-    font-size:10.5px; letter-spacing:0.03em; text-transform:uppercase; font-weight:600;
-    color:var(--ink-faint); padding:6px 10px; border-radius:10px;
+    font-size:10px; letter-spacing:0.02em; text-transform:uppercase; font-weight:600;
+    color:var(--ink-faint); padding:6px 6px; border-radius:10px;
+    flex:1; min-width:0;
   }
   .bottom-nav button.active{ color:var(--ink); }
   .bottom-nav button .bn-icon{ font-size:19px; }
@@ -711,7 +855,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     position:fixed; left:0; right:0; z-index:55;
     bottom: calc(64px + env(safe-area-inset-bottom));
     flex-direction:row; gap:10px;
-    margin-bottom:0; padding: 12px 16px;
+    margin-top:0; margin-bottom:0; padding: 12px 16px;
     background: rgba(10,10,11,0.88); backdrop-filter: blur(18px);
     border-top:1px solid var(--line);
   }
@@ -719,9 +863,12 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   #actionRow.action-row .btn-secondary{
     justify-content:center; flex:1; padding:14px 12px; font-size:13.5px;
   }
-  /* Le contenu qui suit l'action-row (liens secondaires, footer) doit garder
-     assez de marge pour ne pas passer sous la barre fixe + la bottom-nav. */
-  .movie-info{ padding-bottom: 148px; }
+  #actionRow.action-row .btn-skip{
+    width:48px; height:48px; flex-shrink:0;
+  }
+  /* Le contenu de la fiche film doit garder assez de marge pour ne pas
+     passer sous la barre d'actions fixe + la bottom-nav. */
+  .movie-stage{ padding-bottom: 84px; }
 
   .movie-title{ font-size:30px; }
   .settings-panel{ width:100vw; }
@@ -757,7 +904,8 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   <div class="brand"><span class="dot">●</span>&nbsp;Bobine</div>
   <div class="nav-tabs" role="tablist">
     <button class="nav-tab active" data-view="today" role="tab" aria-selected="true">Film du jour</button>
-    <button class="nav-tab" data-view="history" role="tab" aria-selected="false">Mes films</button>
+    <button class="nav-tab" data-view="browse" role="tab" aria-selected="false">Parcourir</button>
+    <button class="nav-tab" data-view="history" role="tab" aria-selected="false">Mon historique</button>
     <button class="nav-tab" data-view="stats" role="tab" aria-selected="false">Statistiques</button>
   </div>
   <button class="nav-icon-btn" id="btnSettings" aria-label="Réglages" title="Réglages">⚙</button>
@@ -773,16 +921,39 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 </div>
 
 <!-- ============================================================
-     VIEW: MES FILMS VUS
+     VIEW: PARCOURIR — mode swipe façon Tinder
+     ============================================================ -->
+<div class="view" id="view-browse" hidden>
+  <main>
+    <div class="section-header">
+      <h2 class="section-title">Parcourir</h2>
+      <div class="browse-type-tabs" role="tablist">
+        <button class="browse-type-tab active" data-media-type="movie" role="tab" aria-selected="true">Films</button>
+        <button class="browse-type-tab" data-media-type="tv" role="tab" aria-selected="false">Séries</button>
+        <button class="browse-type-tab" data-media-type="anime" role="tab" aria-selected="false">Anime</button>
+      </div>
+    </div>
+    <div id="browseContent"><!-- populated by renderBrowseDeck() --></div>
+  </main>
+</div>
+
+<!-- ============================================================
+     VIEW: MON HISTORIQUE
      ============================================================ -->
 <div class="view" id="view-history" hidden>
   <main>
     <div class="section-header">
-      <h2 class="section-title">Mes films<span class="count" id="historyCount"></span></h2>
+      <h2 class="section-title">Mon historique<span class="count" id="historyCount"></span></h2>
       <div class="search-box">
         <span class="icon">⌕</span>
         <input type="text" id="historySearch" placeholder="Rechercher dans mon historique…" aria-label="Rechercher dans mon historique">
       </div>
+    </div>
+    <div class="history-filter-tabs" role="tablist">
+      <button class="history-filter-tab active" data-filter="all" role="tab" aria-selected="true">Tout</button>
+      <button class="history-filter-tab" data-filter="movie" role="tab" aria-selected="false">Films</button>
+      <button class="history-filter-tab" data-filter="tv" role="tab" aria-selected="false">Séries</button>
+      <button class="history-filter-tab" data-filter="anime" role="tab" aria-selected="false">Animes</button>
     </div>
     <div id="historyContent"></div>
   </main>
@@ -808,7 +979,8 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 <!-- Mobile bottom nav -->
 <nav class="bottom-nav">
   <button data-view="today" class="active"><span class="bn-icon">🎬</span>Aujourd'hui</button>
-  <button data-view="history"><span class="bn-icon">🎞</span>Mes films</button>
+  <button data-view="browse"><span class="bn-icon">🔀</span>Parcourir</button>
+  <button data-view="history"><span class="bn-icon">🎞</span>Historique</button>
   <button data-view="stats"><span class="bn-icon">📊</span>Stats</button>
 </nav>
 
@@ -825,6 +997,22 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     <div class="modal-actions">
       <button class="btn-ghost" id="btnSkipRating">Plus tard</button>
       <button class="btn-primary" id="btnSaveRating" disabled>Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     BROWSE DETAIL OVERLAY — fiche détaillée au tap sur une carte swipe
+     ============================================================ -->
+<div class="browse-detail-overlay" id="browseDetailOverlay">
+  <div class="browse-detail-card">
+    <button class="browse-detail-close" id="btnCloseBrowseDetail" aria-label="Fermer">✕</button>
+    <div class="browse-detail-poster"><img id="browseDetailPoster" src="" alt=""></div>
+    <div class="browse-detail-body">
+      <h3 id="browseDetailTitle"></h3>
+      <div class="movie-meta-row" id="browseDetailMeta"></div>
+      <p class="browse-detail-overview" id="browseDetailOverview"></p>
+      <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
     </div>
   </div>
 </div>
@@ -907,16 +1095,24 @@ const DEFAULTS = {
 const STORAGE_KEY = "movieAppData";
 
 let movieAppData = {
-  watched: [],          // [{id,title,original_title,poster_path,backdrop_path,release_date,vote_average,vote_count,genre_ids,genres,runtime,director,cast,overview,watchedAt,myRating}]
-  excluded: [],          // [id, ...] films explicitement écartés ("pas envie de voir ce film") — jamais reproposés, ne comptent pas dans l'historique/stats
+  watched: [],          // [{id,mediaType,isAnime,title,original_title,poster_path,backdrop_path,release_date,vote_average,vote_count,genre_ids,genres,runtime,director,cast,overview,watchedAt,myRating}]
+                          // mediaType: "movie" | "tv" — un id TMDB seul n'est pas unique entre les deux, donc on clé toujours sur "mediaType:id"
+  excluded: [],          // ["movie:12345", "tv:6789", ...] entrées explicitement écartées — jamais reproposées, ne comptent pas dans l'historique/stats
   settings: {
     minVotes: DEFAULTS.minVotes,
     minYear: DEFAULTS.minYear,
     personalization: DEFAULTS.personalization,
     onboarded: false
   },
-  genreWeights: {}      // { genreId: weightMultiplier } learned from ratings
+  genreWeights: {}      // { genreId: weightMultiplier } learned from ratings — clé commune films/séries, TMDB partage les IDs de genre entre les deux
 };
+
+// Clé composite utilisée partout pour identifier une entrée de façon unique
+// entre films et séries (un même ID numérique existe indépendamment dans
+// chaque catalogue TMDB).
+function mediaKey(mediaType, id){
+  return `${mediaType}:${id}`;
+}
 
 function loadData(){
   try{
@@ -989,9 +1185,10 @@ function importData(file){
    ---------------------------------------------------------------- */
 let currentMovie = null;
 let sessionShownIds = new Set();   // avoid repeats within a session
-let genreCache = null;             // {id: name}
+let genreCache = {};               // { movie: {id: name}, tv: {id: name} }
 let candidatePool = [];            // buffered TMDB candidates
 let currentView = "today";
+let historyFilter = "all";         // "all" | "movie" | "tv" | "anime" — filtre affiché dans Mon historique
 let lastTierRating = null;         // vote_average of the tier the current pick came from
 let pendingRatingMovie = null;
 let pendingRatingValue = 0;
@@ -1012,49 +1209,84 @@ async function tmdbFetch(path, params = {}){
   return res.json();
 }
 
-async function fetchGenres(){
-  if(genreCache) return genreCache;
-  const data = await tmdbFetch("/genre/movie/list");
-  genreCache = {};
-  (data.genres || []).forEach(g => genreCache[g.id] = g.name);
-  return genreCache;
+async function fetchGenres(mediaType = "movie"){
+  if(genreCache[mediaType]) return genreCache[mediaType];
+  const data = await tmdbFetch(`/genre/${mediaType}/list`);
+  genreCache[mediaType] = {};
+  (data.genres || []).forEach(g => genreCache[mediaType][g.id] = g.name);
+  return genreCache[mediaType];
 }
 
 // Fetch top-rated candidates from TMDB, sorted by rating descending.
 // No fixed threshold: we always ask TMDB for its best, then filter locally.
-async function fetchTopRatedMovies(page){
+// Fonctionne pour films ("movie") et séries ("tv") via le même endpoint
+// /discover/<type>, qui partage la même forme de réponse côté TMDB.
+async function fetchTopRatedByType(mediaType, page, extraParams = {}){
   const settings = movieAppData.settings;
-  return tmdbFetch("/discover/movie", {
+  const dateField = mediaType === "tv" ? "first_air_date.gte" : "primary_release_date.gte";
+  return tmdbFetch(`/discover/${mediaType}`, {
     sort_by: "vote_average.desc",
     "vote_count.gte": settings.minVotes,
-    "primary_release_date.gte": `${settings.minYear}-01-01`,
+    [dateField]: `${settings.minYear}-01-01`,
     include_adult: "false",
-    page
+    page,
+    ...extraParams
   });
 }
 
-// Fetch runtime, director, top cast for a specific movie
-async function fetchMovieDetails(movieId){
-  const data = await tmdbFetch(`/movie/${movieId}`, { append_to_response: "credits" });
-  const director = (data.credits?.crew || []).find(c => c.job === "Director");
+// Compat: l'ancien nom, toujours utilisé par le flux "Film du jour".
+async function fetchTopRatedMovies(page){
+  return fetchTopRatedByType("movie", page);
+}
+
+// Anime = séries TV genre "Animation" (id 16 côté TMDB) originaires du Japon.
+// TMDB n'a pas de catégorie "anime" propre ; c'est l'approche standard pour
+// l'approximer, fiable dans l'immense majorité des cas.
+const TMDB_ANIMATION_GENRE_ID = 16;
+async function fetchTopRatedAnime(page){
+  return fetchTopRatedByType("tv", page, {
+    with_genres: TMDB_ANIMATION_GENRE_ID,
+    with_origin_country: "JP"
+  });
+}
+
+// Fetch runtime/episodes, réalisateur, cast principal pour un film ou une série.
+async function fetchDetailsByType(mediaType, id){
+  const data = await tmdbFetch(`/${mediaType}/${id}`, { append_to_response: "credits" });
+  const director = (data.credits?.crew || []).find(c => c.job === "Director" || c.job === "Series Director");
   const cast = (data.credits?.cast || []).slice(0, 4).map(c => c.name);
   return {
-    runtime: data.runtime || null,
+    runtime: mediaType === "movie" ? (data.runtime || null) : null,
+    seasons: mediaType === "tv" ? (data.number_of_seasons || null) : null,
+    episodes: mediaType === "tv" ? (data.number_of_episodes || null) : null,
     director: director ? director.name : null,
     cast,
     genres: (data.genres || []).map(g => g.name)
   };
 }
 
+// Compat: l'ancien nom, toujours utilisé par le flux "Film du jour".
+async function fetchMovieDetails(movieId){
+  return fetchDetailsByType("movie", movieId);
+}
+
 /* ----------------------------------------------------------------
    4. RECOMMENDATION ENGINE
    ---------------------------------------------------------------- */
 function getWatchedIds(){
-  return new Set(movieAppData.watched.map(m => m.id));
+  return new Set(movieAppData.watched.map(m => mediaKey(m.mediaType || "movie", m.id)));
 }
 
 function getExcludedIds(){
   return new Set(movieAppData.excluded || []);
+}
+
+function isWatched(mediaType, id){
+  return getWatchedIds().has(mediaKey(mediaType, id));
+}
+
+function isExcluded(mediaType, id){
+  return getExcludedIds().has(mediaKey(mediaType, id));
 }
 
 function calculateRecommendationScore(movie){
@@ -1148,14 +1380,15 @@ async function buildCandidatePoolFromTop(){
       if(highestFoundRating === null && m.vote_average != null){
         highestFoundRating = m.vote_average; // first unfiltered result = current ceiling
       }
+      const key = mediaKey("movie", m.id);
       if(
-        !seen.has(m.id) &&
-        !watchedIds.has(m.id) &&
-        !excludedIds.has(m.id) &&
-        !sessionShownIds.has(m.id) &&
+        !seen.has(key) &&
+        !watchedIds.has(key) &&
+        !excludedIds.has(key) &&
+        !sessionShownIds.has(key) &&
         m.poster_path
       ){
-        seen.add(m.id);
+        seen.add(key);
         pool.push(m);
       }
     });
@@ -1193,7 +1426,7 @@ async function getRecommendation(){
 
   // remove chosen from pool
   candidatePool = candidatePool.filter(m => m.id !== chosen.id);
-  sessionShownIds.add(chosen.id);
+  sessionShownIds.add(mediaKey("movie", chosen.id));
 
   return chosen;
 }
@@ -1201,9 +1434,14 @@ async function getRecommendation(){
 /* ----------------------------------------------------------------
    5. ACTIONS — watch / rate / remove
    ---------------------------------------------------------------- */
+// `movie` peut être un objet déjà normalisé (mediaType présent, via
+// normalizeMedia) ou un film brut du flux "Film du jour" (toujours movie).
 async function markAsWatched(movie, details){
+  const mediaType = movie.mediaType || "movie";
   const record = {
     id: movie.id,
+    mediaType,
+    isAnime: !!movie.isAnime,
     title: movie.title,
     original_title: movie.original_title,
     poster_path: movie.poster_path,
@@ -1216,41 +1454,51 @@ async function markAsWatched(movie, details){
     watchedAt: new Date().toISOString(),
     myRating: null
   };
-  // avoid duplicates
-  movieAppData.watched = movieAppData.watched.filter(m => m.id !== movie.id);
+  // avoid duplicates (même mediaType ET même id — un film et une série
+  // peuvent légitimement partager le même id numérique côté TMDB)
+  movieAppData.watched = movieAppData.watched.filter(m =>
+    !(m.id === movie.id && (m.mediaType || "movie") === mediaType)
+  );
   movieAppData.watched.unshift(record);
   saveData();
   return record;
 }
 
-function rateMovie(movieId, rating){
-  const record = movieAppData.watched.find(m => m.id === movieId);
+function rateMovie(id, rating, mediaType = "movie"){
+  const record = movieAppData.watched.find(m => m.id === id && (m.mediaType || "movie") === mediaType);
   if(!record) return;
   record.myRating = rating;
   saveData();
   updatePersonalization(record);
 }
 
-function removeWatchedMovie(movieId){
-  movieAppData.watched = movieAppData.watched.filter(m => m.id !== movieId);
+function removeWatchedMovie(id, mediaType = "movie"){
+  movieAppData.watched = movieAppData.watched.filter(m =>
+    !(m.id === id && (m.mediaType || "movie") === mediaType)
+  );
   saveData();
   renderHistory();
   renderStats();
 }
 
-function markAsUnwatched(movieId){
-  removeWatchedMovie(movieId);
+function markAsUnwatched(id, mediaType = "movie"){
+  removeWatchedMovie(id, mediaType);
   showToast("Remis dans les films à découvrir");
 }
 
-function excludeMovie(movieId){
+function excludeMovie(id, mediaType = "movie"){
   if(!movieAppData.excluded) movieAppData.excluded = [];
-  if(!movieAppData.excluded.includes(movieId)){
-    movieAppData.excluded.push(movieId);
+  const key = mediaKey(mediaType, id);
+  if(!movieAppData.excluded.includes(key)){
+    movieAppData.excluded.push(key);
     saveData();
   }
-  // retire aussi du pool courant s'il y était encore
-  candidatePool = candidatePool.filter(m => m.id !== movieId);
+  // retire aussi du pool courant s'il y était encore (le pool du "Film du
+  // jour" ne contient que des films, donc cette comparaison reste valable
+  // pour ce flux ; le mode Parcourir gère son propre pool séparément)
+  if(mediaType === "movie"){
+    candidatePool = candidatePool.filter(m => m.id !== id);
+  }
 }
 
 /* ----------------------------------------------------------------
@@ -1397,6 +1645,7 @@ async function renderMovie(movie){
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : `<div class="loader-wrap" style="min-height:100%;"><div class="reel"></div></div>`}
         <div class="poster-shine"></div>
         <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+        <button class="poster-share-btn" id="btnShareMovie" aria-label="Partager ce film à un ami" title="Partager à un ami">↗</button>
       </div>
       <div class="movie-info">
         <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
@@ -1413,15 +1662,12 @@ async function renderMovie(movie){
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
         <div class="crew-block" id="crewBlock" style="display:none;"></div>
-        <div class="action-row" id="actionRow">
-          <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
-          <button class="btn-secondary" id="btnNewMovie">🎲 Change de film</button>
-        </div>
-        <div class="secondary-links-row">
-          <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
-          <button class="btn-tertiary" id="btnShareMovie">↗ Partager à un ami</button>
-          <button class="btn-tertiary" id="btnSkipMovie">Pas envie de voir ce film</button>
-        </div>
+        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+      </div>
+      <div class="action-row" id="actionRow">
+        <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
+        <button class="btn-secondary" id="btnNewMovie">🎲 Change de film</button>
+        <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film">✕</button>
       </div>
     </div>
   `;
@@ -1576,11 +1822,16 @@ function updateRatingLabel(){
 async function finalizeMarkWatched(movie, rating){
   const record = await markAsWatched(movie, movie._details);
   if(rating != null){
-    rateMovie(movie.id, rating);
+    rateMovie(movie.id, rating, movie.mediaType || "movie");
   }
   showToast(rating != null ? "Film noté et enregistré" : "Film marqué comme vu");
   renderHistory();
   renderStats();
+  if(movie._fromBrowse){
+    // Le deck a déjà retiré la carte au moment du swipe (commitSwipe) ;
+    // ici on ne fait que garder les vues à jour, pas relancer "Film du jour".
+    return;
+  }
   await loadNewMovie();
 }
 
@@ -1695,15 +1946,13 @@ function renderSharedMovie(movie){
         </div>
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
-        <div class="action-row" id="actionRow">
-          ${alreadyWatched
-            ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
-            : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
-          <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir Bobine</button>
-        </div>
-        <div class="secondary-links-row">
-          <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
-        </div>
+        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+      </div>
+      <div class="action-row" id="actionRow">
+        ${alreadyWatched
+          ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
+          : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
+        <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir Bobine</button>
       </div>
     </div>
   `;
@@ -1730,24 +1979,308 @@ function renderSharedMovie(movie){
 }
 
 /* ----------------------------------------------------------------
+   8bis. PARCOURIR — mode swipe (façon Tinder) pour films/séries/anime
+   ---------------------------------------------------------------- */
+let browseMediaType = "movie";     // "movie" | "tv" | "anime" (anime = tv + filtre origine JP)
+let browsePools = { movie: [], tv: [], anime: [] };   // pool de candidats bufferisé par onglet
+let browsePages = { movie: 1, tv: 1, anime: 1 };       // page TMDB courante par onglet, pour ne pas re-fetcher la même
+let browseInitialized = { movie: false, tv: false, anime: false };
+let browseSwipeState = null;       // état du geste en cours (voir attachSwipeHandlers)
+
+function initBrowseIfNeeded(){
+  if(!browseInitialized[browseMediaType]){
+    refillBrowsePool(browseMediaType).then(() => renderBrowseDeck());
+  }else{
+    renderBrowseDeck();
+  }
+}
+
+// Convertit "anime" (catégorie UI) vers le vrai mediaType TMDB ("tv") + flag.
+function resolveBrowseFetchType(uiType){
+  return uiType === "anime" ? "tv" : uiType;
+}
+
+async function fetchBrowsePage(uiType, page){
+  if(uiType === "anime") return fetchTopRatedAnime(page);
+  return fetchTopRatedByType(uiType, page);
+}
+
+async function refillBrowsePool(uiType){
+  const watchedIds = getWatchedIds();
+  const excludedIds = getExcludedIds();
+  const fetchType = resolveBrowseFetchType(uiType);
+  const MAX_PAGES_PER_CALL = 6;
+  const POOL_TARGET = 6;
+
+  let fetched = 0;
+  while(browsePools[uiType].length < POOL_TARGET && fetched < MAX_PAGES_PER_CALL){
+    let data;
+    try{
+      data = await fetchBrowsePage(uiType, browsePages[uiType]);
+    }catch(e){
+      browseInitialized[uiType] = true;
+      throw e;
+    }
+    const results = data?.results || [];
+    fetched++;
+    if(results.length === 0) break;
+
+    results.forEach(raw => {
+      const key = mediaKey(fetchType, raw.id);
+      const alreadyInPool = browsePools[uiType].some(m => mediaKey(fetchType, m.id) === key);
+      if(
+        !alreadyInPool &&
+        !watchedIds.has(key) &&
+        !excludedIds.has(key) &&
+        !sessionShownIds.has(key) &&
+        raw.poster_path
+      ){
+        browsePools[uiType].push(normalizeMedia(raw, fetchType, uiType === "anime"));
+      }
+    });
+
+    browsePages[uiType]++;
+    if(browsePages[uiType] > (data.total_pages || 1)) break;
+  }
+  browseInitialized[uiType] = true;
+}
+
+function renderBrowseDeck(){
+  const container = document.getElementById("browseContent");
+  const pool = browsePools[browseMediaType];
+
+  if(pool.length === 0){
+    const typeLabel = browseMediaType === "movie" ? "film" : (browseMediaType === "anime" ? "anime" : "série");
+    container.innerHTML = `
+      <div class="state-card">
+        <div class="icon">🎬</div>
+        <h3>Plus rien à parcourir</h3>
+        <p>Tu as fait le tour des ${typeLabel}s les mieux notés pour l'instant. Reviens plus tard, TMDB en ajoute régulièrement.</p>
+        <button class="btn-primary" id="btnRetryBrowse">↻ Réessayer</button>
+      </div>`;
+    document.getElementById("btnRetryBrowse")?.addEventListener("click", async () => {
+      container.innerHTML = `<div class="loader-wrap"><div class="reel"></div><div class="loader-label">Recherche…</div></div>`;
+      await refillBrowsePool(browseMediaType);
+      renderBrowseDeck();
+    });
+    return;
+  }
+
+  // Empile visuellement les 3 cartes du dessus ; seule la première (dernière
+  // dans le DOM pour être au-dessus) reçoit les gestes de swipe.
+  const stackSize = Math.min(3, pool.length);
+  const stackItems = pool.slice(0, stackSize);
+
+  container.innerHTML = `
+    <div class="swipe-deck">
+      ${stackItems.map((m, i) => renderSwipeCard(m, i)).reverse().join("")}
+    </div>
+    <div class="swipe-actions">
+      <button class="swipe-btn swipe-btn-no" id="btnSwipeNo" aria-label="Pas envie">✕</button>
+      <button class="swipe-btn swipe-btn-info" id="btnSwipeInfo" aria-label="Plus d'infos">ⓘ</button>
+      <button class="swipe-btn swipe-btn-yes" id="btnSwipeYes" aria-label="J'ai vu">✓</button>
+    </div>
+  `;
+
+  const topCard = container.querySelector(`.swipe-card[data-stack-index="0"]`);
+  if(topCard) attachSwipeHandlers(topCard, pool[0]);
+
+  document.getElementById("btnSwipeNo").addEventListener("click", () => programmaticSwipe("left"));
+  document.getElementById("btnSwipeYes").addEventListener("click", () => programmaticSwipe("right"));
+  document.getElementById("btnSwipeInfo").addEventListener("click", () => {
+    if(pool[0]) openBrowseDetail(pool[0]);
+  });
+}
+
+function renderSwipeCard(m, stackIndex){
+  const posterUrl = m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : "";
+  const year = m.release_date ? m.release_date.slice(0,4) : "—";
+  const scaleOffset = stackIndex * 0.04;
+  const yOffset = stackIndex * 14;
+  return `
+    <div class="swipe-card" data-stack-index="${stackIndex}" data-id="${m.id}" data-media-type="${m.mediaType}"
+         style="transform: translateY(${yOffset}px) scale(${1 - scaleOffset}); z-index:${10 - stackIndex}; opacity:${stackIndex === 2 ? 0.6 : 1};">
+      <div class="swipe-card-poster">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(m.title)}" draggable="false">` : ""}
+        <div class="swipe-card-gradient"></div>
+        <div class="swipe-stamp swipe-stamp-no">PASSE</div>
+        <div class="swipe-stamp swipe-stamp-yes">VU</div>
+      </div>
+      <div class="swipe-card-info">
+        <div class="swipe-card-title">${escapeHtml(m.title)}</div>
+        <div class="swipe-card-meta">
+          <span class="tmdb-score"><span class="star">★</span> ${m.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="meta-sep"></span>
+          <span>${year}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Gestes unifiés tactile + souris via Pointer Events. Un swipe suffisamment
+// ample (distance ou vitesse) déclenche l'action ; sinon la carte revient
+// au centre. Le tap (déplacement minime) ouvre la fiche détail.
+function attachSwipeHandlers(cardEl, movie){
+  const SWIPE_THRESHOLD = 110;
+  let startX = 0, startY = 0, currentX = 0, currentY = 0, dragging = false, moved = false;
+
+  const onPointerDown = (e) => {
+    dragging = true; moved = false;
+    startX = e.clientX; startY = e.clientY;
+    cardEl.style.transition = "none";
+    cardEl.setPointerCapture?.(e.pointerId);
+  };
+
+  const onPointerMove = (e) => {
+    if(!dragging) return;
+    currentX = e.clientX - startX;
+    currentY = e.clientY - startY;
+    if(Math.abs(currentX) > 6 || Math.abs(currentY) > 6) moved = true;
+    const rotation = currentX / 18;
+    cardEl.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
+    const noStamp = cardEl.querySelector(".swipe-stamp-no");
+    const yesStamp = cardEl.querySelector(".swipe-stamp-yes");
+    if(noStamp) noStamp.style.opacity = currentX < -20 ? Math.min(1, -currentX / SWIPE_THRESHOLD) : 0;
+    if(yesStamp) yesStamp.style.opacity = currentX > 20 ? Math.min(1, currentX / SWIPE_THRESHOLD) : 0;
+  };
+
+  const onPointerUp = () => {
+    if(!dragging) return;
+    dragging = false;
+    cardEl.style.transition = "transform 0.35s var(--ease)";
+
+    if(!moved){
+      // Tap sans déplacement notable : ouvre le détail plutôt que de swiper.
+      cardEl.style.transform = "";
+      openBrowseDetail(movie);
+      return;
+    }
+
+    if(currentX > SWIPE_THRESHOLD){
+      commitSwipe(cardEl, movie, "right");
+    }else if(currentX < -SWIPE_THRESHOLD){
+      commitSwipe(cardEl, movie, "left");
+    }else{
+      cardEl.style.transform = "";
+      const noStamp = cardEl.querySelector(".swipe-stamp-no");
+      const yesStamp = cardEl.querySelector(".swipe-stamp-yes");
+      if(noStamp) noStamp.style.opacity = 0;
+      if(yesStamp) yesStamp.style.opacity = 0;
+    }
+    currentX = 0; currentY = 0;
+  };
+
+  cardEl.addEventListener("pointerdown", onPointerDown);
+  cardEl.addEventListener("pointermove", onPointerMove);
+  cardEl.addEventListener("pointerup", onPointerUp);
+  cardEl.addEventListener("pointercancel", onPointerUp);
+}
+
+function programmaticSwipe(direction){
+  const container = document.getElementById("browseContent");
+  const topCard = container?.querySelector(`.swipe-card[data-stack-index="0"]`);
+  const pool = browsePools[browseMediaType];
+  if(!topCard || !pool[0]) return;
+  topCard.style.transition = "transform 0.35s var(--ease)";
+  commitSwipe(topCard, pool[0], direction);
+}
+
+function commitSwipe(cardEl, movie, direction){
+  const flyX = direction === "right" ? window.innerWidth : -window.innerWidth;
+  const rotation = direction === "right" ? 18 : -18;
+  cardEl.style.transform = `translate(${flyX}px, -30px) rotate(${rotation}deg)`;
+  cardEl.style.opacity = "0";
+
+  if(direction === "left"){
+    excludeMovie(movie.id, movie.mediaType);
+    sessionShownIds.add(mediaKey(movie.mediaType, movie.id));
+  }
+  // Pour "right", l'exclusion/l'ajout à l'historique se fait via la modale
+  // de notation (openRatingFlowForBrowse → finalizeMarkWatched), pas ici.
+
+  // Retire la carte du pool visuel tout de suite : si c'est un swipe à
+  // droite, la modale de notation s'ouvre par-dessus dans la foulée ; si
+  // c'est à gauche, la pile se reconstitue derrière l'animation de sortie.
+  browsePools[browseMediaType] = browsePools[browseMediaType].filter(m =>
+    !(m.id === movie.id && m.mediaType === movie.mediaType)
+  );
+
+  if(direction === "right"){
+    openRatingFlowForBrowse(movie);
+  }
+
+  setTimeout(() => {
+    if(browsePools[browseMediaType].length < 3){
+      refillBrowsePool(browseMediaType).then(() => {
+        if(currentView === "browse") renderBrowseDeck();
+      });
+    }
+    if(currentView === "browse") renderBrowseDeck();
+  }, 320);
+}
+
+// Swipe à droite = "j'ai vu" : ouvre directement le sélecteur de notation,
+// comme le bouton "J'ai vu ce film" du flux Film du jour, mais marqué pour
+// que finalizeMarkWatched rafraîchisse le deck plutôt que le Film du jour.
+function openRatingFlowForBrowse(movie){
+  openRatingFlow({ ...movie, _fromBrowse: true });
+}
+
+function openBrowseDetail(movie){
+  const posterUrl = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : "";
+  const year = movie.release_date ? movie.release_date.slice(0,4) : "—";
+  const typeLabel = movie.isAnime ? "Anime" : (movie.mediaType === "tv" ? "Série" : "Film");
+
+  document.getElementById("browseDetailPoster").src = posterUrl;
+  document.getElementById("browseDetailPoster").alt = `Affiche de ${movie.title}`;
+  document.getElementById("browseDetailTitle").textContent = movie.title;
+  document.getElementById("browseDetailMeta").innerHTML = `
+    <span class="tmdb-score"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</span>
+    <span class="meta-sep"></span>
+    <span>${year}</span>
+    <span class="meta-sep"></span>
+    <span>${typeLabel}</span>
+  `;
+  document.getElementById("browseDetailOverview").textContent = movie.overview || "Synopsis non disponible.";
+  document.getElementById("browseDetailTmdbLink").href = `https://www.themoviedb.org/${movie.mediaType}/${movie.id}`;
+  document.getElementById("browseDetailOverlay").classList.add("show");
+  document.getElementById("browseDetailOverlay").dataset.currentMovie = JSON.stringify(movie);
+}
+
+function closeBrowseDetail(){
+  document.getElementById("browseDetailOverlay").classList.remove("show");
+}
+
+/* ----------------------------------------------------------------
    9. RENDERING — MES FILMS VUS
    ---------------------------------------------------------------- */
-function renderHistory(filter = ""){
+function renderHistory(filter = "", typeFilter = "all"){
   const container = document.getElementById("historyContent");
   const countEl = document.getElementById("historyCount");
   let list = movieAppData.watched;
+
+  if(typeFilter !== "all"){
+    if(typeFilter === "anime"){
+      list = list.filter(m => m.isAnime);
+    }else if(typeFilter === "tv"){
+      list = list.filter(m => (m.mediaType || "movie") === "tv" && !m.isAnime);
+    }else{
+      list = list.filter(m => (m.mediaType || "movie") === typeFilter);
+    }
+  }
+
   if(filter.trim()){
     const q = filter.trim().toLowerCase();
     list = list.filter(m => m.title.toLowerCase().includes(q));
   }
-  countEl.textContent = `${movieAppData.watched.length} film${movieAppData.watched.length !== 1 ? 's' : ''}`;
+  countEl.textContent = `${movieAppData.watched.length} entrée${movieAppData.watched.length !== 1 ? 's' : ''}`;
 
   if(movieAppData.watched.length === 0){
     container.innerHTML = `
       <div class="state-card">
         <div class="icon">🎞</div>
-        <h3>Aucun film vu pour l'instant</h3>
-        <p>Les films que tu marques comme vus apparaîtront ici, avec tes notes personnelles.</p>
+        <h3>Rien dans ton historique pour l'instant</h3>
+        <p>Les films, séries et animes que tu marques comme vus apparaîtront ici, avec tes notes personnelles.</p>
       </div>`;
     return;
   }
@@ -1756,7 +2289,7 @@ function renderHistory(filter = ""){
       <div class="state-card">
         <div class="icon">⌕</div>
         <h3>Aucun résultat</h3>
-        <p>Aucun film de ton historique ne correspond à « ${escapeHtml(filter)} ».</p>
+        <p>${filter.trim() ? `Aucune entrée ne correspond à « ${escapeHtml(filter)} ».` : "Rien de ce type dans ton historique pour l'instant."}</p>
       </div>`;
     return;
   }
@@ -1766,12 +2299,13 @@ function renderHistory(filter = ""){
   container.querySelectorAll("[data-action]").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const id = parseInt(btn.dataset.id);
+      const mediaType = btn.dataset.mediaType || "movie";
       const action = btn.dataset.action;
-      if(action === "rate") openRatingFromHistory(id);
-      else if(action === "remove") removeWatchedMovie(id);
-      else if(action === "unwatch") markAsUnwatched(id);
+      if(action === "rate") openRatingFromHistory(id, mediaType);
+      else if(action === "remove") removeWatchedMovie(id, mediaType);
+      else if(action === "unwatch") markAsUnwatched(id, mediaType);
       else if(action === "share"){
-        const record = movieAppData.watched.find(m => m.id === id);
+        const record = movieAppData.watched.find(m => m.id === id && (m.mediaType || "movie") === mediaType);
         if(record) shareMovie(record);
       }
     });
@@ -1782,9 +2316,14 @@ function renderHistoryCard(m){
   const posterUrl = m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : "";
   const year = m.release_date ? m.release_date.slice(0,4) : "—";
   const watchedDate = new Date(m.watchedAt).toLocaleDateString('fr-FR', {day:'numeric', month:'short', year:'numeric'});
+  const mediaType = m.mediaType || "movie";
+  const typeLabel = m.isAnime ? "Anime" : (mediaType === "tv" ? "Série" : "Film");
   return `
     <div class="history-card">
-      <div class="history-poster">${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(m.title)}" loading="lazy">` : ""}</div>
+      <div class="history-poster">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(m.title)}" loading="lazy">` : ""}
+        <span class="history-type-badge">${typeLabel}</span>
+      </div>
       <div class="history-body">
         <div class="history-title">${escapeHtml(m.title)}</div>
         <div class="history-year">${year}</div>
@@ -1794,17 +2333,17 @@ function renderHistoryCard(m){
         </div>
         <div class="history-date">Vu le ${watchedDate}</div>
         <div class="history-actions">
-          <button class="icon-btn-sm" data-action="share" data-id="${m.id}" title="Partager à un ami">↗</button>
-          <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" title="Modifier la note">✎</button>
-          <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" title="Remettre non vu">↺</button>
-          <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" title="Supprimer">🗑</button>
+          <button class="icon-btn-sm" data-action="share" data-id="${m.id}" data-media-type="${mediaType}" title="Partager à un ami">↗</button>
+          <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" data-media-type="${mediaType}" title="Modifier la note">✎</button>
+          <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" data-media-type="${mediaType}" title="Remettre non vu">↺</button>
+          <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" data-media-type="${mediaType}" title="Supprimer">🗑</button>
         </div>
       </div>
     </div>`;
 }
 
-function openRatingFromHistory(movieId){
-  const record = movieAppData.watched.find(m => m.id === movieId);
+function openRatingFromHistory(movieId, mediaType = "movie"){
+  const record = movieAppData.watched.find(m => m.id === movieId && (m.mediaType || "movie") === mediaType);
   if(!record) return;
   pendingRatingMovie = { ...record, fromHistory: true };
   pendingRatingValue = record.myRating || 0;
@@ -1917,8 +2456,9 @@ function switchView(view){
     b.classList.toggle("active", b.dataset.view === view);
   });
 
-  if(view === "history") renderHistory(document.getElementById("historySearch").value);
+  if(view === "history") renderHistory(document.getElementById("historySearch").value, historyFilter);
   if(view === "stats") renderStats();
+  if(view === "browse") initBrowseIfNeeded();
 
   window.scrollTo({top:0, behavior:"smooth"});
 }
@@ -1948,6 +2488,24 @@ function applySettingsToUI(){
 // affiche toujours le résultat sur 10 pour rester cohérent avec TMDB.
 function toTen(fiveScaleRating){
   return (fiveScaleRating * 2).toFixed(1);
+}
+
+// TMDB nomme ses champs différemment entre /movie (title, release_date,
+// original_title) et /tv (name, first_air_date, original_name). Cette
+// fonction uniformise tout objet TMDB brut vers le format "title/release_date"
+// déjà utilisé dans toute l'app, quel que soit le média d'origine — pour que
+// le reste du code (rendu, stats, historique) n'ait jamais à distinguer les
+// deux formats.
+function normalizeMedia(raw, mediaType, isAnime = false){
+  const normalized = { ...raw };
+  normalized.mediaType = mediaType;
+  normalized.isAnime = !!isAnime;
+  if(mediaType === "tv"){
+    normalized.title = raw.name;
+    normalized.original_title = raw.original_name;
+    normalized.release_date = raw.first_air_date;
+  }
+  return normalized;
 }
 
 function escapeHtml(str){
@@ -1985,9 +2543,9 @@ function wireEvents(){
     document.getElementById("ratingModal").classList.remove("show");
     if(pendingRatingMovie){
       if(pendingRatingMovie.fromHistory){
-        rateMovie(pendingRatingMovie.id, pendingRatingValue);
+        rateMovie(pendingRatingMovie.id, pendingRatingValue, pendingRatingMovie.mediaType || "movie");
         showToast("Note mise à jour");
-        renderHistory(document.getElementById("historySearch").value);
+        renderHistory(document.getElementById("historySearch").value, historyFilter);
         renderStats();
       }else{
         finalizeMarkWatched(pendingRatingMovie, pendingRatingValue);
@@ -2001,8 +2559,40 @@ function wireEvents(){
 
   // History search
   document.getElementById("historySearch").addEventListener("input", debounce((e) => {
-    renderHistory(e.target.value);
+    renderHistory(e.target.value, historyFilter);
   }, 200));
+
+  // History filter tabs (Tout / Films / Séries / Animes)
+  document.querySelectorAll(".history-filter-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".history-filter-tab").forEach(t => {
+        t.classList.toggle("active", t === tab);
+        t.setAttribute("aria-selected", t === tab);
+      });
+      historyFilter = tab.dataset.filter;
+      renderHistory(document.getElementById("historySearch").value, historyFilter);
+    });
+  });
+
+  // Browse type tabs (Films / Séries / Anime)
+  document.querySelectorAll(".browse-type-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      if(tab.dataset.mediaType === browseMediaType) return;
+      document.querySelectorAll(".browse-type-tab").forEach(t => {
+        t.classList.toggle("active", t === tab);
+        t.setAttribute("aria-selected", t === tab);
+      });
+      browseMediaType = tab.dataset.mediaType;
+      document.getElementById("browseContent").innerHTML = `<div class="loader-wrap"><div class="reel"></div><div class="loader-label">Recherche…</div></div>`;
+      initBrowseIfNeeded();
+    });
+  });
+
+  // Browse detail overlay
+  document.getElementById("btnCloseBrowseDetail").addEventListener("click", closeBrowseDetail);
+  document.getElementById("browseDetailOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "browseDetailOverlay") closeBrowseDetail();
+  });
 
   // Settings
   document.getElementById("btnSettings").addEventListener("click", openSettings);
