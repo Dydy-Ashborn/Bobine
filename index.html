@@ -234,20 +234,11 @@ main{ max-width:1280px; margin:0 auto; }
   display:inline-flex; align-items:center; gap:7px;
   font-size:12.5px; color:var(--ink-dim);
   border:1px solid var(--line-strong); border-radius:999px;
-  padding:6px 14px; margin-bottom:18px;
+  padding:6px 14px; margin-bottom:22px;
   opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
   animation-delay:0.02s;
 }
 .tier-badge .star{ color:var(--gold); font-size:12px; }
-
-.tier-notice{
-  display:inline-flex; align-items:center; gap:8px;
-  font-size:13px; color:var(--gold);
-  background: rgba(207,168,85,0.1); border:1px solid rgba(207,168,85,0.3);
-  padding:9px 16px; border-radius:999px; margin-bottom:22px;
-  opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
-  animation-delay:0.06s;
-}
 
 .movie-stage{
   display:grid;
@@ -354,6 +345,13 @@ main{ max-width:1280px; margin:0 auto; }
   transition: border-color 0.22s, background 0.22s, transform 0.22s;
 }
 .btn-secondary:hover{ background:rgba(255,255,255,0.06); border-color:var(--ink-dim); transform:translateY(-2px); }
+.btn-tertiary{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:13px; font-weight:500; color:var(--ink-faint);
+  padding:10px 4px; border-bottom:1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn-tertiary:hover{ color:var(--ink-dim); border-color:var(--ink-faint); }
 .btn-tmdb-link{
   display:inline-flex; align-items:center; gap:7px;
   font-size:13.5px; color:var(--ink-faint); font-weight:500;
@@ -362,6 +360,10 @@ main{ max-width:1280px; margin:0 auto; }
   transition: color 0.2s, border-color 0.2s;
 }
 .btn-tmdb-link:hover{ color:var(--ink); border-color:var(--ink-faint); }
+
+.secondary-links-row{
+  display:flex; flex-wrap:wrap; align-items:center; gap:20px;
+}
 
 /* Loader */
 .loader-wrap{
@@ -376,6 +378,55 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .loader-label{
   font-family:var(--font-display); font-style:italic; color:var(--ink-dim); font-size:15px;
+}
+
+/* ================================================================
+   SLOT REEL — animation de tirage au sort ("🎲 Change de film")
+   Rouleau vertical d'affiches façon machine à sous / bande de pellicule.
+   ================================================================ */
+.slot-stage{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height: 60vh; gap:26px;
+}
+.slot-window{
+  position:relative;
+  width: min(260px, 68vw);
+  aspect-ratio: 2/3;
+  border-radius: var(--radius-lg);
+  overflow:hidden;
+  background: var(--bg-card);
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--line-strong);
+}
+.slot-window::before, .slot-window::after{
+  content:""; position:absolute; left:0; right:0; height:38%; z-index:3; pointer-events:none;
+}
+.slot-window::before{ top:0; background: linear-gradient(180deg, var(--bg) 0%, transparent 100%); }
+.slot-window::after{ bottom:0; background: linear-gradient(0deg, var(--bg) 0%, transparent 100%); }
+.slot-strip{
+  position:absolute; left:0; right:0; top:0;
+  display:flex; flex-direction:column;
+  will-change: transform;
+}
+.slot-strip img{
+  width:100%; aspect-ratio:2/3; object-fit:cover; display:block;
+  flex-shrink:0;
+}
+.slot-center-line{
+  position:absolute; left:0; right:0; top:50%; height:2px; z-index:4;
+  background: var(--bordeaux); transform: translateY(-50%);
+  box-shadow: 0 0 12px var(--bordeaux-glow);
+  opacity:0.85;
+}
+.slot-label{
+  font-family:var(--font-display); font-style:italic; color:var(--ink-dim); font-size:15px;
+  display:flex; align-items:center; gap:10px;
+}
+.slot-label .dice{
+  display:inline-block; animation: diceSpin 0.6s ease-in-out infinite;
+}
+@keyframes diceSpin{
+  0%, 100%{ transform: rotate(0deg); }
+  50%{ transform: rotate(18deg); }
 }
 
 /* Empty / error states */
@@ -509,10 +560,10 @@ main{ max-width:1280px; margin:0 auto; }
 .history-tmdb{ color:var(--ink-dim); }
 .history-mine{ color:var(--gold); font-weight:700; display:flex; align-items:center; gap:3px; }
 .history-date{ font-size:11px; color:var(--ink-faint); margin-bottom:12px; }
-.history-actions{ display:flex; gap:6px; }
+.history-actions{ display:flex; gap:5px; }
 .icon-btn-sm{
   flex:1; display:flex; align-items:center; justify-content:center;
-  padding:8px; border-radius:8px; border:1px solid var(--line);
+  padding:8px 4px; border-radius:8px; border:1px solid var(--line);
   font-size:12px; color:var(--ink-dim);
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
@@ -652,8 +703,26 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   .bottom-nav button.active{ color:var(--ink); }
   .bottom-nav button .bn-icon{ font-size:19px; }
   .view{ padding-bottom:110px; }
-  .action-row{ flex-direction:column; }
-  .action-row .btn-primary, .action-row .btn-secondary{ justify-content:center; width:100%; }
+
+  /* Barre d'actions du film du jour : fixée juste au-dessus de la bottom-nav,
+     toujours atteignable au pouce sans avoir à scroller — y compris pendant
+     l'animation de tirage, qui se joue en haut de l'écran. */
+  #actionRow.action-row{
+    position:fixed; left:0; right:0; z-index:55;
+    bottom: calc(64px + env(safe-area-inset-bottom));
+    flex-direction:row; gap:10px;
+    margin-bottom:0; padding: 12px 16px;
+    background: rgba(10,10,11,0.88); backdrop-filter: blur(18px);
+    border-top:1px solid var(--line);
+  }
+  #actionRow.action-row .btn-primary,
+  #actionRow.action-row .btn-secondary{
+    justify-content:center; flex:1; padding:14px 12px; font-size:13.5px;
+  }
+  /* Le contenu qui suit l'action-row (liens secondaires, footer) doit garder
+     assez de marge pour ne pas passer sous la barre fixe + la bottom-nav. */
+  .movie-info{ padding-bottom: 148px; }
+
   .movie-title{ font-size:30px; }
   .settings-panel{ width:100vw; }
 }
@@ -798,6 +867,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       <button class="settings-action-btn" id="btnExport">⭳&nbsp;&nbsp;Exporter mes données (JSON)</button>
       <button class="settings-action-btn" id="btnImportTrigger">⭱&nbsp;&nbsp;Importer un fichier JSON</button>
       <input type="file" id="importFile" accept="application/json">
+      <button class="settings-action-btn" id="btnClearExcluded">↺&nbsp;&nbsp;Réautoriser les films écartés</button>
       <button class="settings-action-btn danger" id="btnResetData">🗑&nbsp;&nbsp;Réinitialiser toutes les données</button>
     </div>
   </div>
@@ -838,12 +908,12 @@ const STORAGE_KEY = "movieAppData";
 
 let movieAppData = {
   watched: [],          // [{id,title,original_title,poster_path,backdrop_path,release_date,vote_average,vote_count,genre_ids,genres,runtime,director,cast,overview,watchedAt,myRating}]
+  excluded: [],          // [id, ...] films explicitement écartés ("pas envie de voir ce film") — jamais reproposés, ne comptent pas dans l'historique/stats
   settings: {
     minVotes: DEFAULTS.minVotes,
     minYear: DEFAULTS.minYear,
     personalization: DEFAULTS.personalization,
-    onboarded: false,
-    peakRatingSeen: null   // highest tier rating ever shown — used to detect a tier downgrade
+    onboarded: false
   },
   genreWeights: {}      // { genreId: weightMultiplier } learned from ratings
 };
@@ -856,6 +926,7 @@ function loadData(){
       movieAppData = Object.assign(movieAppData, parsed);
       movieAppData.settings = Object.assign({}, movieAppData.settings, parsed.settings || {});
       movieAppData.watched = parsed.watched || [];
+      movieAppData.excluded = parsed.excluded || [];
       movieAppData.genreWeights = parsed.genreWeights || {};
     }
   }catch(e){
@@ -896,6 +967,7 @@ function importData(file){
       }
       movieAppData = {
         watched: parsed.watched || [],
+        excluded: parsed.excluded || [],
         settings: Object.assign({}, movieAppData.settings, parsed.settings || {}),
         genreWeights: parsed.genreWeights || {}
       };
@@ -921,9 +993,6 @@ let genreCache = null;             // {id: name}
 let candidatePool = [];            // buffered TMDB candidates
 let currentView = "today";
 let lastTierRating = null;         // vote_average of the tier the current pick came from
-let peakRatingSeen = null;         // highest tier rating seen so far (mirrors settings.peakRatingSeen)
-let tierWasDowngraded = false;     // true when this pick's tier is below the historical peak
-let tierPeakBeforePick = null;     // the peak rating as it stood BEFORE this pick (for the UI notice)
 let pendingRatingMovie = null;
 let pendingRatingValue = 0;
 
@@ -982,6 +1051,10 @@ async function fetchMovieDetails(movieId){
    ---------------------------------------------------------------- */
 function getWatchedIds(){
   return new Set(movieAppData.watched.map(m => m.id));
+}
+
+function getExcludedIds(){
+  return new Set(movieAppData.excluded || []);
 }
 
 function calculateRecommendationScore(movie){
@@ -1052,6 +1125,7 @@ function updatePersonalization(movieRecord){
 // — entirely automatic, nothing hardcoded, nothing for the user to tune.
 async function buildCandidatePoolFromTop(){
   const watchedIds = getWatchedIds();
+  const excludedIds = getExcludedIds();
   const MAX_PAGES_TO_SCAN = 20;   // safety cap so we never loop forever
   const POOL_TARGET = 8;
 
@@ -1077,6 +1151,7 @@ async function buildCandidatePoolFromTop(){
       if(
         !seen.has(m.id) &&
         !watchedIds.has(m.id) &&
+        !excludedIds.has(m.id) &&
         !sessionShownIds.has(m.id) &&
         m.poster_path
       ){
@@ -1112,16 +1187,9 @@ async function getRecommendation(){
   const topTier = scored.slice(0, topTierSize);
   const chosen = topTier[Math.floor(Math.random() * topTier.length)].movie;
 
-  // The note actually shown to the user is what defines "this tier" — never
-  // the pool's top score, since the chosen film can be anyone in topTier.
+  // Badge display: the note actually shown to the user, never the pool's
+  // top score, since the chosen film can be anyone in topTier.
   lastTierRating = chosen.vote_average;
-  const peak = movieAppData.settings.peakRatingSeen;
-  tierPeakBeforePick = peak;
-  tierWasDowngraded = peak != null && lastTierRating < peak - 0.05;
-  if(peak == null || lastTierRating > peak){
-    movieAppData.settings.peakRatingSeen = lastTierRating;
-    saveData();
-  }
 
   // remove chosen from pool
   candidatePool = candidatePool.filter(m => m.id !== chosen.id);
@@ -1175,6 +1243,16 @@ function markAsUnwatched(movieId){
   showToast("Remis dans les films à découvrir");
 }
 
+function excludeMovie(movieId){
+  if(!movieAppData.excluded) movieAppData.excluded = [];
+  if(!movieAppData.excluded.includes(movieId)){
+    movieAppData.excluded.push(movieId);
+    saveData();
+  }
+  // retire aussi du pool courant s'il y était encore
+  candidatePool = candidatePool.filter(m => m.id !== movieId);
+}
+
 /* ----------------------------------------------------------------
    6. RENDERING — FILM DU JOUR
    ---------------------------------------------------------------- */
@@ -1193,6 +1271,55 @@ function showLoader(label = "Recherche du film parfait…"){
       <div class="reel" role="status" aria-label="Chargement"></div>
       <div class="loader-label">${escapeHtml(label)}</div>
     </div>`;
+}
+
+// Animation de tirage au sort façon machine à sous : une bande verticale
+// d'affiches (piochées dans le pool déjà en mémoire, donc sans requête
+// réseau) défile puis ralentit jusqu'à se figer sur l'affiche finale.
+// Retourne une Promise résolue une fois l'animation terminée.
+function showSlotReel(posterUrls, finalPosterUrl){
+  return new Promise((resolve) => {
+    const POSTER_H_RATIO = 1.5; // aspect-ratio 2/3 → hauteur = largeur * 1.5
+    const strip = [...posterUrls, finalPosterUrl].filter(Boolean);
+    // Répète la bande pour qu'elle soit assez longue à faire défiler
+    const repeated = [];
+    while(repeated.length < 18) repeated.push(...strip);
+    repeated.push(finalPosterUrl); // la toute dernière image = le résultat
+
+    document.getElementById("todayContent").innerHTML = `
+      <div class="slot-stage">
+        <div class="slot-window">
+          <div class="slot-strip" id="slotStrip">
+            ${repeated.map(url => `<img src="${url}" alt="" aria-hidden="true">`).join("")}
+          </div>
+          <div class="slot-center-line"></div>
+        </div>
+        <div class="slot-label"><span class="dice">🎲</span> Tirage en cours…</div>
+      </div>`;
+
+    const stripEl = document.getElementById("slotStrip");
+    const windowEl = stripEl.parentElement;
+
+    requestAnimationFrame(() => {
+      const posterWidth = windowEl.getBoundingClientRect().width;
+      const posterHeight = posterWidth * POSTER_H_RATIO;
+      const windowHeight = windowEl.getBoundingClientRect().height;
+      // Distance pour amener la DERNIÈRE image (le résultat) au centre de la fenêtre
+      const finalIndex = repeated.length - 1;
+      const targetY = -(finalIndex * posterHeight) + (windowHeight / 2 - posterHeight / 2);
+
+      stripEl.style.transition = "transform 2.1s cubic-bezier(0.13, 0.72, 0.1, 1)";
+      stripEl.style.transform = `translateY(${targetY}px)`;
+
+      const done = () => {
+        stripEl.removeEventListener("transitionend", done);
+        resolve();
+      };
+      stripEl.addEventListener("transitionend", done);
+      // Filet de sécurité si transitionend ne se déclenche pas (onglet en arrière-plan, etc.)
+      setTimeout(resolve, 2400);
+    });
+  });
 }
 
 function showKeyMissing(){
@@ -1264,11 +1391,7 @@ async function renderMovie(movie){
 
   document.getElementById("todayContent").innerHTML = `
     <div class="hero-eyebrow">Ton film du jour</div>
-    <div class="tier-badge"><span class="star">★</span> Palier du moment : ${lastTierRating.toFixed(1)}</div>
-    ${tierWasDowngraded ? `
-    <div class="tier-notice">
-      Palier ${tierPeakBeforePick.toFixed(1)} épuisé — sélection élargie à ${lastTierRating.toFixed(1)}+
-    </div>` : ""}
+    <div class="tier-badge"><span class="star">★</span> Sélection actuelle : ${lastTierRating.toFixed(1)}+</div>
     <div class="movie-stage">
       <div class="poster-wrap">
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : `<div class="loader-wrap" style="min-height:100%;"><div class="reel"></div></div>`}
@@ -1290,17 +1413,23 @@ async function renderMovie(movie){
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
         <div class="crew-block" id="crewBlock" style="display:none;"></div>
-        <div class="action-row">
+        <div class="action-row" id="actionRow">
           <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
           <button class="btn-secondary" id="btnNewMovie">🎲 Change de film</button>
         </div>
-        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+        <div class="secondary-links-row">
+          <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+          <button class="btn-tertiary" id="btnShareMovie">↗ Partager à un ami</button>
+          <button class="btn-tertiary" id="btnSkipMovie">Pas envie de voir ce film</button>
+        </div>
       </div>
     </div>
   `;
 
   document.getElementById("btnMarkWatched").addEventListener("click", handleMarkWatched);
   document.getElementById("btnNewMovie").addEventListener("click", loadNewMovie);
+  document.getElementById("btnSkipMovie").addEventListener("click", handleSkipMovie);
+  document.getElementById("btnShareMovie").addEventListener("click", () => shareMovie(movie));
 
   // Fetch extra details (runtime/director/cast) without blocking initial paint
   try{
@@ -1329,13 +1458,33 @@ async function renderMovie(movie){
 }
 
 async function loadNewMovie(){
-  showLoader();
+  // Si un pool est déjà en mémoire, on a des affiches à faire défiler :
+  // animation de tirage au sort. Sinon (tout premier film, ou pool à
+  // reconstituer depuis TMDB), loader classique le temps de la requête.
+  const poolSnapshot = candidatePool.slice(0, 8).map(m =>
+    m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : null
+  ).filter(Boolean);
+  const useSlotReel = poolSnapshot.length >= 3;
+
+  if(!useSlotReel) showLoader();
+
   try{
+    // getRecommendation() pioche dans le pool déjà en mémoire quand il y en
+    // a un, donc c'est quasi instantané — on l'attend d'abord pour connaître
+    // l'affiche finale, puis on joue le rouleau dessus pour un vrai suspense visuel.
     const movie = await getRecommendation();
     if(!movie){
       showErrorState("NO_RESULTS");
       return;
     }
+
+    if(useSlotReel){
+      const finalPoster = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : null;
+      if(finalPoster){
+        await showSlotReel(poolSnapshot, finalPoster);
+      }
+    }
+
     await renderMovie(movie);
   }catch(e){
     console.error(e);
@@ -1348,6 +1497,13 @@ async function loadNewMovie(){
 function handleMarkWatched(){
   if(!currentMovie) return;
   openRatingFlow(currentMovie);
+}
+
+function handleSkipMovie(){
+  if(!currentMovie) return;
+  excludeMovie(currentMovie.id);
+  showToast("Ce film ne sera plus proposé", "🚫");
+  loadNewMovie();
 }
 
 /* ----------------------------------------------------------------
@@ -1442,6 +1598,138 @@ function showToast(text, icon = "✓"){
 }
 
 /* ----------------------------------------------------------------
+   8bis. PARTAGE — recommander un film à un ami via un lien
+   ---------------------------------------------------------------- */
+// Construit un lien qui, une fois ouvert, affiche directement ce film
+// dans un écran "Recommandé par un ami" — sans que le destinataire ait
+// besoin d'avoir déjà utilisé Bobine.
+function buildShareUrl(movie){
+  const url = new URL(window.location.href);
+  url.search = ""; // on repart d'une URL propre
+  url.hash = "";
+  url.searchParams.set("share", movie.id);
+  return url.toString();
+}
+
+async function shareMovie(movie){
+  const shareUrl = buildShareUrl(movie);
+  const shareText = `${movie.title} — je te le recommande sur Bobine`;
+
+  if(navigator.share){
+    try{
+      await navigator.share({ title: movie.title, text: shareText, url: shareUrl });
+    }catch(err){
+      // AbortError = l'utilisateur a annulé le partage → rien à faire
+      if(err?.name !== "AbortError"){
+        copyShareLinkFallback(shareUrl);
+      }
+    }
+  }else{
+    copyShareLinkFallback(shareUrl);
+  }
+}
+
+async function copyShareLinkFallback(url){
+  try{
+    await navigator.clipboard.writeText(url);
+    showToast("Lien copié — colle-le où tu veux");
+  }catch(err){
+    showToast("Impossible de copier le lien", "⚠");
+  }
+}
+
+// Au chargement, si l'URL contient ?share=<id>, on récupère ce film sur
+// TMDB et on affiche un écran dédié avant tout le reste.
+function getSharedMovieIdFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("share");
+  return id ? parseInt(id, 10) : null;
+}
+
+async function showSharedMovieScreen(movieId){
+  showLoader("Récupération de la recommandation…");
+  try{
+    const movie = await tmdbFetch(`/movie/${movieId}`, { append_to_response: "credits" });
+    if(!movie || movie.success === false){
+      showErrorState("UNKNOWN");
+      return;
+    }
+    renderSharedMovie(movie);
+  }catch(e){
+    console.error(e);
+    if(e.message === "API_KEY_INVALID") showErrorState("API_KEY_INVALID");
+    else if(e.message === "NETWORK_ERROR") showErrorState("NETWORK_ERROR");
+    else showErrorState("UNKNOWN");
+  }
+}
+
+function renderSharedMovie(movie){
+  // Normalise le format "détail" de TMDB (genres: [{id,name}]) vers le
+  // format "liste" utilisé partout ailleurs dans l'app (genre_ids: [id]),
+  // pour que markAsWatched / les stats / la personnalisation fonctionnent
+  // identiquement, que le film vienne d'une recommandation ou d'un partage.
+  movie.genre_ids = (movie.genres || []).map(g => g.id);
+
+  setBackdrop(movie.backdrop_path);
+  const year = movie.release_date ? movie.release_date.slice(0,4) : "—";
+  const posterUrl = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : "";
+  const genreNames = (movie.genres || []).map(g => g.name);
+  const alreadyWatched = getWatchedIds().has(movie.id);
+
+  document.getElementById("todayContent").innerHTML = `
+    <div class="hero-eyebrow">Recommandé par un ami</div>
+    <div class="movie-stage">
+      <div class="poster-wrap">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : ""}
+        <div class="poster-shine"></div>
+        <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+      </div>
+      <div class="movie-info">
+        <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
+        ${movie.original_title && movie.original_title !== movie.title ? `<div class="movie-original-title">${escapeHtml(movie.original_title)}</div>` : ""}
+        <div class="movie-meta-row">
+          <span class="tmdb-score"><span class="star">★</span> TMDB ${movie.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="meta-sep"></span>
+          <span>${year}</span>
+          ${movie.runtime ? `<span class="meta-sep"></span><span>${formatRuntime(movie.runtime)}</span>` : ""}
+        </div>
+        <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
+        <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
+        <div class="action-row" id="actionRow">
+          ${alreadyWatched
+            ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
+            : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
+          <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir Bobine</button>
+        </div>
+        <div class="secondary-links-row">
+          <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("btnGoToApp").addEventListener("click", () => {
+    // Nettoie l'URL, marque l'onboarding comme fait (un nouvel arrivant qui
+    // vient de voir un vrai film n'a plus besoin de l'écran de bienvenue),
+    // et repart sur le flux normal de l'app.
+    window.history.replaceState({}, "", window.location.pathname);
+    movieAppData.settings.onboarded = true;
+    saveData();
+    loadNewMovie();
+  });
+
+  const addBtn = document.getElementById("btnAddSharedWatched");
+  if(addBtn){
+    addBtn.addEventListener("click", () => {
+      window.history.replaceState({}, "", window.location.pathname);
+      movieAppData.settings.onboarded = true;
+      saveData();
+      openRatingFlow(movie);
+    });
+  }
+}
+
+/* ----------------------------------------------------------------
    9. RENDERING — MES FILMS VUS
    ---------------------------------------------------------------- */
 function renderHistory(filter = ""){
@@ -1482,6 +1770,10 @@ function renderHistory(filter = ""){
       if(action === "rate") openRatingFromHistory(id);
       else if(action === "remove") removeWatchedMovie(id);
       else if(action === "unwatch") markAsUnwatched(id);
+      else if(action === "share"){
+        const record = movieAppData.watched.find(m => m.id === id);
+        if(record) shareMovie(record);
+      }
     });
   });
 }
@@ -1502,6 +1794,7 @@ function renderHistoryCard(m){
         </div>
         <div class="history-date">Vu le ${watchedDate}</div>
         <div class="history-actions">
+          <button class="icon-btn-sm" data-action="share" data-id="${m.id}" title="Partager à un ami">↗</button>
           <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" title="Modifier la note">✎</button>
           <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" title="Remettre non vu">↺</button>
           <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" title="Supprimer">🗑</button>
@@ -1731,6 +2024,16 @@ function wireEvents(){
     if(file) importData(file);
     e.target.value = "";
   });
+  document.getElementById("btnClearExcluded").addEventListener("click", () => {
+    const count = (movieAppData.excluded || []).length;
+    if(count === 0){
+      showToast("Aucun film écarté pour l'instant");
+      return;
+    }
+    movieAppData.excluded = [];
+    saveData();
+    showToast(`${count} film${count > 1 ? "s" : ""} réautorisé${count > 1 ? "s" : ""}`);
+  });
   document.getElementById("btnResetData").addEventListener("click", () => {
     if(confirm("Supprimer définitivement tout ton historique et tes réglages ?")){
       localStorage.removeItem(STORAGE_KEY);
@@ -1790,6 +2093,17 @@ function init(){
   if(!TMDB_API_KEY || TMDB_API_KEY === "MA_CLE_API_TMDB" || TMDB_API_KEY.trim() === ""){
     document.getElementById("onboarding").hidden = true;
     showKeyMissing();
+    return;
+  }
+
+  // Un lien de partage (?share=<id>) prime sur tout le reste, y compris
+  // l'onboarding : un nouvel arrivant doit voir directement le film
+  // recommandé, pas un écran de bienvenue générique.
+  const sharedMovieId = getSharedMovieIdFromUrl();
+  if(sharedMovieId){
+    document.getElementById("onboarding").hidden = true;
+    showSharedMovieScreen(sharedMovieId);
+    renderHistory();
     return;
   }
 
