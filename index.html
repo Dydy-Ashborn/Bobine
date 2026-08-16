@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bobine</title>
+<meta name="description" content="Un film. Chaque jour. Pas de navet.">
+
+<!-- ============================================================
+     PWA — manifest, icônes, theme-color
+     ============================================================ -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9Ijk2IiBmaWxsPSIjMGEwYTBiIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2I4MjEzZiIgc3Ryb2tlLXdpZHRoPSIyNiIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iNDYiIGZpbGw9IiNiODIxM2YiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxMjAiIHI9IjMwIiBmaWxsPSIjZjJmMGVjIi8+CiAgPGNpcmNsZSBjeD0iMzY4IiBjeT0iMTkyIiByPSIzMCIgZmlsbD0iI2YyZjBlYyIvPgogIDxjaXJjbGUgY3g9IjM2OCIgY3k9IjMyMCIgcj0iMzAiIGZpbGw9IiNmMmYwZWMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIzOTIiIHI9IjMwIiBmaWxsPSIjZjJmMGVjIi8+CiAgPGNpcmNsZSBjeD0iMTQ0IiBjeT0iMzIwIiByPSIzMCIgZmlsbD0iI2YyZjBlYyIvPgogIDxjaXJjbGUgY3g9IjE0NCIgY3k9IjE5MiIgcj0iMzAiIGZpbGw9IiNmMmYwZWMiLz4KPC9zdmc+Cg==">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9Ijk2IiBmaWxsPSIjMGEwYTBiIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2I4MjEzZiIgc3Ryb2tlLXdpZHRoPSIyNiIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iNDYiIGZpbGw9IiNiODIxM2YiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxMjAiIHI9IjMwIiBmaWxsPSIjZjJmMGVjIi8+CiAgPGNpcmNsZSBjeD0iMzY4IiBjeT0iMTkyIiByPSIzMCIgZmlsbD0iI2YyZjBlYyIvPgogIDxjaXJjbGUgY3g9IjM2OCIgY3k9IjMyMCIgcj0iMzAiIGZpbGw9IiNmMmYwZWMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIzOTIiIHI9IjMwIiBmaWxsPSIjZjJmMGVjIi8+CiAgPGNpcmNsZSBjeD0iMTQ0IiBjeT0iMzIwIiByPSIzMCIgZmlsbD0iI2YyZjBlYyIvPgogIDxjaXJjbGUgY3g9IjE0NCIgY3k9IjE5MiIgcj0iMzAiIGZpbGw9IiNmMmYwZWMiLz4KPC9zdmc+Cg==">
+<meta name="theme-color" content="#0a0a0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bobine">
+<link rel="manifest" id="manifestLink">
+
+<!-- ============================================================
+     FONTS — Fraunces (display, éditorial/cinéma) + Inter (UI)
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;0,9..144,700;1,9..144,450;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   TOKENS
+   ================================================================ */
+:root{
+  --bg: #0a0a0b;
+  --bg-raised: #131215;
+  --bg-card: #17161a;
+  --line: rgba(242,240,236,0.09);
+  --line-strong: rgba(242,240,236,0.16);
+  --ink: #f2f0ec;
+  --ink-dim: #b9b6b0;
+  --ink-faint: #726f6a;
+  --bordeaux: #b8213f;
+  --bordeaux-deep: #7a1530;
+  --bordeaux-glow: rgba(184,33,63,0.35);
+  --gold: #cfa855;
+  --success: #4f9d6e;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%; display:block;}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+a{color:inherit;}
+::selection{ background:var(--bordeaux); color:#fff; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
+
+/* Visible keyboard focus everywhere */
+button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ================================================================
+   FILM GRAIN — signature ambient texture
+   ================================================================ */
+.grain{
+  position:fixed; inset:0; z-index:2; pointer-events:none;
+  opacity:0.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ================================================================
+   BACKDROP LAYER
+   ================================================================ */
+.backdrop-layer{
+  position:fixed; inset:0; z-index:0;
+  background-size:cover; background-position:center 20%;
+  transition: background-image 0.6s var(--ease);
+  filter: blur(38px) saturate(1.1) brightness(0.55);
+  transform: scale(1.15);
+}
+.backdrop-scrim{
+  position:fixed; inset:0; z-index:1;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(10,10,11,0.2) 0%, rgba(10,10,11,0.75) 55%, var(--bg) 100%),
+    linear-gradient(180deg, rgba(10,10,11,0.55) 0%, rgba(10,10,11,0.85) 60%, var(--bg) 100%);
+}
+
+/* ================================================================
+   TOP NAV
+   ================================================================ */
+.topnav{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 18px clamp(18px, 4vw, 48px);
+  backdrop-filter: blur(16px) saturate(1.2);
+  background: rgba(10,10,11,0.55);
+  border-bottom: 1px solid var(--line);
+}
+.brand{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size: 19px;
+  letter-spacing: 0.01em;
+  display:flex; align-items:baseline; gap:2px;
+}
+.brand .dot{ color:var(--bordeaux); font-size:22px; line-height:0; }
+
+.nav-tabs{
+  display:flex; gap:4px;
+  background: rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius: 999px;
+  padding:4px;
+}
+.nav-tab{
+  font-size:12.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+  padding:8px 16px; border-radius:999px; color:var(--ink-dim);
+  transition: color 0.25s var(--ease), background 0.25s var(--ease);
+  white-space:nowrap;
+}
+.nav-tab.active{ background:var(--bordeaux); color:#fff; }
+.nav-tab:not(.active):hover{ color:var(--ink); }
+
+.nav-icon-btn{
+  width:38px; height:38px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--line); color:var(--ink-dim);
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.nav-icon-btn:hover{ color:var(--ink); border-color:var(--line-strong); transform:rotate(20deg); }
+
+/* Mobile bottom tabs */
+.bottom-nav{ display:none; }
+
+/* ================================================================
+   LAYOUT SHELL
+   ================================================================ */
+.view{
+  position:relative; z-index:5;
+  min-height: calc(100vh - 74px);
+  padding: clamp(20px, 4vw, 48px);
+  padding-bottom: 100px;
+}
+.view[hidden]{ display:none; }
+main{ max-width:1280px; margin:0 auto; }
+
+/* ================================================================
+   ONBOARDING
+   ================================================================ */
+.onboarding{
+  position:fixed; inset:0; z-index:100;
+  display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(ellipse at 50% 40%, #1a1418 0%, var(--bg) 70%);
+  padding:24px;
+  animation: fadeIn 0.6s var(--ease);
+}
+.onboarding[hidden]{ display:none; }
+.onboarding-card{
+  text-align:center; max-width:480px;
+  animation: riseIn 0.8s var(--ease);
+}
+.onboarding-mark{
+  font-family:var(--font-display); font-style:italic; font-weight:450;
+  font-size:14px; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--bordeaux); margin-bottom:22px; display:block;
+}
+.onboarding-title{
+  font-family:var(--font-display); font-weight:600; font-size:clamp(34px,6vw,52px);
+  line-height:1.08; margin-bottom:18px;
+}
+.onboarding-sub{
+  font-size:16px; color:var(--ink-dim); margin-bottom:40px; line-height:1.6;
+}
+.btn-primary{
+  display:inline-flex; align-items:center; gap:10px;
+  background: var(--bordeaux); color:#fff;
+  font-weight:600; font-size:15px; letter-spacing:0.02em;
+  padding: 16px 36px; border-radius:999px;
+  box-shadow: 0 8px 30px var(--bordeaux-glow);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s;
+}
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 38px var(--bordeaux-glow); background:#c72446; }
+.btn-primary:active{ transform:translateY(0); }
+.btn-primary:disabled{ opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none; }
+
+/* ================================================================
+   API KEY NOTICE (when missing)
+   ================================================================ */
+.key-missing{
+  max-width: 560px; margin: 12vh auto; text-align:center;
+  padding: 40px 32px; border:1px solid var(--line); border-radius:var(--radius-lg);
+  background: var(--bg-card);
+}
+.key-missing .icon{ font-size:34px; margin-bottom:16px; }
+.key-missing h2{ font-family:var(--font-display); font-size:26px; margin-bottom:12px; }
+.key-missing p{ color:var(--ink-dim); line-height:1.6; margin-bottom:6px; }
+.key-missing code{
+  display:inline-block; margin-top:14px; padding:10px 16px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--line-strong);
+  border-radius:8px; font-size:13px; color:var(--gold);
+}
+
+/* ================================================================
+   FILM DU JOUR — HERO
+   ================================================================ */
+.hero-eyebrow{
+  font-family:var(--font-display); font-style:italic; font-weight:450;
+  color:var(--bordeaux); font-size:14px; letter-spacing:0.1em; text-transform:uppercase;
+  margin-bottom: 12px;
+  opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
+}
+
+.tier-badge{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:12.5px; color:var(--ink-dim);
+  border:1px solid var(--line-strong); border-radius:999px;
+  padding:6px 14px; margin-bottom:18px;
+  opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
+  animation-delay:0.02s;
+}
+.tier-badge .star{ color:var(--gold); font-size:12px; }
+
+.tier-notice{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:13px; color:var(--gold);
+  background: rgba(207,168,85,0.1); border:1px solid rgba(207,168,85,0.3);
+  padding:9px 16px; border-radius:999px; margin-bottom:22px;
+  opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
+  animation-delay:0.06s;
+}
+
+.movie-stage{
+  display:grid;
+  grid-template-columns: minmax(260px, 380px) 1fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items:start;
+}
+@media (max-width: 900px){
+  .movie-stage{ grid-template-columns: 1fr; }
+}
+
+.poster-wrap{
+  position:relative;
+  border-radius: var(--radius-lg);
+  overflow:hidden;
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--line);
+  aspect-ratio: 2/3;
+  background: var(--bg-card);
+  opacity:0; transform: scale(0.96);
+  animation: posterIn 0.7s var(--ease) forwards;
+  animation-delay:0.08s;
+}
+.poster-wrap img{ width:100%; height:100%; object-fit:cover; }
+.poster-shine{
+  position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 40%);
+  pointer-events:none;
+}
+.poster-rating-badge{
+  position:absolute; top:14px; left:14px;
+  background: rgba(10,10,11,0.72); backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius: 999px; padding: 7px 13px 7px 11px;
+  display:flex; align-items:center; gap:6px;
+  font-size:13px; font-weight:700;
+}
+.poster-rating-badge .star{ color:var(--gold); }
+
+/* Perforated "ticket" divider — signature element */
+.ticket-divider{
+  display:none;
+}
+@media (min-width: 901px){
+  .movie-stage{ position:relative; }
+  .ticket-divider{
+    display:block; position:absolute; left: calc(min(380px, 100% * 0.30)); top:0; bottom:0;
+    width:0;
+  }
+}
+
+.movie-info{
+  opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
+  animation-delay:0.18s;
+}
+.movie-title{
+  font-family:var(--font-display); font-weight:600;
+  font-size: clamp(30px, 4.4vw, 48px);
+  line-height:1.05; letter-spacing:-0.01em;
+  margin-bottom:6px;
+}
+.movie-original-title{
+  font-family:var(--font-display); font-style:italic; font-weight:450;
+  color:var(--ink-faint); font-size:15px; margin-bottom:18px;
+}
+.movie-meta-row{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;
+  margin-bottom:22px; font-size:14px; color:var(--ink-dim);
+}
+.tmdb-score{
+  display:inline-flex; align-items:center; gap:6px;
+  font-weight:700; color:var(--ink);
+}
+.tmdb-score .star{ color:var(--gold); font-size:15px; }
+.meta-dot::before{ content:"·"; margin-right:14px; color:var(--ink-faint); }
+.meta-sep{ width:4px; height:4px; border-radius:50%; background:var(--ink-faint); }
+
+.genre-pills{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+.genre-pill{
+  font-size:12px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+  padding:7px 14px; border-radius:999px;
+  border:1px solid var(--line-strong); color:var(--ink-dim);
+}
+
+.movie-synopsis{
+  font-size:15.5px; line-height:1.75; color:var(--ink-dim);
+  max-width: 62ch; margin-bottom:26px;
+}
+
+.crew-block{
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap:16px; margin-bottom:30px;
+  padding: 18px 20px; border-radius:var(--radius-md);
+  background: rgba(255,255,255,0.025); border:1px solid var(--line);
+}
+.crew-item .label{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px; }
+.crew-item .value{ font-size:14px; color:var(--ink); line-height:1.5; }
+
+.action-row{ display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px; }
+.btn-secondary{
+  display:inline-flex; align-items:center; gap:9px;
+  border:1px solid var(--line-strong); color:var(--ink);
+  font-weight:600; font-size:14.5px;
+  padding:15px 26px; border-radius:999px;
+  transition: border-color 0.22s, background 0.22s, transform 0.22s;
+}
+.btn-secondary:hover{ background:rgba(255,255,255,0.06); border-color:var(--ink-dim); transform:translateY(-2px); }
+.btn-tmdb-link{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:13.5px; color:var(--ink-faint); font-weight:500;
+  padding: 10px 4px;
+  border-bottom:1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn-tmdb-link:hover{ color:var(--ink); border-color:var(--ink-faint); }
+
+/* Loader */
+.loader-wrap{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height: 60vh; gap:22px;
+}
+.reel{
+  width:56px; height:56px; border-radius:50%;
+  border: 3px solid var(--line-strong);
+  border-top-color: var(--bordeaux);
+  animation: spin 0.9s linear infinite;
+}
+.loader-label{
+  font-family:var(--font-display); font-style:italic; color:var(--ink-dim); font-size:15px;
+}
+
+/* Empty / error states */
+.state-card{
+  max-width:520px; margin: 8vh auto; text-align:center;
+  padding: 44px 32px; border:1px solid var(--line); border-radius:var(--radius-lg);
+  background: var(--bg-card);
+}
+.state-card .icon{ font-size:32px; margin-bottom:14px; }
+.state-card h3{ font-family:var(--font-display); font-size:22px; margin-bottom:10px; }
+.state-card p{ color:var(--ink-dim); line-height:1.6; margin-bottom:20px; font-size:14.5px; }
+
+/* Toast confirmation */
+.toast{
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+  background: var(--bg-raised); border:1px solid var(--line-strong);
+  color:var(--ink); padding:16px 24px; border-radius:14px;
+  display:flex; align-items:center; gap:12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  z-index:200; opacity:0; pointer-events:none;
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+  font-size:14px; font-weight:500;
+  max-width: calc(100vw - 40px);
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+.toast .check{
+  width:22px;height:22px;border-radius:50%; background:var(--success);
+  display:flex;align-items:center;justify-content:center; flex-shrink:0; font-size:13px; color:#fff;
+}
+
+/* ================================================================
+   RATING MODAL
+   ================================================================ */
+.modal-overlay{
+  position:fixed; inset:0; z-index:150;
+  background: rgba(10,10,11,0.72); backdrop-filter: blur(6px);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition: opacity 0.3s var(--ease);
+}
+.modal-overlay.show{ opacity:1; pointer-events:auto; }
+.modal-card{
+  background: var(--bg-raised); border:1px solid var(--line-strong);
+  border-radius: var(--radius-lg); padding: 36px 32px;
+  max-width: 420px; width:100%; text-align:center;
+  transform: translateY(16px) scale(0.97); transition: transform 0.35s var(--ease);
+}
+.modal-overlay.show .modal-card{ transform: translateY(0) scale(1); }
+.modal-poster-mini{
+  width:70px; height:105px; border-radius:8px; overflow:hidden; margin:0 auto 16px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.5);
+}
+.modal-poster-mini img{ width:100%; height:100%; object-fit:cover; }
+.modal-card h3{ font-family:var(--font-display); font-size:22px; margin-bottom:6px; }
+.modal-card .modal-sub{ color:var(--ink-faint); font-size:13.5px; margin-bottom:24px; }
+
+.star-rating{
+  display:flex; justify-content:center; gap:6px; margin-bottom:8px;
+  position:relative;
+}
+.star-rating .star-slot{
+  position:relative; width:38px; height:38px; font-size:32px; line-height:1;
+  color: var(--line-strong);
+}
+.star-rating .star-slot .fill{
+  position:absolute; inset:0; overflow:hidden; width:0; color:var(--gold);
+  transition: width 0.15s;
+}
+.star-rating .star-slot button{
+  position:absolute; inset:0; width:50%; height:100%; z-index:2;
+}
+.star-rating .star-slot button.right{ left:50%; }
+.rating-value-label{
+  font-size:14px; color:var(--ink-dim); margin-bottom:26px; height:20px;
+}
+.rating-value-label b{ color:var(--gold); font-weight:700; }
+.modal-actions{ display:flex; gap:12px; justify-content:center; }
+.btn-ghost{
+  padding:12px 20px; border-radius:999px; border:1px solid var(--line-strong);
+  font-size:13.5px; font-weight:600; color:var(--ink-dim);
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover{ color:var(--ink); border-color:var(--ink-dim); }
+
+/* ================================================================
+   MES FILMS (history)
+   ================================================================ */
+.section-header{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:16px; margin-bottom:28px;
+}
+.section-title{
+  font-family:var(--font-display); font-weight:600; font-size:clamp(26px,3.4vw,36px);
+}
+.section-title .count{ color:var(--ink-faint); font-weight:450; font-style:italic; font-size:0.6em; margin-left:10px; }
+
+.search-box{
+  position:relative; min-width:240px; flex:1; max-width:340px;
+}
+.search-box input{
+  width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--line-strong);
+  border-radius:999px; padding:12px 18px 12px 40px; color:var(--ink); font-size:14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.search-box input:focus{ background:rgba(255,255,255,0.07); border-color:var(--bordeaux); outline:none; }
+.search-box input::placeholder{ color:var(--ink-faint); }
+.search-box .icon{ position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--ink-faint); font-size:14px; }
+
+.history-grid{
+  display:grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 22px;
+}
+.history-card{
+  background: var(--bg-card); border:1px solid var(--line);
+  border-radius: var(--radius-md); overflow:hidden;
+  transition: transform 0.3s var(--ease), border-color 0.3s, box-shadow 0.3s;
+  opacity:0; animation: fadeUp 0.5s var(--ease) forwards;
+}
+.history-card:hover{
+  transform: translateY(-6px);
+  border-color: var(--line-strong);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.6);
+}
+.history-poster{ aspect-ratio:2/3; overflow:hidden; position:relative; background:var(--bg-raised); }
+.history-poster img{ width:100%; height:100%; object-fit:cover; transition: transform 0.4s var(--ease); }
+.history-card:hover .history-poster img{ transform: scale(1.06); }
+.history-body{ padding:14px; }
+.history-title{ font-weight:600; font-size:14px; line-height:1.3; margin-bottom:4px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.history-year{ font-size:12px; color:var(--ink-faint); margin-bottom:10px; }
+.history-ratings{ display:flex; align-items:center; justify-content:space-between; font-size:12px; margin-bottom:10px; }
+.history-tmdb{ color:var(--ink-dim); }
+.history-mine{ color:var(--gold); font-weight:700; display:flex; align-items:center; gap:3px; }
+.history-date{ font-size:11px; color:var(--ink-faint); margin-bottom:12px; }
+.history-actions{ display:flex; gap:6px; }
+.icon-btn-sm{
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:8px; border-radius:8px; border:1px solid var(--line);
+  font-size:12px; color:var(--ink-dim);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.icon-btn-sm:hover{ color:var(--ink); border-color:var(--line-strong); background:rgba(255,255,255,0.04); }
+.icon-btn-sm.danger:hover{ color:#e05a70; border-color:#e05a70; }
+
+/* ================================================================
+   STATISTIQUES
+   ================================================================ */
+.stats-grid{
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap:18px; margin-bottom:36px;
+}
+.stat-card{
+  background: var(--bg-card); border:1px solid var(--line); border-radius:var(--radius-md);
+  padding: 26px 24px;
+  opacity:0; animation: fadeUp 0.5s var(--ease) forwards;
+}
+.stat-value{
+  font-family:var(--font-display); font-weight:600; font-size:clamp(30px,3.6vw,42px);
+  line-height:1; margin-bottom:8px; color:var(--ink);
+}
+.stat-value .unit{ font-size:0.45em; color:var(--gold); margin-left:6px; }
+.stat-label{ font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
+
+.stat-highlight{
+  display:flex; align-items:center; gap:18px;
+  background: var(--bg-card); border:1px solid var(--line); border-radius:var(--radius-lg);
+  padding: 22px; margin-bottom:22px;
+}
+.stat-highlight img{ width:64px; height:96px; object-fit:cover; border-radius:8px; flex-shrink:0; }
+.stat-highlight .label{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px; }
+.stat-highlight .title{ font-family:var(--font-display); font-weight:600; font-size:19px; margin-bottom:4px; }
+.stat-highlight .rating{ color:var(--gold); font-weight:700; font-size:14px; }
+
+.genre-bars{ display:flex; flex-direction:column; gap:14px; }
+.genre-bar-row{ display:grid; grid-template-columns: 130px 1fr 40px; align-items:center; gap:12px; }
+.genre-bar-name{ font-size:13.5px; color:var(--ink-dim); }
+.genre-bar-track{ height:8px; border-radius:999px; background:rgba(255,255,255,0.06); overflow:hidden; }
+.genre-bar-fill{ height:100%; background: linear-gradient(90deg, var(--bordeaux-deep), var(--bordeaux)); border-radius:999px;
+  width:0; transition: width 0.9s var(--ease); }
+.genre-bar-count{ font-size:12.5px; color:var(--ink-faint); text-align:right; }
+
+/* ================================================================
+   SETTINGS PANEL
+   ================================================================ */
+.settings-panel{
+  position:fixed; top:0; right:0; bottom:0; z-index:120;
+  width: min(400px, 100vw);
+  background: var(--bg-raised); border-left:1px solid var(--line-strong);
+  padding: 26px 26px 40px; overflow-y:auto;
+  transform: translateX(100%); transition: transform 0.4s var(--ease);
+}
+.settings-panel.open{ transform: translateX(0); }
+.settings-scrim{
+  position:fixed; inset:0; z-index:110; background:rgba(10,10,11,0.55);
+  opacity:0; pointer-events:none; transition:opacity 0.3s;
+}
+.settings-scrim.show{ opacity:1; pointer-events:auto; }
+.settings-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.settings-head h3{ font-family:var(--font-display); font-size:22px; }
+.settings-close{ font-size:20px; color:var(--ink-dim); width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.settings-close:hover{ background:rgba(255,255,255,0.06); }
+
+.settings-group{ margin-bottom:26px; padding-bottom:26px; border-bottom:1px solid var(--line); }
+.settings-group:last-child{ border-bottom:none; }
+.settings-group h4{ font-size:12px; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px; }
+
+.toggle-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.toggle-row .toggle-label{ font-size:14.5px; }
+.toggle-row .toggle-desc{ font-size:12.5px; color:var(--ink-faint); margin-top:3px; }
+.switch{ position:relative; width:44px; height:26px; border-radius:999px; background:rgba(255,255,255,0.12); flex-shrink:0; transition:background 0.25s; }
+.switch.on{ background: var(--bordeaux); }
+.switch .knob{ position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition: transform 0.25s var(--ease); }
+.switch.on .knob{ transform: translateX(18px); }
+
+.settings-btn-row{ display:flex; flex-direction:column; gap:10px; }
+.settings-action-btn{
+  display:flex; align-items:center; gap:10px; justify-content:flex-start;
+  padding:13px 16px; border-radius:10px; border:1px solid var(--line-strong);
+  font-size:14px; font-weight:500; color:var(--ink);
+  transition: background 0.2s, border-color 0.2s;
+}
+.settings-action-btn:hover{ background:rgba(255,255,255,0.05); }
+.settings-action-btn.danger{ color:#e07485; border-color:rgba(224,90,112,0.35); }
+.settings-action-btn.danger:hover{ background:rgba(224,90,112,0.08); }
+input[type="file"]{ display:none; }
+
+.settings-slider-row{ margin-top:16px; }
+.settings-slider-row label{ font-size:13.5px; color:var(--ink-dim); display:flex; justify-content:space-between; margin-bottom:10px; }
+.settings-slider-row input[type="range"]{ width:100%; accent-color:var(--bordeaux); }
+
+footer.app-footer{
+  position:relative; z-index:5;
+  text-align:center; padding: 30px 20px 40px;
+  font-size:12px; color:var(--ink-faint); line-height:1.8;
+}
+footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-underline-offset:3px; }
+
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
+@keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+@keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+@keyframes riseIn{ from{opacity:0; transform:translateY(28px);} to{opacity:1; transform:translateY(0);} }
+@keyframes posterIn{ from{opacity:0; transform:scale(0.94);} to{opacity:1; transform:scale(1);} }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+@keyframes pop{ 0%{transform:scale(1);} 40%{transform:scale(1.35);} 100%{transform:scale(1);} }
+.pop{ animation: pop 0.4s var(--ease); }
+
+/* stagger for grids */
+.history-card:nth-child(1),.stat-card:nth-child(1){animation-delay:0.02s;}
+.history-card:nth-child(2),.stat-card:nth-child(2){animation-delay:0.07s;}
+.history-card:nth-child(3),.stat-card:nth-child(3){animation-delay:0.12s;}
+.history-card:nth-child(4),.stat-card:nth-child(4){animation-delay:0.17s;}
+.history-card:nth-child(5){animation-delay:0.22s;}
+.history-card:nth-child(6){animation-delay:0.27s;}
+
+/* ================================================================
+   RESPONSIVE — mobile refinements
+   ================================================================ */
+@media (max-width: 640px){
+  .nav-tabs{ display:none; }
+  .topnav{ padding:16px 18px; }
+  .bottom-nav{
+    display:flex; position:fixed; bottom:0; left:0; right:0; z-index:60;
+    background: rgba(19,18,21,0.9); backdrop-filter: blur(18px);
+    border-top:1px solid var(--line);
+    padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
+    justify-content:space-around;
+  }
+  .bottom-nav button{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    font-size:10.5px; letter-spacing:0.03em; text-transform:uppercase; font-weight:600;
+    color:var(--ink-faint); padding:6px 10px; border-radius:10px;
+  }
+  .bottom-nav button.active{ color:var(--ink); }
+  .bottom-nav button .bn-icon{ font-size:19px; }
+  .view{ padding-bottom:110px; }
+  .action-row{ flex-direction:column; }
+  .action-row .btn-primary, .action-row .btn-secondary{ justify-content:center; width:100%; }
+  .movie-title{ font-size:30px; }
+  .settings-panel{ width:100vw; }
+}
+@media (min-width: 641px) and (max-width: 900px){
+  .movie-stage{ max-width:560px; margin:0 auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient backdrop -->
+<div class="backdrop-layer" id="backdropLayer"></div>
+<div class="backdrop-scrim"></div>
+<div class="grain"></div>
+
+<!-- ============================================================
+     ONBOARDING (first run only)
+     ============================================================ -->
+<div class="onboarding" id="onboarding" hidden>
+  <div class="onboarding-card">
+    <span class="onboarding-mark">Bobine</span>
+    <h1 class="onboarding-title">Un film.<br>Chaque jour.<br>Pas de navet.</h1>
+    <p class="onboarding-sub">On choisit pour toi, parmi les mieux notés. Tu regardes, tu notes, on retient tout — jamais deux fois le même film.</p>
+    <button class="btn-primary" id="btnStart">Commencer</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOP NAVIGATION
+     ============================================================ -->
+<nav class="topnav">
+  <div class="brand"><span class="dot">●</span>&nbsp;Bobine</div>
+  <div class="nav-tabs" role="tablist">
+    <button class="nav-tab active" data-view="today" role="tab" aria-selected="true">Film du jour</button>
+    <button class="nav-tab" data-view="history" role="tab" aria-selected="false">Mes films</button>
+    <button class="nav-tab" data-view="stats" role="tab" aria-selected="false">Statistiques</button>
+  </div>
+  <button class="nav-icon-btn" id="btnSettings" aria-label="Réglages" title="Réglages">⚙</button>
+</nav>
+
+<!-- ============================================================
+     VIEW: FILM DU JOUR
+     ============================================================ -->
+<div class="view" id="view-today">
+  <main>
+    <div id="todayContent"><!-- populated by renderMovie() / loader / empty state --></div>
+  </main>
+</div>
+
+<!-- ============================================================
+     VIEW: MES FILMS VUS
+     ============================================================ -->
+<div class="view" id="view-history" hidden>
+  <main>
+    <div class="section-header">
+      <h2 class="section-title">Mes films<span class="count" id="historyCount"></span></h2>
+      <div class="search-box">
+        <span class="icon">⌕</span>
+        <input type="text" id="historySearch" placeholder="Rechercher dans mon historique…" aria-label="Rechercher dans mon historique">
+      </div>
+    </div>
+    <div id="historyContent"></div>
+  </main>
+</div>
+
+<!-- ============================================================
+     VIEW: STATISTIQUES
+     ============================================================ -->
+<div class="view" id="view-stats" hidden>
+  <main>
+    <div class="section-header">
+      <h2 class="section-title">Statistiques</h2>
+    </div>
+    <div id="statsContent"></div>
+  </main>
+</div>
+
+<footer class="app-footer">
+  This product uses the TMDB API but is not endorsed or certified by TMDB.<br>
+  <a href="https://www.themoviedb.org" target="_blank" rel="noopener">themoviedb.org</a>
+</footer>
+
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav">
+  <button data-view="today" class="active"><span class="bn-icon">🎬</span>Aujourd'hui</button>
+  <button data-view="history"><span class="bn-icon">🎞</span>Mes films</button>
+  <button data-view="stats"><span class="bn-icon">📊</span>Stats</button>
+</nav>
+
+<!-- ============================================================
+     RATING MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="ratingModal">
+  <div class="modal-card">
+    <div class="modal-poster-mini"><img id="modalPoster" src="" alt=""></div>
+    <h3 id="modalTitle">Note ce film</h3>
+    <p class="modal-sub">Ta note personnelle — indépendante de TMDB</p>
+    <div class="star-rating" id="starRating"></div>
+    <div class="rating-value-label" id="ratingValueLabel">Choisis une note</div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="btnSkipRating">Plus tard</button>
+      <button class="btn-primary" id="btnSaveRating" disabled>Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOAST
+     ============================================================ -->
+<div class="toast" id="toast">
+  <span class="check">✓</span>
+  <span id="toastText">Film marqué comme vu</span>
+</div>
+
+<!-- ============================================================
+     SETTINGS PANEL
+     ============================================================ -->
+<div class="settings-scrim" id="settingsScrim"></div>
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-head">
+    <h3>Réglages</h3>
+    <button class="settings-close" id="btnCloseSettings" aria-label="Fermer">✕</button>
+  </div>
+
+  <div class="settings-group">
+    <h4>Recommandations</h4>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Personnalisation</div>
+        <div class="toggle-desc">Apprend de tes notes pour affiner les suggestions</div>
+      </div>
+      <button class="switch on" id="togglePersonalization" role="switch" aria-checked="true"><span class="knob"></span></button>
+    </div>
+    <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin-top:14px;">
+      Bobine propose toujours les films les mieux notés disponibles. Quand tout un palier de notes a été vu, la sélection descend automatiquement au palier suivant.
+    </p>
+  </div>
+
+  <div class="settings-group">
+    <h4>Mes données</h4>
+    <div class="settings-btn-row">
+      <button class="settings-action-btn" id="btnExport">⭳&nbsp;&nbsp;Exporter mes données (JSON)</button>
+      <button class="settings-action-btn" id="btnImportTrigger">⭱&nbsp;&nbsp;Importer un fichier JSON</button>
+      <input type="file" id="importFile" accept="application/json">
+      <button class="settings-action-btn danger" id="btnResetData">🗑&nbsp;&nbsp;Réinitialiser toutes les données</button>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h4>À propos</h4>
+    <p style="font-size:13px; color:var(--ink-faint); line-height:1.7;">
+      Bobine propose une sélection quotidienne parmi les films les mieux notés de TMDB, en évitant ceux que tu as déjà vus.
+    </p>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   FILM DU JOUR — Application JavaScript
+   Architecture: sections clairement séparées, fonctions dédiées.
+   ================================================================ */
+
+/* ----------------------------------------------------------------
+   0. CONFIGURATION
+   ---------------------------------------------------------------- */
+const TMDB_API_KEY = "5204764f48befe44845f18424245f0f3";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const IMG_BASE = "https://image.tmdb.org/t/p";
+const POSTER_SIZE = "w500";
+const BACKDROP_SIZE = "w1280";
+
+const DEFAULTS = {
+  minVotes: 500,      // fiabilité minimale : évite les faux "10/10" avec 3 votes
+  minYear: 1970,
+  personalization: true
+};
+
+/* ----------------------------------------------------------------
+   1. STATE + PERSISTENCE (localStorage)
+   ---------------------------------------------------------------- */
+const STORAGE_KEY = "movieAppData";
+
+let movieAppData = {
+  watched: [],          // [{id,title,original_title,poster_path,backdrop_path,release_date,vote_average,vote_count,genre_ids,genres,runtime,director,cast,overview,watchedAt,myRating}]
+  settings: {
+    minVotes: DEFAULTS.minVotes,
+    minYear: DEFAULTS.minYear,
+    personalization: DEFAULTS.personalization,
+    onboarded: false,
+    peakRatingSeen: null   // highest tier rating ever shown — used to detect a tier downgrade
+  },
+  genreWeights: {}      // { genreId: weightMultiplier } learned from ratings
+};
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      movieAppData = Object.assign(movieAppData, parsed);
+      movieAppData.settings = Object.assign({}, movieAppData.settings, parsed.settings || {});
+      movieAppData.watched = parsed.watched || [];
+      movieAppData.genreWeights = parsed.genreWeights || {};
+    }
+  }catch(e){
+    console.error("Erreur de chargement des données:", e);
+  }
+}
+
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(movieAppData));
+  }catch(e){
+    console.error("Erreur de sauvegarde des données:", e);
+    showToast("Impossible de sauvegarder (stockage plein ?)", "⚠");
+  }
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(movieAppData, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `bobine-export-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast("Données exportées");
+}
+
+function importData(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(!parsed || !Array.isArray(parsed.watched)){
+        throw new Error("Format invalide");
+      }
+      movieAppData = {
+        watched: parsed.watched || [],
+        settings: Object.assign({}, movieAppData.settings, parsed.settings || {}),
+        genreWeights: parsed.genreWeights || {}
+      };
+      saveData();
+      applySettingsToUI();
+      showToast("Données importées avec succès");
+      renderHistory();
+      renderStats();
+    }catch(err){
+      console.error(err);
+      showToast("Fichier invalide, import annulé", "⚠");
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ----------------------------------------------------------------
+   2. SESSION STATE
+   ---------------------------------------------------------------- */
+let currentMovie = null;
+let sessionShownIds = new Set();   // avoid repeats within a session
+let genreCache = null;             // {id: name}
+let candidatePool = [];            // buffered TMDB candidates
+let currentView = "today";
+let lastTierRating = null;         // vote_average of the tier the current pick came from
+let peakRatingSeen = null;         // highest tier rating seen so far (mirrors settings.peakRatingSeen)
+let tierWasDowngraded = false;     // true when this pick's tier is below the historical peak
+let tierPeakBeforePick = null;     // the peak rating as it stood BEFORE this pick (for the UI notice)
+let pendingRatingMovie = null;
+let pendingRatingValue = 0;
+
+/* ----------------------------------------------------------------
+   3. TMDB FETCHING
+   ---------------------------------------------------------------- */
+async function tmdbFetch(path, params = {}){
+  const url = new URL(TMDB_BASE + path);
+  url.searchParams.set("api_key", TMDB_API_KEY);
+  url.searchParams.set("language", "fr-FR");
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString());
+  if(!res.ok){
+    if(res.status === 401){ throw new Error("API_KEY_INVALID"); }
+    throw new Error("NETWORK_ERROR");
+  }
+  return res.json();
+}
+
+async function fetchGenres(){
+  if(genreCache) return genreCache;
+  const data = await tmdbFetch("/genre/movie/list");
+  genreCache = {};
+  (data.genres || []).forEach(g => genreCache[g.id] = g.name);
+  return genreCache;
+}
+
+// Fetch top-rated candidates from TMDB, sorted by rating descending.
+// No fixed threshold: we always ask TMDB for its best, then filter locally.
+async function fetchTopRatedMovies(page){
+  const settings = movieAppData.settings;
+  return tmdbFetch("/discover/movie", {
+    sort_by: "vote_average.desc",
+    "vote_count.gte": settings.minVotes,
+    "primary_release_date.gte": `${settings.minYear}-01-01`,
+    include_adult: "false",
+    page
+  });
+}
+
+// Fetch runtime, director, top cast for a specific movie
+async function fetchMovieDetails(movieId){
+  const data = await tmdbFetch(`/movie/${movieId}`, { append_to_response: "credits" });
+  const director = (data.credits?.crew || []).find(c => c.job === "Director");
+  const cast = (data.credits?.cast || []).slice(0, 4).map(c => c.name);
+  return {
+    runtime: data.runtime || null,
+    director: director ? director.name : null,
+    cast,
+    genres: (data.genres || []).map(g => g.name)
+  };
+}
+
+/* ----------------------------------------------------------------
+   4. RECOMMENDATION ENGINE
+   ---------------------------------------------------------------- */
+function getWatchedIds(){
+  return new Set(movieAppData.watched.map(m => m.id));
+}
+
+function calculateRecommendationScore(movie){
+  const voteAvg = movie.vote_average || 0;
+  const voteCount = movie.vote_count || 0;
+  const popularity = movie.popularity || 0;
+  const year = movie.release_date ? parseInt(movie.release_date.slice(0,4)) : 2000;
+  const currentYear = new Date().getFullYear();
+
+  // Base quality score (0-10 weighted heavily)
+  let score = voteAvg * 10;
+
+  // Vote count confidence (logarithmic — rewards more votes, diminishing returns)
+  score += Math.min(Math.log10(voteCount + 1) * 6, 25);
+
+  // Popularity boost, capped so it doesn't dominate over quality
+  score += Math.min(Math.log10(popularity + 1) * 4, 15);
+
+  // Slight recency preference, but don't punish classics too hard
+  const age = currentYear - year;
+  if(age <= 3) score += 6;
+  else if(age <= 10) score += 3;
+  else if(age > 40) score -= 2;
+
+  // Diversity: small random jitter so results aren't static
+  score += Math.random() * 8;
+
+  // Personalization: boost genres the user has rated highly
+  if(movieAppData.settings.personalization){
+    const genreIds = movie.genre_ids || [];
+    let genreBoost = 0;
+    genreIds.forEach(gid => {
+      const w = movieAppData.genreWeights[gid];
+      if(w) genreBoost += w;
+    });
+    score += genreBoost;
+  }
+
+  return score;
+}
+
+function updatePersonalization(movieRecord){
+  if(!movieAppData.settings.personalization) return;
+  const rating = movieRecord.myRating;
+  if(rating == null) return;
+  const genreIds = movieRecord.genre_ids || [];
+  // ratings >=4.5 reinforce, <=2 penalize, others neutral-light
+  let delta = 0;
+  if(rating >= 4.5) delta = 3;
+  else if(rating >= 3.5) delta = 1;
+  else if(rating <= 1.5) delta = -3;
+  else if(rating <= 2.5) delta = -1;
+
+  if(delta === 0) return;
+  genreIds.forEach(gid => {
+    const current = movieAppData.genreWeights[gid] || 0;
+    // clamp to avoid runaway weights
+    movieAppData.genreWeights[gid] = Math.max(-10, Math.min(10, current + delta));
+  });
+  saveData();
+}
+
+// Walks TMDB's top-rated list (sorted best → worst) page by page, skipping
+// movies already watched or shown this session, until it has gathered a
+// workable pool. Because results arrive sorted by vote_average descending,
+// the pool naturally starts at whatever the true best available rating is
+// (10/10 if one exists and is unwatched, otherwise the next tier down, etc.)
+// — entirely automatic, nothing hardcoded, nothing for the user to tune.
+async function buildCandidatePoolFromTop(){
+  const watchedIds = getWatchedIds();
+  const MAX_PAGES_TO_SCAN = 20;   // safety cap so we never loop forever
+  const POOL_TARGET = 8;
+
+  let pool = [];
+  const seen = new Set();
+  let page = 1;
+  let highestFoundRating = null;
+
+  while(pool.length < POOL_TARGET && page <= MAX_PAGES_TO_SCAN){
+    let data;
+    try{
+      data = await fetchTopRatedMovies(page);
+    }catch(e){
+      throw e;
+    }
+    const results = data?.results || [];
+    if(results.length === 0) break; // no more pages
+
+    results.forEach(m => {
+      if(highestFoundRating === null && m.vote_average != null){
+        highestFoundRating = m.vote_average; // first unfiltered result = current ceiling
+      }
+      if(
+        !seen.has(m.id) &&
+        !watchedIds.has(m.id) &&
+        !sessionShownIds.has(m.id) &&
+        m.poster_path
+      ){
+        seen.add(m.id);
+        pool.push(m);
+      }
+    });
+
+    if(page >= (data.total_pages || 1)) break;
+    page++;
+  }
+
+  return pool;
+}
+
+async function getRecommendation(){
+  // Refill candidate pool when running low — always re-discovers the
+  // current top tier automatically, no fixed threshold involved.
+  if(candidatePool.length < 3){
+    candidatePool = await buildCandidatePoolFromTop();
+  }
+
+  if(candidatePool.length === 0){
+    return null;
+  }
+
+  // Score all candidates, pick from the top tier (not always #1 → variety)
+  const scored = candidatePool
+    .map(m => ({ movie: m, score: calculateRecommendationScore(m) }))
+    .sort((a,b) => b.score - a.score);
+
+  // The very top of the current pool defines "this tier" for the UI notice.
+  // Compare against the highest tier ever shown to detect an automatic downgrade.
+  lastTierRating = scored[0].movie.vote_average;
+  const peak = movieAppData.settings.peakRatingSeen;
+  tierPeakBeforePick = peak;
+  tierWasDowngraded = peak != null && lastTierRating < peak - 0.05;
+  if(peak == null || lastTierRating > peak){
+    movieAppData.settings.peakRatingSeen = lastTierRating;
+    saveData();
+  }
+
+  const topTierSize = Math.max(1, Math.min(5, Math.ceil(scored.length * 0.25)));
+  const topTier = scored.slice(0, topTierSize);
+  const chosen = topTier[Math.floor(Math.random() * topTier.length)].movie;
+
+  // remove chosen from pool
+  candidatePool = candidatePool.filter(m => m.id !== chosen.id);
+  sessionShownIds.add(chosen.id);
+
+  return chosen;
+}
+
+/* ----------------------------------------------------------------
+   5. ACTIONS — watch / rate / remove
+   ---------------------------------------------------------------- */
+async function markAsWatched(movie, details){
+  const record = {
+    id: movie.id,
+    title: movie.title,
+    original_title: movie.original_title,
+    poster_path: movie.poster_path,
+    backdrop_path: movie.backdrop_path,
+    release_date: movie.release_date,
+    vote_average: movie.vote_average,
+    vote_count: movie.vote_count,
+    genre_ids: movie.genre_ids || [],
+    overview: movie.overview,
+    watchedAt: new Date().toISOString(),
+    myRating: null
+  };
+  // avoid duplicates
+  movieAppData.watched = movieAppData.watched.filter(m => m.id !== movie.id);
+  movieAppData.watched.unshift(record);
+  saveData();
+  return record;
+}
+
+function rateMovie(movieId, rating){
+  const record = movieAppData.watched.find(m => m.id === movieId);
+  if(!record) return;
+  record.myRating = rating;
+  saveData();
+  updatePersonalization(record);
+}
+
+function removeWatchedMovie(movieId){
+  movieAppData.watched = movieAppData.watched.filter(m => m.id !== movieId);
+  saveData();
+  renderHistory();
+  renderStats();
+}
+
+function markAsUnwatched(movieId){
+  removeWatchedMovie(movieId);
+  showToast("Remis dans les films à découvrir");
+}
+
+/* ----------------------------------------------------------------
+   6. RENDERING — FILM DU JOUR
+   ---------------------------------------------------------------- */
+function setBackdrop(path){
+  const layer = document.getElementById("backdropLayer");
+  if(path){
+    layer.style.backgroundImage = `url(${IMG_BASE}/${BACKDROP_SIZE}${path})`;
+  }else{
+    layer.style.backgroundImage = "none";
+  }
+}
+
+function showLoader(label = "Recherche du film parfait…"){
+  document.getElementById("todayContent").innerHTML = `
+    <div class="loader-wrap">
+      <div class="reel" role="status" aria-label="Chargement"></div>
+      <div class="loader-label">${escapeHtml(label)}</div>
+    </div>`;
+}
+
+function showKeyMissing(){
+  document.getElementById("todayContent").innerHTML = `
+    <div class="key-missing">
+      <div class="icon">🔑</div>
+      <h2>Clé TMDB manquante</h2>
+      <p>Ajoute ta clé TMDB dans index.html pour commencer.</p>
+      <code>const TMDB_API_KEY = "TA_CLE_ICI";</code>
+    </div>`;
+}
+
+function showErrorState(type){
+  const messages = {
+    NETWORK_ERROR: {
+      icon: "📡",
+      title: "Connexion impossible",
+      body: "Impossible de joindre TMDB. Vérifie ta connexion internet et réessaie."
+    },
+    API_KEY_INVALID: {
+      icon: "🔑",
+      title: "Clé API invalide",
+      body: "La clé TMDB renseignée semble invalide. Vérifie-la dans le code source."
+    },
+    NO_RESULTS: {
+      icon: "🎬",
+      title: "Tu as vraiment tout vu",
+      body: "Impossible de trouver un film inédit sur TMDB pour l'instant. Reviens plus tard, TMDB ajoute des films régulièrement."
+    },
+    UNKNOWN: {
+      icon: "⚠",
+      title: "Un imprévu s'est glissé",
+      body: "Quelque chose s'est mal passé. Réessaie dans un instant."
+    }
+  };
+  const m = messages[type] || messages.UNKNOWN;
+  document.getElementById("todayContent").innerHTML = `
+    <div class="state-card">
+      <div class="icon">${m.icon}</div>
+      <h3>${m.title}</h3>
+      <p>${m.body}</p>
+      <button class="btn-primary" id="btnRetry">🎲 Réessayer</button>
+    </div>`;
+  document.getElementById("btnRetry")?.addEventListener("click", loadNewMovie);
+}
+
+function formatRuntime(min){
+  if(!min) return null;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return `${h}h${String(m).padStart(2,'0')}`;
+}
+
+function renderStarsStatic(vote){
+  // vote is 0-10 from TMDB → convert to 5-star display
+  return (vote / 2).toFixed(1);
+}
+
+async function renderMovie(movie){
+  currentMovie = movie;
+  setBackdrop(movie.backdrop_path);
+
+  const year = movie.release_date ? movie.release_date.slice(0,4) : "—";
+  const genres = await fetchGenres();
+  const genreNames = (movie.genre_ids || []).map(id => genres[id]).filter(Boolean);
+
+  // Optimistic render without extra details first
+  const posterUrl = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : "";
+
+  document.getElementById("todayContent").innerHTML = `
+    <div class="hero-eyebrow">Ton film du jour</div>
+    <div class="tier-badge"><span class="star">★</span> Sélection actuelle : ${lastTierRating.toFixed(1)}+</div>
+    ${tierWasDowngraded ? `
+    <div class="tier-notice">
+      Palier ${tierPeakBeforePick.toFixed(1)} épuisé — sélection élargie à ${lastTierRating.toFixed(1)}+
+    </div>` : ""}
+    <div class="movie-stage">
+      <div class="poster-wrap">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : `<div class="loader-wrap" style="min-height:100%;"><div class="reel"></div></div>`}
+        <div class="poster-shine"></div>
+        <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+      </div>
+      <div class="movie-info">
+        <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
+        ${movie.original_title && movie.original_title !== movie.title ? `<div class="movie-original-title">${escapeHtml(movie.original_title)}</div>` : ""}
+        <div class="movie-meta-row">
+          <span class="tmdb-score"><span class="star">★</span> TMDB ${movie.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="meta-sep"></span>
+          <span>${year}</span>
+          <span class="meta-sep" id="runtimeSep" style="display:none;"></span>
+          <span id="runtimeMeta"></span>
+          <span class="meta-sep"></span>
+          <span>${(movie.vote_count || 0).toLocaleString('fr-FR')} votes</span>
+        </div>
+        <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
+        <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
+        <div class="crew-block" id="crewBlock" style="display:none;"></div>
+        <div class="action-row">
+          <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
+          <button class="btn-secondary" id="btnNewMovie">🎲 Change de film</button>
+        </div>
+        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("btnMarkWatched").addEventListener("click", handleMarkWatched);
+  document.getElementById("btnNewMovie").addEventListener("click", loadNewMovie);
+
+  // Fetch extra details (runtime/director/cast) without blocking initial paint
+  try{
+    const details = await fetchMovieDetails(movie.id);
+    if(currentMovie?.id !== movie.id) return; // user already moved on
+    if(details.runtime){
+      document.getElementById("runtimeMeta").textContent = formatRuntime(details.runtime);
+      document.getElementById("runtimeSep").style.display = "inline-block";
+    }
+    const crewBlock = document.getElementById("crewBlock");
+    let crewHtml = "";
+    if(details.director){
+      crewHtml += `<div class="crew-item"><div class="label">Réalisateur</div><div class="value">${escapeHtml(details.director)}</div></div>`;
+    }
+    if(details.cast?.length){
+      crewHtml += `<div class="crew-item"><div class="label">Avec</div><div class="value">${escapeHtml(details.cast.join(", "))}</div></div>`;
+    }
+    if(crewHtml){
+      crewBlock.innerHTML = crewHtml;
+      crewBlock.style.display = "grid";
+    }
+    movie._details = details;
+  }catch(e){
+    // silent — details are a nice-to-have
+  }
+}
+
+async function loadNewMovie(){
+  showLoader();
+  try{
+    const movie = await getRecommendation();
+    if(!movie){
+      showErrorState("NO_RESULTS");
+      return;
+    }
+    await renderMovie(movie);
+  }catch(e){
+    console.error(e);
+    if(e.message === "API_KEY_INVALID") showErrorState("API_KEY_INVALID");
+    else if(e.message === "NETWORK_ERROR") showErrorState("NETWORK_ERROR");
+    else showErrorState("UNKNOWN");
+  }
+}
+
+function handleMarkWatched(){
+  if(!currentMovie) return;
+  openRatingFlow(currentMovie);
+}
+
+/* ----------------------------------------------------------------
+   7. RATING MODAL
+   ---------------------------------------------------------------- */
+function openRatingFlow(movie){
+  pendingRatingMovie = movie;
+  pendingRatingValue = 0;
+  const posterUrl = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : "";
+  document.getElementById("modalPoster").src = posterUrl;
+  document.getElementById("modalPoster").alt = `Affiche de ${movie.title}`;
+  document.getElementById("modalTitle").textContent = movie.title;
+  buildStarRating();
+  updateRatingLabel();
+  document.getElementById("btnSaveRating").disabled = true;
+  document.getElementById("ratingModal").classList.add("show");
+}
+
+function closeRatingModal(skip){
+  document.getElementById("ratingModal").classList.remove("show");
+  if(skip && pendingRatingMovie){
+    finalizeMarkWatched(pendingRatingMovie, null);
+  }
+  pendingRatingMovie = null;
+}
+
+function buildStarRating(){
+  const container = document.getElementById("starRating");
+  container.innerHTML = "";
+  for(let i = 1; i <= 5; i++){
+    const slot = document.createElement("div");
+    slot.className = "star-slot";
+    slot.innerHTML = `
+      <span>★</span>
+      <span class="fill">★</span>
+      <button class="left" data-value="${i - 0.5}" aria-label="${i - 0.5} étoiles"></button>
+      <button class="right" data-value="${i}" aria-label="${i} étoiles"></button>
+    `;
+    container.appendChild(slot);
+  }
+  container.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      pendingRatingValue = parseFloat(btn.dataset.value);
+      renderStarFill();
+      updateRatingLabel();
+      document.getElementById("btnSaveRating").disabled = false;
+    });
+  });
+}
+
+function renderStarFill(){
+  const slots = document.querySelectorAll(".star-slot");
+  slots.forEach((slot, idx) => {
+    const starIndex = idx + 1;
+    const fill = slot.querySelector(".fill");
+    let pct = 0;
+    if(pendingRatingValue >= starIndex) pct = 100;
+    else if(pendingRatingValue >= starIndex - 0.5) pct = 50;
+    fill.style.width = pct + "%";
+  });
+}
+
+function updateRatingLabel(){
+  const label = document.getElementById("ratingValueLabel");
+  label.innerHTML = pendingRatingValue > 0
+    ? `<b>${pendingRatingValue}</b> / 5`
+    : "Choisis une note";
+}
+
+async function finalizeMarkWatched(movie, rating){
+  const record = await markAsWatched(movie, movie._details);
+  if(rating != null){
+    rateMovie(movie.id, rating);
+  }
+  showToast(rating != null ? "Film noté et enregistré" : "Film marqué comme vu");
+  renderHistory();
+  renderStats();
+  await loadNewMovie();
+}
+
+/* ----------------------------------------------------------------
+   8. TOAST
+   ---------------------------------------------------------------- */
+let toastTimer = null;
+function showToast(text, icon = "✓"){
+  const toast = document.getElementById("toast");
+  document.getElementById("toastText").textContent = text;
+  toast.querySelector(".check").textContent = icon;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+/* ----------------------------------------------------------------
+   9. RENDERING — MES FILMS VUS
+   ---------------------------------------------------------------- */
+function renderHistory(filter = ""){
+  const container = document.getElementById("historyContent");
+  const countEl = document.getElementById("historyCount");
+  let list = movieAppData.watched;
+  if(filter.trim()){
+    const q = filter.trim().toLowerCase();
+    list = list.filter(m => m.title.toLowerCase().includes(q));
+  }
+  countEl.textContent = `${movieAppData.watched.length} film${movieAppData.watched.length !== 1 ? 's' : ''}`;
+
+  if(movieAppData.watched.length === 0){
+    container.innerHTML = `
+      <div class="state-card">
+        <div class="icon">🎞</div>
+        <h3>Aucun film vu pour l'instant</h3>
+        <p>Les films que tu marques comme vus apparaîtront ici, avec tes notes personnelles.</p>
+      </div>`;
+    return;
+  }
+  if(list.length === 0){
+    container.innerHTML = `
+      <div class="state-card">
+        <div class="icon">⌕</div>
+        <h3>Aucun résultat</h3>
+        <p>Aucun film de ton historique ne correspond à « ${escapeHtml(filter)} ».</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="history-grid">${list.map(renderHistoryCard).join("")}</div>`;
+
+  container.querySelectorAll("[data-action]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const id = parseInt(btn.dataset.id);
+      const action = btn.dataset.action;
+      if(action === "rate") openRatingFromHistory(id);
+      else if(action === "remove") removeWatchedMovie(id);
+      else if(action === "unwatch") markAsUnwatched(id);
+    });
+  });
+}
+
+function renderHistoryCard(m){
+  const posterUrl = m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : "";
+  const year = m.release_date ? m.release_date.slice(0,4) : "—";
+  const watchedDate = new Date(m.watchedAt).toLocaleDateString('fr-FR', {day:'numeric', month:'short', year:'numeric'});
+  return `
+    <div class="history-card">
+      <div class="history-poster">${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(m.title)}" loading="lazy">` : ""}</div>
+      <div class="history-body">
+        <div class="history-title">${escapeHtml(m.title)}</div>
+        <div class="history-year">${year}</div>
+        <div class="history-ratings">
+          <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="history-mine">${m.myRating != null ? `★ ${m.myRating}` : "Non noté"}</span>
+        </div>
+        <div class="history-date">Vu le ${watchedDate}</div>
+        <div class="history-actions">
+          <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" title="Modifier la note">✎</button>
+          <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" title="Remettre non vu">↺</button>
+          <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" title="Supprimer">🗑</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function openRatingFromHistory(movieId){
+  const record = movieAppData.watched.find(m => m.id === movieId);
+  if(!record) return;
+  pendingRatingMovie = { ...record, fromHistory: true };
+  pendingRatingValue = record.myRating || 0;
+  const posterUrl = record.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${record.poster_path}` : "";
+  document.getElementById("modalPoster").src = posterUrl;
+  document.getElementById("modalPoster").alt = `Affiche de ${record.title}`;
+  document.getElementById("modalTitle").textContent = record.title;
+  buildStarRating();
+  renderStarFill();
+  updateRatingLabel();
+  document.getElementById("btnSaveRating").disabled = pendingRatingValue === 0;
+  document.getElementById("ratingModal").classList.add("show");
+}
+
+/* ----------------------------------------------------------------
+   10. RENDERING — STATISTIQUES
+   ---------------------------------------------------------------- */
+async function renderStats(){
+  const container = document.getElementById("statsContent");
+  const watched = movieAppData.watched;
+
+  if(watched.length === 0){
+    container.innerHTML = `
+      <div class="state-card">
+        <div class="icon">📊</div>
+        <h3>Pas encore de statistiques</h3>
+        <p>Regarde et note quelques films pour voir apparaître tes statistiques ici.</p>
+      </div>`;
+    return;
+  }
+
+  const rated = watched.filter(m => m.myRating != null);
+  const avgRating = rated.length ? (rated.reduce((s,m) => s + m.myRating, 0) / rated.length) : 0;
+  const fiveStars = rated.filter(m => m.myRating === 5).length;
+  const topMovie = rated.slice().sort((a,b) => b.myRating - a.myRating)[0];
+
+  // genre breakdown
+  const genres = await fetchGenres();
+  const genreCounts = {};
+  watched.forEach(m => {
+    (m.genre_ids || []).forEach(gid => {
+      const name = genres[gid];
+      if(!name) return;
+      genreCounts[name] = (genreCounts[name] || 0) + 1;
+    });
+  });
+  const topGenres = Object.entries(genreCounts).sort((a,b) => b[1] - a[1]).slice(0, 6);
+  const maxGenreCount = topGenres.length ? topGenres[0][1] : 1;
+
+  container.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">${watched.length}</div>
+        <div class="stat-label">Films vus</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${avgRating.toFixed(1)}<span class="unit">★</span></div>
+        <div class="stat-label">Moyenne de mes notes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${fiveStars}</div>
+        <div class="stat-label">Films notés 5 / 5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${rated.length}</div>
+        <div class="stat-label">Films notés</div>
+      </div>
+    </div>
+
+    ${topMovie ? `
+    <div class="stat-highlight">
+      ${topMovie.poster_path ? `<img src="${IMG_BASE}/${POSTER_SIZE}${topMovie.poster_path}" alt="Affiche de ${escapeHtml(topMovie.title)}">` : ""}
+      <div>
+        <div class="label">Mon film le mieux noté</div>
+        <div class="title">${escapeHtml(topMovie.title)}</div>
+        <div class="rating">★ ${topMovie.myRating} / 5</div>
+      </div>
+    </div>` : ""}
+
+    ${topGenres.length ? `
+    <div class="stat-card" style="animation-delay:0.3s;">
+      <div class="stat-label" style="margin-bottom:18px;">Genres les plus regardés</div>
+      <div class="genre-bars">
+        ${topGenres.map(([name, count]) => `
+          <div class="genre-bar-row">
+            <div class="genre-bar-name">${escapeHtml(name)}</div>
+            <div class="genre-bar-track"><div class="genre-bar-fill" style="width:${(count/maxGenreCount*100)}%"></div></div>
+            <div class="genre-bar-count">${count}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>` : ""}
+  `;
+}
+
+/* ----------------------------------------------------------------
+   11. NAVIGATION
+   ---------------------------------------------------------------- */
+function switchView(view){
+  currentView = view;
+  document.querySelectorAll(".view").forEach(v => v.hidden = true);
+  document.getElementById(`view-${view}`).hidden = false;
+
+  document.querySelectorAll(".nav-tab").forEach(t => {
+    const active = t.dataset.view === view;
+    t.classList.toggle("active", active);
+    t.setAttribute("aria-selected", active);
+  });
+  document.querySelectorAll(".bottom-nav button").forEach(b => {
+    b.classList.toggle("active", b.dataset.view === view);
+  });
+
+  if(view === "history") renderHistory(document.getElementById("historySearch").value);
+  if(view === "stats") renderStats();
+
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ----------------------------------------------------------------
+   12. SETTINGS PANEL
+   ---------------------------------------------------------------- */
+function openSettings(){
+  document.getElementById("settingsPanel").classList.add("open");
+  document.getElementById("settingsScrim").classList.add("show");
+}
+function closeSettings(){
+  document.getElementById("settingsPanel").classList.remove("open");
+  document.getElementById("settingsScrim").classList.remove("show");
+}
+
+function applySettingsToUI(){
+  const s = movieAppData.settings;
+  document.getElementById("togglePersonalization").classList.toggle("on", !!s.personalization);
+  document.getElementById("togglePersonalization").setAttribute("aria-checked", !!s.personalization);
+}
+
+/* ----------------------------------------------------------------
+   13. UTILITIES
+   ---------------------------------------------------------------- */
+function escapeHtml(str){
+  if(str == null) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function debounce(fn, delay){
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+}
+
+/* ----------------------------------------------------------------
+   14. EVENT WIRING
+   ---------------------------------------------------------------- */
+function wireEvents(){
+  // Nav
+  document.querySelectorAll(".nav-tab, .bottom-nav button").forEach(el => {
+    el.addEventListener("click", () => switchView(el.dataset.view));
+  });
+
+  // Onboarding
+  document.getElementById("btnStart").addEventListener("click", () => {
+    movieAppData.settings.onboarded = true;
+    saveData();
+    document.getElementById("onboarding").hidden = true;
+    loadNewMovie();
+  });
+
+  // Rating modal
+  document.getElementById("btnSkipRating").addEventListener("click", () => closeRatingModal(true));
+  document.getElementById("btnSaveRating").addEventListener("click", () => {
+    document.getElementById("ratingModal").classList.remove("show");
+    if(pendingRatingMovie){
+      if(pendingRatingMovie.fromHistory){
+        rateMovie(pendingRatingMovie.id, pendingRatingValue);
+        showToast("Note mise à jour");
+        renderHistory(document.getElementById("historySearch").value);
+        renderStats();
+      }else{
+        finalizeMarkWatched(pendingRatingMovie, pendingRatingValue);
+      }
+    }
+    pendingRatingMovie = null;
+  });
+  document.getElementById("ratingModal").addEventListener("click", (e) => {
+    if(e.target.id === "ratingModal") closeRatingModal(true);
+  });
+
+  // History search
+  document.getElementById("historySearch").addEventListener("input", debounce((e) => {
+    renderHistory(e.target.value);
+  }, 200));
+
+  // Settings
+  document.getElementById("btnSettings").addEventListener("click", openSettings);
+  document.getElementById("btnCloseSettings").addEventListener("click", closeSettings);
+  document.getElementById("settingsScrim").addEventListener("click", closeSettings);
+
+  document.getElementById("togglePersonalization").addEventListener("click", () => {
+    movieAppData.settings.personalization = !movieAppData.settings.personalization;
+    saveData();
+    applySettingsToUI();
+  });
+
+  document.getElementById("btnExport").addEventListener("click", exportData);
+  document.getElementById("btnImportTrigger").addEventListener("click", () => {
+    document.getElementById("importFile").click();
+  });
+  document.getElementById("importFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(file) importData(file);
+    e.target.value = "";
+  });
+  document.getElementById("btnResetData").addEventListener("click", () => {
+    if(confirm("Supprimer définitivement tout ton historique et tes réglages ?")){
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+  });
+}
+
+/* ----------------------------------------------------------------
+   15. PWA — manifest inline + enregistrement du service worker
+   ---------------------------------------------------------------- */
+function setupPWA(){
+  // Génère le manifest.json à la volée sous forme de data URI, pour rester
+  // installable sans fichier séparé (le manifest, contrairement au service
+  // worker, peut légalement être chargé depuis une data: URL).
+  const iconDataUri = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9Ijk2IiBmaWxsPSIjMGEwYTBiIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2I4MjEzZiIgc3Ryb2tlLXdpZHRoPSIyNiIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iNDYiIGZpbGw9IiNiODIxM2YiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxMjAiIHI9IjMwIiBmaWxsPSIjZjJmMGVjIi8+CiAgPGNpcmNsZSBjeD0iMzY4IiBjeT0iMTkyIiByPSIzMCIgZmlsbD0iI2YyZjBlYyIvPgogIDxjaXJjbGUgY3g9IjM2OCIgY3k9IjMyMCIgcj0iMzAiIGZpbGw9IiNmMmYwZWMiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIzOTIiIHI9IjMwIiBmaWxsPSIjZjJmMGVjIi8+CiAgPGNpcmNsZSBjeD0iMTQ0IiBjeT0iMzIwIiByPSIzMCIgZmlsbD0iI2YyZjBlYyIvPgogIDxjaXJjbGUgY3g9IjE0NCIgY3k9IjE5MiIgcj0iMzAiIGZpbGw9IiNmMmYwZWMiLz4KPC9zdmc+Cg==";
+  const manifest = {
+    name: "Bobine",
+    short_name: "Bobine",
+    description: "Un film. Chaque jour. Pas de navet.",
+    start_url: ".",
+    scope: ".",
+    display: "standalone",
+    background_color: "#0a0a0b",
+    theme_color: "#0a0a0b",
+    orientation: "portrait-primary",
+    icons: [
+      { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" },
+      { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" }
+    ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+  const manifestUrl = URL.createObjectURL(manifestBlob);
+  document.getElementById("manifestLink").setAttribute("href", manifestUrl);
+
+  // Le service worker doit être un fichier réel servi en http(s) — impossible
+  // en data:/blob: par restriction du navigateur. sw.js doit être déployé
+  // à côté de index.html (même dossier, même origine).
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {
+        // Échec silencieux : l'app fonctionne normalement sans mode hors-ligne.
+      });
+    });
+  }
+}
+
+/* ----------------------------------------------------------------
+   16. INIT
+   ---------------------------------------------------------------- */
+function init(){
+  loadData();
+  wireEvents();
+  applySettingsToUI();
+  setupPWA();
+
+  if(!TMDB_API_KEY || TMDB_API_KEY === "MA_CLE_API_TMDB" || TMDB_API_KEY.trim() === ""){
+    document.getElementById("onboarding").hidden = true;
+    showKeyMissing();
+    return;
+  }
+
+  if(!movieAppData.settings.onboarded){
+    document.getElementById("onboarding").hidden = false;
+  }else{
+    loadNewMovie();
+  }
+
+  renderHistory();
+}
+
+init();
+</script>
+</body>
+</html>
