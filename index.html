@@ -414,8 +414,13 @@ main{ max-width:1280px; margin:0 auto; }
   min-height: 60vh; gap:26px;
 }
 .slot-window{
+  /* Doit occuper exactement la même largeur que .poster-wrap dans le même
+     contexte, pour que le passage affiche → rouleau → affiche ne donne
+     jamais l'impression que le poster "rétrécit". Desktop : largeur de la
+     colonne poster de la grille .movie-stage. Mobile : voir media query. */
   position:relative;
-  width: min(260px, 68vw);
+  width: 100%;
+  max-width: 380px;
   aspect-ratio: 2/3;
   border-radius: var(--radius-lg);
   overflow:hidden;
@@ -622,9 +627,12 @@ main{ max-width:1280px; margin:0 auto; }
    ================================================================ */
 .swipe-deck{
   position:relative;
-  width:min(360px, 100%);
+  width: 100%;
+  max-width: 420px;
+  max-height: 58vh;  /* fallback pour navigateurs sans support de svh */
+  max-height: 58svh; /* priorité à la hauteur dispo pour ne jamais pousser les boutons hors écran */
   aspect-ratio: 2/3;
-  margin: 0 auto 32px;
+  margin: 0 auto 28px;
   touch-action: pan-y; /* laisse le scroll vertical de la page tout en captant le drag horizontal */
 }
 .swipe-card{
@@ -709,8 +717,7 @@ main{ max-width:1280px; margin:0 auto; }
 .browse-detail-overview{ font-size:14.5px; line-height:1.7; color:var(--ink-dim); margin: 16px 0 18px; }
 
 @media (max-width: 640px){
-  .swipe-deck{ width: min(320px, 88vw); }
-  .swipe-card-title{ font-size:21px; }
+  .swipe-card-title{ font-size:22px; }
 }
 
 /* ================================================================
@@ -848,27 +855,36 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   .bottom-nav button .bn-icon{ font-size:19px; }
   .view{ padding-bottom:110px; }
 
+  /* Compaction verticale sur mobile : chaque pixel gagné en haut de l'écran
+     est un pixel de plus pour l'affiche, la vraie pièce maîtresse. */
+  .hero-eyebrow{ font-size:12px; margin-bottom:8px; }
+  .tier-badge{ padding:5px 12px; margin-bottom:14px; font-size:11.5px; }
+  #view-today{ padding-top:14px; }
+
   /* Barre d'actions du film du jour : fixée juste au-dessus de la bottom-nav,
      toujours atteignable au pouce sans avoir à scroller — y compris pendant
-     l'animation de tirage, qui se joue en haut de l'écran. */
+     l'animation de tirage, qui se joue en haut de l'écran. Volontairement
+     compacte pour laisser un maximum de place à l'affiche au-dessus. */
   #actionRow.action-row{
     position:fixed; left:0; right:0; z-index:55;
-    bottom: calc(64px + env(safe-area-inset-bottom));
-    flex-direction:row; gap:10px;
-    margin-top:0; margin-bottom:0; padding: 12px 16px;
+    bottom: calc(58px + env(safe-area-inset-bottom));
+    flex-direction:row; gap:8px;
+    margin-top:0; margin-bottom:0; padding: 8px 12px;
     background: rgba(10,10,11,0.88); backdrop-filter: blur(18px);
     border-top:1px solid var(--line);
   }
   #actionRow.action-row .btn-primary,
   #actionRow.action-row .btn-secondary{
-    justify-content:center; flex:1; padding:14px 12px; font-size:13.5px;
+    justify-content:center; flex:1; padding:11px 10px; font-size:13px;
+    white-space:nowrap;
   }
+  #actionRow.action-row .btn-secondary .btn-label{ display:none; }
   #actionRow.action-row .btn-skip{
-    width:48px; height:48px; flex-shrink:0;
+    width:40px; height:40px; flex-shrink:0; font-size:14px;
   }
   /* Le contenu de la fiche film doit garder assez de marge pour ne pas
      passer sous la barre d'actions fixe + la bottom-nav. */
-  .movie-stage{ padding-bottom: 84px; }
+  .movie-stage{ padding-bottom: 62px; }
 
   .movie-title{ font-size:30px; }
   .settings-panel{ width:100vw; }
@@ -1428,6 +1444,19 @@ async function getRecommendation(){
   candidatePool = candidatePool.filter(m => m.id !== chosen.id);
   sessionShownIds.add(mediaKey("movie", chosen.id));
 
+  // Réapprovisionne tout de suite en arrière-plan si le pool devient trop
+  // court, pour que le PROCHAIN "Change de film" ait déjà assez d'affiches
+  // sous la main pour jouer l'animation de tirage sans interruption.
+  if(candidatePool.length < 3){
+    buildCandidatePoolFromTop().then(fresh => {
+      // fusionne sans dupliquer, au cas où un appel concurrent aurait déjà ajouté des candidats
+      const seen = new Set(candidatePool.map(m => m.id));
+      fresh.forEach(m => { if(!seen.has(m.id)){ seen.add(m.id); candidatePool.push(m); } });
+    }).catch(() => {
+      // échec silencieux : le prochain getRecommendation() réessaiera normalement
+    });
+  }
+
   return chosen;
 }
 
@@ -1666,7 +1695,7 @@ async function renderMovie(movie){
       </div>
       <div class="action-row" id="actionRow">
         <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
-        <button class="btn-secondary" id="btnNewMovie">🎲 Change de film</button>
+        <button class="btn-secondary" id="btnNewMovie">🎲 <span class="btn-label">Change de film</span></button>
         <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film">✕</button>
       </div>
     </div>
@@ -2192,11 +2221,14 @@ function commitSwipe(cardEl, movie, direction){
   cardEl.style.opacity = "0";
 
   if(direction === "left"){
-    excludeMovie(movie.id, movie.mediaType);
+    // "Suivant" — ne rien enregistrer nulle part : ni historique, ni
+    // exclusion définitive. Le film reste éligible aux futures propositions
+    // (Film du jour comme Parcourir) ; on évite juste de le remontrer
+    // immédiatement dans cette session.
     sessionShownIds.add(mediaKey(movie.mediaType, movie.id));
   }
-  // Pour "right", l'exclusion/l'ajout à l'historique se fait via la modale
-  // de notation (openRatingFlowForBrowse → finalizeMarkWatched), pas ici.
+  // Pour "right", l'ajout à l'historique (vu + note) se fait via la modale
+  // de notation (openRatingFlowForBrowse → finalizeMarkWatched).
 
   // Retire la carte du pool visuel tout de suite : si c'est un swipe à
   // droite, la modale de notation s'ouvre par-dessus dans la foulée ; si
