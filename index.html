@@ -879,6 +879,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   .hero-eyebrow{ font-size:12px; margin-bottom:8px; }
   .tier-badge{ padding:5px 12px; margin-bottom:14px; font-size:11.5px; }
   #view-today{ padding-top:14px; }
+  #view-browse{ padding-top:14px; }
 
   /* Les boutons d'action sont désormais superposés directement sur
      l'affiche (.poster-action-row) — sur mobile on les compacte un peu
@@ -947,13 +948,10 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      ============================================================ -->
 <div class="view" id="view-browse" hidden>
   <main>
-    <div class="section-header">
-      <h2 class="section-title">Parcourir</h2>
-      <div class="browse-type-tabs" role="tablist">
-        <button class="browse-type-tab active" data-media-type="movie" role="tab" aria-selected="true">Films</button>
-        <button class="browse-type-tab" data-media-type="tv" role="tab" aria-selected="false">Séries</button>
-        <button class="browse-type-tab" data-media-type="anime" role="tab" aria-selected="false">Anime</button>
-      </div>
+    <div class="browse-type-tabs" role="tablist">
+      <button class="browse-type-tab active" data-media-type="movie" role="tab" aria-selected="true">Films</button>
+      <button class="browse-type-tab" data-media-type="tv" role="tab" aria-selected="false">Séries</button>
+      <button class="browse-type-tab" data-media-type="anime" role="tab" aria-selected="false">Anime</button>
     </div>
     <div id="browseContent"><!-- populated by renderBrowseDeck() --></div>
   </main>
@@ -1243,6 +1241,7 @@ async function fetchGenres(mediaType = "movie"){
 // No fixed threshold: we always ask TMDB for its best, then filter locally.
 // Fonctionne pour films ("movie") et séries ("tv") via le même endpoint
 // /discover/<type>, qui partage la même forme de réponse côté TMDB.
+// Utilisé uniquement par "Film du jour", qui priorise la qualité (note).
 async function fetchTopRatedByType(mediaType, page, extraParams = {}){
   const settings = movieAppData.settings;
   const dateField = mediaType === "tv" ? "first_air_date.gte" : "primary_release_date.gte";
@@ -1261,12 +1260,33 @@ async function fetchTopRatedMovies(page){
   return fetchTopRatedByType("movie", page);
 }
 
+// Fetch les candidats les plus POPULAIRES du moment (pas les mieux notés).
+// Utilisé par "Parcourir" : c'est un flux d'exploration façon petit jeu,
+// pas une sélection qualité — on veut de la variété et de l'actualité,
+// pas systématiquement les meilleures notes.
+async function fetchPopularByType(mediaType, page, extraParams = {}){
+  return tmdbFetch(`/discover/${mediaType}`, {
+    sort_by: "popularity.desc",
+    "vote_count.gte": 50, // filtre léger, juste pour écarter le vrai bruit (0-1 vote)
+    include_adult: "false",
+    page,
+    ...extraParams
+  });
+}
+
 // Anime = séries TV genre "Animation" (id 16 côté TMDB) originaires du Japon.
 // TMDB n'a pas de catégorie "anime" propre ; c'est l'approche standard pour
 // l'approximer, fiable dans l'immense majorité des cas.
 const TMDB_ANIMATION_GENRE_ID = 16;
 async function fetchTopRatedAnime(page){
   return fetchTopRatedByType("tv", page, {
+    with_genres: TMDB_ANIMATION_GENRE_ID,
+    with_origin_country: "JP"
+  });
+}
+
+async function fetchPopularAnime(page){
+  return fetchPopularByType("tv", page, {
     with_genres: TMDB_ANIMATION_GENRE_ID,
     with_origin_country: "JP"
   });
@@ -2038,8 +2058,11 @@ function resolveBrowseFetchType(uiType){
 }
 
 async function fetchBrowsePage(uiType, page){
-  if(uiType === "anime") return fetchTopRatedAnime(page);
-  return fetchTopRatedByType(uiType, page);
+  // Parcourir privilégie la popularité du moment, pas la note : c'est un
+  // flux d'exploration/découverte, pas une sélection de qualité stricte
+  // comme "Film du jour".
+  if(uiType === "anime") return fetchPopularAnime(page);
+  return fetchPopularByType(uiType, page);
 }
 
 async function refillBrowsePool(uiType){
