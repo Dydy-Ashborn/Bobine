@@ -223,22 +223,27 @@ main{ max-width:1280px; margin:0 auto; }
 /* ================================================================
    FILM DU JOUR — HERO
    ================================================================ */
+.hero-row{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin-bottom: 18px;
+}
 .hero-eyebrow{
   font-family:var(--font-display); font-style:italic; font-weight:450;
   color:var(--bordeaux); font-size:14px; letter-spacing:0.1em; text-transform:uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
   opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
 }
+.hero-row .hero-eyebrow{ margin-bottom:0; }
 
 .tier-badge{
-  display:inline-flex; align-items:center; gap:7px;
-  font-size:12.5px; color:var(--ink-dim);
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; color:var(--ink-dim);
   border:1px solid var(--line-strong); border-radius:999px;
-  padding:6px 14px; margin-bottom:22px;
+  padding:5px 12px;
   opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
   animation-delay:0.02s;
 }
-.tier-badge .star{ color:var(--gold); font-size:12px; }
+.tier-badge .star{ color:var(--gold); font-size:11px; }
 
 .movie-stage{
   display:grid;
@@ -287,6 +292,28 @@ main{ max-width:1280px; margin:0 auto; }
   transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
 .poster-share-btn:hover{ background:rgba(184,33,63,0.35); border-color:var(--bordeaux); transform:scale(1.06); }
+
+/* Barre d'actions superposée en bas de l'affiche — toujours visible, ne
+   dépend d'aucun calcul de hauteur externe (bottom-nav, etc.), et laisse
+   l'affiche occuper un maximum d'espace vertical. */
+.poster-action-row{
+  position:absolute; left:0; right:0; bottom:0; z-index:5;
+  display:flex; gap:8px; padding: 34px 12px 14px;
+  background: linear-gradient(0deg, rgba(6,6,7,0.94) 0%, rgba(6,6,7,0.75) 55%, transparent 100%);
+}
+.poster-action-row .btn-primary,
+.poster-action-row .btn-secondary{
+  flex:1; justify-content:center;
+  padding:12px 10px; font-size:13px; white-space:nowrap;
+}
+.poster-action-row .btn-secondary{
+  background: rgba(255,255,255,0.08); backdrop-filter: blur(6px);
+}
+.poster-action-row .btn-secondary:hover{ background:rgba(255,255,255,0.14); }
+.poster-action-row .btn-skip{
+  width:42px; height:42px; flex-shrink:0; font-size:15px;
+  background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);
+}
 
 /* Perforated "ticket" divider — signature element */
 .ticket-divider{
@@ -347,14 +374,6 @@ main{ max-width:1280px; margin:0 auto; }
 .crew-item .label{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px; }
 .crew-item .value{ font-size:14px; color:var(--ink); line-height:1.5; }
 
-.action-row{
-  grid-column: 2; /* aligné sous la colonne d'infos, pas sous le poster */
-  display:flex; flex-wrap:wrap; gap:14px;
-  margin-top:28px; margin-bottom:16px;
-}
-@media (max-width: 900px){
-  .action-row{ grid-column: 1; }
-}
 .btn-secondary{
   display:inline-flex; align-items:center; gap:9px;
   border:1px solid var(--line-strong); color:var(--ink);
@@ -861,30 +880,17 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   .tier-badge{ padding:5px 12px; margin-bottom:14px; font-size:11.5px; }
   #view-today{ padding-top:14px; }
 
-  /* Barre d'actions du film du jour : fixée juste au-dessus de la bottom-nav,
-     toujours atteignable au pouce sans avoir à scroller — y compris pendant
-     l'animation de tirage, qui se joue en haut de l'écran. Volontairement
-     compacte pour laisser un maximum de place à l'affiche au-dessus. */
-  #actionRow.action-row{
-    position:fixed; left:0; right:0; z-index:55;
-    bottom: calc(58px + env(safe-area-inset-bottom));
-    flex-direction:row; gap:8px;
-    margin-top:0; margin-bottom:0; padding: 8px 12px;
-    background: rgba(10,10,11,0.88); backdrop-filter: blur(18px);
-    border-top:1px solid var(--line);
+  /* Les boutons d'action sont désormais superposés directement sur
+     l'affiche (.poster-action-row) — sur mobile on les compacte un peu
+     plus et on masque le libellé texte du bouton "Change" pour ne garder
+     que l'icône, l'affiche gagnant ainsi un maximum de hauteur visible. */
+  .poster-action-row{ padding: 28px 10px 12px; gap:6px; }
+  .poster-action-row .btn-primary,
+  .poster-action-row .btn-secondary{
+    padding:11px 8px; font-size:12.5px;
   }
-  #actionRow.action-row .btn-primary,
-  #actionRow.action-row .btn-secondary{
-    justify-content:center; flex:1; padding:11px 10px; font-size:13px;
-    white-space:nowrap;
-  }
-  #actionRow.action-row .btn-secondary .btn-label{ display:none; }
-  #actionRow.action-row .btn-skip{
-    width:40px; height:40px; flex-shrink:0; font-size:14px;
-  }
-  /* Le contenu de la fiche film doit garder assez de marge pour ne pas
-     passer sous la barre d'actions fixe + la bottom-nav. */
-  .movie-stage{ padding-bottom: 62px; }
+  .poster-action-row .btn-secondary .btn-label{ display:none; }
+  .poster-action-row .btn-skip{ width:38px; height:38px; font-size:13px; }
 
   .movie-title{ font-size:30px; }
   .settings-panel{ width:100vw; }
@@ -1667,14 +1673,21 @@ async function renderMovie(movie){
   const posterUrl = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : "";
 
   document.getElementById("todayContent").innerHTML = `
-    <div class="hero-eyebrow">Ton film du jour</div>
-    <div class="tier-badge"><span class="star">★</span> Sélection actuelle : ${lastTierRating.toFixed(1)}+</div>
+    <div class="hero-row">
+      <div class="hero-eyebrow">Ton film du jour</div>
+      <div class="tier-badge"><span class="star">★</span> ${lastTierRating.toFixed(1)}+</div>
+    </div>
     <div class="movie-stage">
       <div class="poster-wrap">
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : `<div class="loader-wrap" style="min-height:100%;"><div class="reel"></div></div>`}
         <div class="poster-shine"></div>
         <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
         <button class="poster-share-btn" id="btnShareMovie" aria-label="Partager ce film à un ami" title="Partager à un ami">↗</button>
+        <div class="poster-action-row" id="actionRow">
+          <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
+          <button class="btn-secondary" id="btnNewMovie">🎲 <span class="btn-label">Change</span></button>
+          <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film">✕</button>
+        </div>
       </div>
       <div class="movie-info">
         <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
@@ -1692,11 +1705,6 @@ async function renderMovie(movie){
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
         <div class="crew-block" id="crewBlock" style="display:none;"></div>
         <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
-      </div>
-      <div class="action-row" id="actionRow">
-        <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
-        <button class="btn-secondary" id="btnNewMovie">🎲 <span class="btn-label">Change de film</span></button>
-        <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film">✕</button>
       </div>
     </div>
   `;
@@ -1963,6 +1971,12 @@ function renderSharedMovie(movie){
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : ""}
         <div class="poster-shine"></div>
         <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+        <div class="poster-action-row" id="actionRow">
+          ${alreadyWatched
+            ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
+            : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
+          <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir</button>
+        </div>
       </div>
       <div class="movie-info">
         <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
@@ -1976,12 +1990,6 @@ function renderSharedMovie(movie){
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
         <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
-      </div>
-      <div class="action-row" id="actionRow">
-        ${alreadyWatched
-          ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
-          : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
-        <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir Bobine</button>
       </div>
     </div>
   `;
