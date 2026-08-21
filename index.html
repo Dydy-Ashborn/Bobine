@@ -293,6 +293,17 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .poster-share-btn:hover{ background:rgba(184,33,63,0.35); border-color:var(--bordeaux); transform:scale(1.06); }
 
+.poster-list-btn{
+  position:absolute; top:60px; right:14px;
+  width:38px; height:38px; border-radius:50%;
+  background: rgba(10,10,11,0.72); backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,0.14);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:600; color:var(--ink);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.poster-list-btn:hover{ background:rgba(184,33,63,0.35); border-color:var(--bordeaux); transform:scale(1.06); }
+
 /* Barre d'actions superposée en bas de l'affiche — toujours visible, ne
    dépend d'aucun calcul de hauteur externe (bottom-nav, etc.), et laisse
    l'affiche occuper un maximum d'espace vertical. */
@@ -559,6 +570,34 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .btn-ghost:hover{ color:var(--ink); border-color:var(--ink-dim); }
 
+/* Modal "Ajouter à une liste" */
+.add-to-list-options{
+  display:flex; flex-direction:column; gap:8px;
+  max-height:240px; overflow-y:auto;
+  margin-bottom:18px; text-align:left;
+}
+.add-to-list-option{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-radius:10px;
+  border:1px solid var(--line); background:rgba(255,255,255,0.02);
+  font-size:14px; color:var(--ink);
+  transition: border-color 0.2s, background 0.2s;
+}
+.add-to-list-option:hover{ border-color:var(--line-strong); background:rgba(255,255,255,0.05); }
+.add-to-list-option .count{ font-size:12px; color:var(--ink-faint); }
+.add-to-list-empty{
+  font-size:13px; color:var(--ink-faint); text-align:center; padding:16px 0;
+}
+.add-to-list-new{
+  display:flex; gap:10px; margin-bottom:6px;
+}
+.add-to-list-new input{
+  flex:1; background:rgba(255,255,255,0.04); border:1px solid var(--line-strong);
+  border-radius:10px; padding:12px 14px; color:var(--ink); font-size:14px;
+}
+.add-to-list-new input:focus{ outline:none; border-color:var(--bordeaux); }
+.add-to-list-new .btn-primary{ padding:12px 20px; font-size:13.5px; }
+
 /* ================================================================
    MES FILMS (history)
    ================================================================ */
@@ -597,6 +636,40 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .browse-type-tab.active, .history-filter-tab.active{ background:var(--bordeaux); color:#fff; }
 .browse-type-tab:not(.active):hover, .history-filter-tab:not(.active):hover{ color:var(--ink); }
+
+.search-results-label{
+  font-size:12.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em;
+  margin-bottom:14px;
+}
+#searchResultsContent:not(:empty){
+  margin-bottom:32px; padding-bottom:28px; border-bottom:1px solid var(--line);
+}
+
+.custom-lists-grid{
+  display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap:18px;
+}
+.custom-list-card{
+  background: var(--bg-card); border:1px solid var(--line); border-radius:var(--radius-md);
+  overflow:hidden; text-align:left;
+  transition: transform 0.3s var(--ease), border-color 0.3s;
+}
+.custom-list-card:hover{ transform:translateY(-4px); border-color:var(--line-strong); }
+.custom-list-card-covers{
+  display:grid; grid-template-columns:1fr 1fr; aspect-ratio:2/1.4; background:var(--bg-raised);
+}
+.custom-list-card-covers img{ width:100%; height:100%; object-fit:cover; }
+.custom-list-card-cover-empty{ width:100%; height:100%; background:var(--bg-raised); }
+.custom-list-card-name{ font-weight:600; font-size:14.5px; padding:14px 14px 2px; }
+.custom-list-card-count{ font-size:12px; color:var(--ink-faint); padding:0 14px 14px; }
+
+.custom-list-detail-header{ margin-bottom:24px; }
+.custom-list-detail-title-row{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:14px; gap:12px;
+}
+.custom-list-detail-title-row h3{ font-family:var(--font-display); font-size:22px; font-weight:600; }
+.custom-list-detail-actions{ display:flex; gap:8px; }
 
 .history-grid{
   display:grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -734,6 +807,7 @@ main{ max-width:1280px; margin:0 auto; }
 .browse-detail-body{ padding: 22px 24px 26px; }
 .browse-detail-body h3{ font-family:var(--font-display); font-weight:600; font-size:24px; margin-bottom:12px; }
 .browse-detail-overview{ font-size:14.5px; line-height:1.7; color:var(--ink-dim); margin: 16px 0 18px; }
+.browse-detail-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:18px; }
 
 @media (max-width: 640px){
   .swipe-card-title{ font-size:22px; }
@@ -966,14 +1040,16 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       <h2 class="section-title">Mon historique<span class="count" id="historyCount"></span></h2>
       <div class="search-box">
         <span class="icon">⌕</span>
-        <input type="text" id="historySearch" placeholder="Rechercher dans mon historique…" aria-label="Rechercher dans mon historique">
+        <input type="text" id="historySearch" placeholder="Chercher un film, une série…" aria-label="Rechercher un titre">
       </div>
     </div>
+    <div id="searchResultsContent"><!-- résultats TMDB, affichés uniquement pendant une recherche active --></div>
     <div class="history-filter-tabs" role="tablist">
       <button class="history-filter-tab active" data-filter="all" role="tab" aria-selected="true">Tout</button>
       <button class="history-filter-tab" data-filter="movie" role="tab" aria-selected="false">Films</button>
       <button class="history-filter-tab" data-filter="tv" role="tab" aria-selected="false">Séries</button>
       <button class="history-filter-tab" data-filter="anime" role="tab" aria-selected="false">Animes</button>
+      <button class="history-filter-tab" data-filter="lists" role="tab" aria-selected="false">Mes listes</button>
     </div>
     <div id="historyContent"></div>
   </main>
@@ -1032,8 +1108,27 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       <h3 id="browseDetailTitle"></h3>
       <div class="movie-meta-row" id="browseDetailMeta"></div>
       <p class="browse-detail-overview" id="browseDetailOverview"></p>
-      <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+      <div class="browse-detail-actions">
+        <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+        <button class="btn-tertiary" id="btnAddToListFromDetail">+ Ajouter à une liste</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADD TO LIST MODAL — choisir ou créer une liste perso
+     ============================================================ -->
+<div class="modal-overlay" id="addToListModal">
+  <div class="modal-card">
+    <h3>Ajouter à une liste</h3>
+    <p class="modal-sub" id="addToListMovieTitle"></p>
+    <div class="add-to-list-options" id="addToListOptions"><!-- listes existantes, générées dynamiquement --></div>
+    <div class="add-to-list-new">
+      <input type="text" id="newListNameInput" placeholder="Nouvelle liste…" maxlength="60">
+      <button class="btn-primary" id="btnCreateAndAdd">Créer</button>
+    </div>
+    <button class="btn-ghost" id="btnCloseAddToList" style="margin-top:16px;">Fermer</button>
   </div>
 </div>
 
@@ -1118,6 +1213,8 @@ let movieAppData = {
   watched: [],          // [{id,mediaType,isAnime,title,original_title,poster_path,backdrop_path,release_date,vote_average,vote_count,genre_ids,genres,runtime,director,cast,overview,watchedAt,myRating}]
                           // mediaType: "movie" | "tv" — un id TMDB seul n'est pas unique entre les deux, donc on clé toujours sur "mediaType:id"
   excluded: [],          // ["movie:12345", "tv:6789", ...] entrées explicitement écartées — jamais reproposées, ne comptent pas dans l'historique/stats
+  customLists: [],       // [{id, name, createdAt, items: [{id,mediaType,isAnime,title,poster_path,release_date,vote_average,addedAt}]}]
+                          // listes perso (ex: "À voir cet été") — indépendantes de watched, un film ici n'est pas forcément vu
   settings: {
     minVotes: DEFAULTS.minVotes,
     minYear: DEFAULTS.minYear,
@@ -1143,6 +1240,7 @@ function loadData(){
       movieAppData.settings = Object.assign({}, movieAppData.settings, parsed.settings || {});
       movieAppData.watched = parsed.watched || [];
       movieAppData.excluded = parsed.excluded || [];
+      movieAppData.customLists = parsed.customLists || [];
       movieAppData.genreWeights = parsed.genreWeights || {};
     }
   }catch(e){
@@ -1184,6 +1282,7 @@ function importData(file){
       movieAppData = {
         watched: parsed.watched || [],
         excluded: parsed.excluded || [],
+        customLists: parsed.customLists || [],
         settings: Object.assign({}, movieAppData.settings, parsed.settings || {}),
         genreWeights: parsed.genreWeights || {}
       };
@@ -1310,6 +1409,20 @@ async function fetchDetailsByType(mediaType, id){
 // Compat: l'ancien nom, toujours utilisé par le flux "Film du jour".
 async function fetchMovieDetails(movieId){
   return fetchDetailsByType("movie", movieId);
+}
+
+// Recherche TMDB multi-type (films + séries) par titre, pour la barre de
+// recherche de "Mon historique". /search/multi couvre aussi les personnes,
+// qu'on filtre pour ne garder que movie/tv.
+async function searchTmdbMulti(query){
+  const data = await tmdbFetch("/search/multi", {
+    query,
+    include_adult: "false"
+  });
+  const results = (data.results || []).filter(r =>
+    (r.media_type === "movie" || r.media_type === "tv") && r.poster_path
+  );
+  return results.map(r => normalizeMedia(r, r.media_type, false));
 }
 
 /* ----------------------------------------------------------------
@@ -1557,6 +1670,71 @@ function excludeMovie(id, mediaType = "movie"){
 }
 
 /* ----------------------------------------------------------------
+   5bis. LISTES PERSO — création et gestion (ex: "À voir cet été")
+   Indépendantes de l'historique : un film ici n'est pas forcément vu.
+   ---------------------------------------------------------------- */
+function getCustomLists(){
+  if(!movieAppData.customLists) movieAppData.customLists = [];
+  return movieAppData.customLists;
+}
+
+function createCustomList(name){
+  const trimmed = name.trim();
+  if(!trimmed) return null;
+  const list = {
+    id: `list_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+    name: trimmed,
+    createdAt: new Date().toISOString(),
+    items: []
+  };
+  getCustomLists().push(list);
+  saveData();
+  return list;
+}
+
+function renameCustomList(listId, newName){
+  const list = getCustomLists().find(l => l.id === listId);
+  if(!list) return;
+  const trimmed = newName.trim();
+  if(!trimmed) return;
+  list.name = trimmed;
+  saveData();
+}
+
+function deleteCustomList(listId){
+  movieAppData.customLists = getCustomLists().filter(l => l.id !== listId);
+  saveData();
+}
+
+// Ajoute un film/série à une liste ; ignore silencieusement s'il y est déjà.
+function addToCustomList(listId, movie){
+  const list = getCustomLists().find(l => l.id === listId);
+  if(!list) return false;
+  const mediaType = movie.mediaType || "movie";
+  const alreadyIn = list.items.some(item => item.id === movie.id && (item.mediaType || "movie") === mediaType);
+  if(alreadyIn) return false;
+  list.items.unshift({
+    id: movie.id,
+    mediaType,
+    isAnime: !!movie.isAnime,
+    title: movie.title,
+    poster_path: movie.poster_path,
+    release_date: movie.release_date,
+    vote_average: movie.vote_average,
+    addedAt: new Date().toISOString()
+  });
+  saveData();
+  return true;
+}
+
+function removeFromCustomList(listId, itemId, mediaType){
+  const list = getCustomLists().find(l => l.id === listId);
+  if(!list) return;
+  list.items = list.items.filter(item => !(item.id === itemId && (item.mediaType || "movie") === mediaType));
+  saveData();
+}
+
+/* ----------------------------------------------------------------
    6. RENDERING — FILM DU JOUR
    ---------------------------------------------------------------- */
 function setBackdrop(path){
@@ -1703,6 +1881,7 @@ async function renderMovie(movie){
         <div class="poster-shine"></div>
         <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
         <button class="poster-share-btn" id="btnShareMovie" aria-label="Partager ce film à un ami" title="Partager à un ami">↗</button>
+        <button class="poster-list-btn" id="btnAddToListToday" aria-label="Ajouter à une liste" title="Ajouter à une liste">+</button>
         <div class="poster-action-row" id="actionRow">
           <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
           <button class="btn-secondary" id="btnNewMovie">🎲 <span class="btn-label">Change</span></button>
@@ -1733,6 +1912,7 @@ async function renderMovie(movie){
   document.getElementById("btnNewMovie").addEventListener("click", loadNewMovie);
   document.getElementById("btnSkipMovie").addEventListener("click", handleSkipMovie);
   document.getElementById("btnShareMovie").addEventListener("click", () => shareMovie(movie));
+  document.getElementById("btnAddToListToday").addEventListener("click", () => openAddToListModal(movie));
 
   // Fetch extra details (runtime/director/cast) without blocking initial paint
   try{
@@ -2315,11 +2495,159 @@ function closeBrowseDetail(){
 }
 
 /* ----------------------------------------------------------------
+   8ter. MODAL "AJOUTER À UNE LISTE"
+   ---------------------------------------------------------------- */
+let pendingListMovie = null;
+
+function openAddToListModal(movie){
+  pendingListMovie = movie;
+  document.getElementById("addToListMovieTitle").textContent = movie.title;
+  renderAddToListOptions();
+  document.getElementById("newListNameInput").value = "";
+  document.getElementById("addToListModal").classList.add("show");
+}
+
+function closeAddToListModal(){
+  document.getElementById("addToListModal").classList.remove("show");
+  pendingListMovie = null;
+}
+
+function renderAddToListOptions(){
+  const container = document.getElementById("addToListOptions");
+  const lists = getCustomLists();
+  if(lists.length === 0){
+    container.innerHTML = `<div class="add-to-list-empty">Aucune liste pour l'instant — crée-en une ci-dessous.</div>`;
+    return;
+  }
+  container.innerHTML = lists.map(list => `
+    <button class="add-to-list-option" data-list-id="${list.id}">
+      <span>${escapeHtml(list.name)}</span>
+      <span class="count">${list.items.length} film${list.items.length !== 1 ? 's' : ''}</span>
+    </button>
+  `).join("");
+
+  container.querySelectorAll(".add-to-list-option").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if(!pendingListMovie) return;
+      const added = addToCustomList(btn.dataset.listId, pendingListMovie);
+      showToast(added ? "Ajouté à la liste" : "Déjà dans cette liste");
+      closeAddToListModal();
+    });
+  });
+}
+
+function handleCreateAndAddToList(){
+  const input = document.getElementById("newListNameInput");
+  const name = input.value.trim();
+  if(!name){
+    input.focus();
+    return;
+  }
+  const list = createCustomList(name);
+  if(list && pendingListMovie){
+    addToCustomList(list.id, pendingListMovie);
+    showToast(`Liste « ${name} » créée`);
+  }
+  closeAddToListModal();
+}
+
+/* ----------------------------------------------------------------
+   8quater. RECHERCHE TMDB — barre de recherche de "Mon historique"
+   ---------------------------------------------------------------- */
+let searchDebounceToken = 0; // ignore les réponses de recherches devenues obsolètes (frappe rapide)
+
+async function performTmdbSearch(query){
+  const container = document.getElementById("searchResultsContent");
+  if(!query){
+    container.innerHTML = "";
+    return;
+  }
+
+  const myToken = ++searchDebounceToken;
+  container.innerHTML = `<div class="loader-wrap" style="min-height:auto; padding:24px 0;"><div class="reel" style="width:32px; height:32px;"></div></div>`;
+
+  try{
+    const results = await searchTmdbMulti(query);
+    if(myToken !== searchDebounceToken) return; // une recherche plus récente a été lancée entre-temps
+    renderSearchResults(results, query);
+  }catch(e){
+    if(myToken !== searchDebounceToken) return;
+    console.error(e);
+    container.innerHTML = `<p style="color:var(--ink-faint); font-size:13.5px; padding:8px 0 20px;">Recherche indisponible pour l'instant.</p>`;
+  }
+}
+
+function renderSearchResults(results, query){
+  const container = document.getElementById("searchResultsContent");
+  if(results.length === 0){
+    container.innerHTML = `<p style="color:var(--ink-faint); font-size:13.5px; padding:8px 0 20px;">Aucun résultat pour « ${escapeHtml(query)} ».</p>`;
+    return;
+  }
+
+  const watchedIds = getWatchedIds();
+  container.innerHTML = `
+    <div class="search-results-label">Résultats pour « ${escapeHtml(query)} »</div>
+    <div class="history-grid">
+      ${results.slice(0, 12).map(m => renderSearchResultCard(m, watchedIds)).join("")}
+    </div>
+  `;
+
+  container.querySelectorAll("[data-search-action]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = parseInt(btn.dataset.id);
+      const mediaType = btn.dataset.mediaType;
+      const movie = results.find(m => m.id === id && m.mediaType === mediaType);
+      if(!movie) return;
+      const action = btn.dataset.searchAction;
+      if(action === "watch"){
+        openRatingFlow(movie);
+      }else if(action === "list"){
+        openAddToListModal(movie);
+      }
+    });
+  });
+}
+
+function renderSearchResultCard(m, watchedIds){
+  const posterUrl = m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : "";
+  const year = m.release_date ? m.release_date.slice(0,4) : "—";
+  const typeLabel = m.mediaType === "tv" ? "Série" : "Film";
+  const alreadyWatched = watchedIds.has(mediaKey(m.mediaType, m.id));
+  return `
+    <div class="history-card">
+      <div class="history-poster">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(m.title)}" loading="lazy">` : ""}
+        <span class="history-type-badge">${typeLabel}</span>
+      </div>
+      <div class="history-body">
+        <div class="history-title">${escapeHtml(m.title)}</div>
+        <div class="history-year">${year}</div>
+        <div class="history-ratings">
+          <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
+        </div>
+        <div class="history-actions">
+          ${alreadyWatched
+            ? `<span class="icon-btn-sm" style="flex:1; opacity:0.5;" title="Déjà dans ton historique">✓ Déjà vu</span>`
+            : `<button class="icon-btn-sm" data-search-action="watch" data-id="${m.id}" data-media-type="${m.mediaType}" title="Marquer comme vu">✓ Vu</button>`}
+          <button class="icon-btn-sm" data-search-action="list" data-id="${m.id}" data-media-type="${m.mediaType}" title="Ajouter à une liste">+ Liste</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ----------------------------------------------------------------
    9. RENDERING — MES FILMS VUS
    ---------------------------------------------------------------- */
-function renderHistory(filter = "", typeFilter = "all"){
+function renderHistory(typeFilter = "all"){
   const container = document.getElementById("historyContent");
   const countEl = document.getElementById("historyCount");
+
+  if(typeFilter === "lists"){
+    countEl.textContent = "";
+    renderCustomListsSection(container);
+    return;
+  }
+
   let list = movieAppData.watched;
 
   if(typeFilter !== "all"){
@@ -2332,10 +2660,6 @@ function renderHistory(filter = "", typeFilter = "all"){
     }
   }
 
-  if(filter.trim()){
-    const q = filter.trim().toLowerCase();
-    list = list.filter(m => m.title.toLowerCase().includes(q));
-  }
   countEl.textContent = `${movieAppData.watched.length} entrée${movieAppData.watched.length !== 1 ? 's' : ''}`;
 
   if(movieAppData.watched.length === 0){
@@ -2352,7 +2676,7 @@ function renderHistory(filter = "", typeFilter = "all"){
       <div class="state-card">
         <div class="icon">⌕</div>
         <h3>Aucun résultat</h3>
-        <p>${filter.trim() ? `Aucune entrée ne correspond à « ${escapeHtml(filter)} ».` : "Rien de ce type dans ton historique pour l'instant."}</p>
+        <p>Rien de ce type dans ton historique pour l'instant.</p>
       </div>`;
     return;
   }
@@ -2400,6 +2724,123 @@ function renderHistoryCard(m){
           <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" data-media-type="${mediaType}" title="Modifier la note">✎</button>
           <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" data-media-type="${mediaType}" title="Remettre non vu">↺</button>
           <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" data-media-type="${mediaType}" title="Supprimer">🗑</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ----------------------------------------------------------------
+   9bis. RENDERING — MES LISTES (onglet "Mes listes" de l'historique)
+   ---------------------------------------------------------------- */
+let openCustomListId = null; // liste actuellement ouverte en détail, null = vue d'ensemble
+
+function renderCustomListsSection(container){
+  const lists = getCustomLists();
+
+  if(openCustomListId){
+    const list = lists.find(l => l.id === openCustomListId);
+    if(list){
+      renderCustomListDetail(container, list);
+      return;
+    }
+    openCustomListId = null; // la liste a été supprimée entre-temps
+  }
+
+  if(lists.length === 0){
+    container.innerHTML = `
+      <div class="state-card">
+        <div class="icon">📋</div>
+        <h3>Aucune liste pour l'instant</h3>
+        <p>Crée des listes perso (« À voir cet été », « Films de Noël »…) depuis le bouton + sur un film, dans Film du jour ou Parcourir.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="custom-lists-grid">
+      ${lists.map(list => `
+        <button class="custom-list-card" data-list-id="${list.id}">
+          <div class="custom-list-card-covers">
+            ${list.items.slice(0, 4).map(item =>
+              item.poster_path
+                ? `<img src="${IMG_BASE}/${POSTER_SIZE}${item.poster_path}" alt="" loading="lazy">`
+                : `<div class="custom-list-card-cover-empty"></div>`
+            ).join("") || `<div class="custom-list-card-cover-empty"></div>`}
+          </div>
+          <div class="custom-list-card-name">${escapeHtml(list.name)}</div>
+          <div class="custom-list-card-count">${list.items.length} film${list.items.length !== 1 ? 's' : ''}</div>
+        </button>
+      `).join("")}
+    </div>
+  `;
+
+  container.querySelectorAll(".custom-list-card").forEach(card => {
+    card.addEventListener("click", () => {
+      openCustomListId = card.dataset.listId;
+      renderHistory("lists");
+    });
+  });
+}
+
+function renderCustomListDetail(container, list){
+  container.innerHTML = `
+    <div class="custom-list-detail-header">
+      <button class="btn-ghost" id="btnBackToLists">← Toutes les listes</button>
+      <div class="custom-list-detail-title-row">
+        <h3>${escapeHtml(list.name)}</h3>
+        <div class="custom-list-detail-actions">
+          <button class="icon-btn-sm" id="btnRenameList" title="Renommer">✎</button>
+          <button class="icon-btn-sm danger" id="btnDeleteList" title="Supprimer la liste">🗑</button>
+        </div>
+      </div>
+    </div>
+    ${list.items.length === 0
+      ? `<div class="state-card"><div class="icon">📋</div><h3>Liste vide</h3><p>Ajoute des films depuis le bouton + sur une fiche film.</p></div>`
+      : `<div class="history-grid">${list.items.map(item => renderCustomListItemCard(item, list.id)).join("")}</div>`}
+  `;
+
+  document.getElementById("btnBackToLists").addEventListener("click", () => {
+    openCustomListId = null;
+    renderHistory("lists");
+  });
+  document.getElementById("btnRenameList").addEventListener("click", () => {
+    const newName = prompt("Renommer la liste :", list.name);
+    if(newName && newName.trim()){
+      renameCustomList(list.id, newName);
+      renderHistory("lists");
+    }
+  });
+  document.getElementById("btnDeleteList").addEventListener("click", () => {
+    if(confirm(`Supprimer la liste « ${list.name} » ? Les films eux-mêmes ne sont pas affectés.`)){
+      deleteCustomList(list.id);
+      openCustomListId = null;
+      renderHistory("lists");
+    }
+  });
+
+  container.querySelectorAll("[data-remove-from-list]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      removeFromCustomList(list.id, parseInt(btn.dataset.itemId), btn.dataset.mediaType);
+      renderHistory("lists");
+    });
+  });
+}
+
+function renderCustomListItemCard(item, listId){
+  const posterUrl = item.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${item.poster_path}` : "";
+  const year = item.release_date ? item.release_date.slice(0,4) : "—";
+  const mediaType = item.mediaType || "movie";
+  return `
+    <div class="history-card">
+      <div class="history-poster">${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(item.title)}" loading="lazy">` : ""}</div>
+      <div class="history-body">
+        <div class="history-title">${escapeHtml(item.title)}</div>
+        <div class="history-year">${year}</div>
+        <div class="history-ratings">
+          <span class="history-tmdb">★ ${item.vote_average?.toFixed(1) ?? "—"}</span>
+        </div>
+        <div class="history-actions">
+          <button class="icon-btn-sm danger" data-remove-from-list data-item-id="${item.id}" data-media-type="${mediaType}" title="Retirer de la liste" style="flex:1;">Retirer</button>
         </div>
       </div>
     </div>`;
@@ -2519,7 +2960,7 @@ function switchView(view){
     b.classList.toggle("active", b.dataset.view === view);
   });
 
-  if(view === "history") renderHistory(document.getElementById("historySearch").value, historyFilter);
+  if(view === "history") renderHistory(historyFilter);
   if(view === "stats") renderStats();
   if(view === "browse") initBrowseIfNeeded();
 
@@ -2608,7 +3049,7 @@ function wireEvents(){
       if(pendingRatingMovie.fromHistory){
         rateMovie(pendingRatingMovie.id, pendingRatingValue, pendingRatingMovie.mediaType || "movie");
         showToast("Note mise à jour");
-        renderHistory(document.getElementById("historySearch").value, historyFilter);
+        renderHistory(historyFilter);
         renderStats();
       }else{
         finalizeMarkWatched(pendingRatingMovie, pendingRatingValue);
@@ -2620,12 +3061,12 @@ function wireEvents(){
     if(e.target.id === "ratingModal") closeRatingModal(true);
   });
 
-  // History search
+  // History search — interroge TMDB (films + séries), pas juste l'historique local
   document.getElementById("historySearch").addEventListener("input", debounce((e) => {
-    renderHistory(e.target.value, historyFilter);
-  }, 200));
+    performTmdbSearch(e.target.value.trim());
+  }, 350));
 
-  // History filter tabs (Tout / Films / Séries / Animes)
+  // History filter tabs (Tout / Films / Séries / Animes / Mes listes)
   document.querySelectorAll(".history-filter-tab").forEach(tab => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".history-filter-tab").forEach(t => {
@@ -2633,7 +3074,10 @@ function wireEvents(){
         t.setAttribute("aria-selected", t === tab);
       });
       historyFilter = tab.dataset.filter;
-      renderHistory(document.getElementById("historySearch").value, historyFilter);
+      if(historyFilter !== "lists") openCustomListId = null; // repart de la vue d'ensemble si on revient plus tard
+      document.getElementById("searchResultsContent").innerHTML = "";
+      document.getElementById("historySearch").value = "";
+      renderHistory(historyFilter);
     });
   });
 
@@ -2655,6 +3099,21 @@ function wireEvents(){
   document.getElementById("btnCloseBrowseDetail").addEventListener("click", closeBrowseDetail);
   document.getElementById("browseDetailOverlay").addEventListener("click", (e) => {
     if(e.target.id === "browseDetailOverlay") closeBrowseDetail();
+  });
+  document.getElementById("btnAddToListFromDetail").addEventListener("click", () => {
+    const overlay = document.getElementById("browseDetailOverlay");
+    const movie = overlay.dataset.currentMovie ? JSON.parse(overlay.dataset.currentMovie) : null;
+    if(movie) openAddToListModal(movie);
+  });
+
+  // Add to list modal
+  document.getElementById("btnCloseAddToList").addEventListener("click", closeAddToListModal);
+  document.getElementById("addToListModal").addEventListener("click", (e) => {
+    if(e.target.id === "addToListModal") closeAddToListModal();
+  });
+  document.getElementById("btnCreateAndAdd").addEventListener("click", handleCreateAndAddToList);
+  document.getElementById("newListNameInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") handleCreateAndAddToList();
   });
 
   // Settings
