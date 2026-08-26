@@ -24,6 +24,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;0,9..144,700;1,9..144,450;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- ============================================================
+     ICONS — Font Awesome (CDN), remplace les glyphes Unicode/emoji
+     dans la navbar : rendu inégal d'une police système à l'autre.
+     ============================================================ -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 <style>
 /* ================================================================
    TOKENS
@@ -144,7 +150,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .nav-icon-btn{
   width:38px; height:38px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  border:1px solid var(--line); color:var(--ink-dim);
+  border:1px solid var(--line); color:var(--ink-dim); font-size:15px;
   transition: border-color 0.2s, color 0.2s, transform 0.2s;
 }
 .nav-icon-btn:hover{ color:var(--ink); border-color:var(--line-strong); transform:rotate(20deg); }
@@ -534,6 +540,85 @@ main{ max-width:1280px; margin:0 auto; }
   transform: translateY(16px) scale(0.97); transition: transform 0.35s var(--ease);
 }
 .modal-overlay.show .modal-card{ transform: translateY(0) scale(1); }
+
+/* ================================================================
+   POPUP DE REMERCIEMENT — après un achat "Retirer les pubs" réussi
+   ================================================================ */
+.thank-you-card{ position:relative; overflow:hidden; padding-top:44px; }
+.thank-you-icon{
+  width:64px; height:64px; border-radius:50%; margin:0 auto 18px;
+  background: rgba(184,33,63,0.14); color: var(--bordeaux);
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+  animation: thankYouPop 0.5s var(--ease);
+}
+@keyframes thankYouPop{
+  0%{ transform: scale(0.4); opacity:0; }
+  60%{ transform: scale(1.12); opacity:1; }
+  100%{ transform: scale(1); }
+}
+.thank-you-text{ text-align:left; }
+.thank-you-confetti{
+  position:absolute; inset:0; pointer-events:none; overflow:hidden;
+}
+.thank-you-confetti span{
+  position:absolute; top:-20px; color: var(--gold); font-size:14px; opacity:0;
+  animation: thankYouFall 2.6s ease-in forwards;
+}
+.thank-you-confetti span:nth-child(1){ left:10%; animation-delay:0.1s; color: var(--gold); }
+.thank-you-confetti span:nth-child(2){ left:28%; animation-delay:0.3s; color: var(--bordeaux); }
+.thank-you-confetti span:nth-child(3){ left:48%; animation-delay:0s;   color: var(--gold); }
+.thank-you-confetti span:nth-child(4){ left:64%; animation-delay:0.45s; color: var(--bordeaux); }
+.thank-you-confetti span:nth-child(5){ left:80%; animation-delay:0.2s; color: var(--gold); }
+.thank-you-confetti span:nth-child(6){ left:92%; animation-delay:0.5s; color: var(--bordeaux); }
+@keyframes thankYouFall{
+  0%{ transform: translateY(0) rotate(0deg); opacity:0; }
+  10%{ opacity:1; }
+  100%{ transform: translateY(220px) rotate(200deg); opacity:0; }
+}
+
+/* ================================================================
+   POPUP D'INTRODUCTION D'ONGLET — une fois par onglet, à la première visite
+   ================================================================ */
+.tab-intro-icon{
+  width:52px; height:52px; border-radius:50%; margin:0 auto 16px;
+  background: rgba(212,175,55,0.12); color: var(--gold);
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+}
+
+/* ================================================================
+   MON TOP — grille de 5 slots favoris (réglages) + liste du picker
+   ================================================================ */
+.top-favorites-grid{
+  display:grid; grid-template-columns: repeat(5, 1fr); gap:10px;
+}
+@media (max-width: 520px){
+  .top-favorites-grid{ grid-template-columns: repeat(3, 1fr); }
+}
+.top-favorite-slot{
+  aspect-ratio: 2/3; border-radius:10px; border:1px dashed var(--line-strong);
+  background:rgba(255,255,255,0.03); cursor:pointer; overflow:hidden; position:relative;
+  display:flex; align-items:center; justify-content:center; padding:0;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.top-favorite-slot:hover{ border-color: var(--ink-faint); }
+.top-favorite-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
+.top-favorite-slot .slot-empty-icon{ font-size:18px; color:var(--ink-faint); }
+.top-favorite-slot .slot-remove{
+  position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%;
+  background:rgba(10,10,11,0.75); color:#fff; border:none; font-size:12px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.top-favorite-picker-list{ max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+.top-favorite-picker-item{
+  display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+  padding:8px 10px; border-radius:10px; border:1px solid var(--line-strong);
+  background:rgba(255,255,255,0.02); cursor:pointer; color:var(--ink); font-family:inherit;
+}
+.top-favorite-picker-item:hover{ background:rgba(255,255,255,0.05); }
+.top-favorite-picker-item img{ width:34px; height:51px; object-fit:cover; border-radius:5px; flex-shrink:0; }
+.top-favorite-picker-item .picker-item-title{ font-size:13.5px; }
+.top-favorite-picker-item .picker-item-year{ font-size:11.5px; color:var(--ink-faint); }
+
 .modal-poster-mini{
   width:70px; height:105px; border-radius:8px; overflow:hidden; margin:0 auto 16px;
   box-shadow: 0 10px 24px rgba(0,0,0,0.5);
@@ -542,26 +627,45 @@ main{ max-width:1280px; margin:0 auto; }
 .modal-card h3{ font-family:var(--font-display); font-size:22px; margin-bottom:6px; }
 .modal-card .modal-sub{ color:var(--ink-faint); font-size:13.5px; margin-bottom:24px; }
 
-.star-rating{
-  display:flex; justify-content:center; gap:6px; margin-bottom:8px;
-  position:relative;
-}
-.star-rating .star-slot{
-  position:relative; width:38px; height:38px; font-size:32px; line-height:1;
-  color: var(--line-strong);
-}
-.star-rating .star-slot .fill{
-  position:absolute; inset:0; overflow:hidden; width:0; color:var(--gold);
-  transition: width 0.15s;
-}
-.star-rating .star-slot button{
-  position:absolute; inset:0; width:50%; height:100%; z-index:2;
-}
-.star-rating .star-slot button.right{ left:50%; }
 .rating-value-label{
-  font-size:14px; color:var(--ink-dim); margin-bottom:26px; height:20px;
+  font-size:32px; color:var(--ink); font-family:var(--font-display); margin-bottom:14px; height:40px;
+  display:flex; align-items:baseline; justify-content:center; gap:6px;
 }
-.rating-value-label b{ color:var(--gold); font-weight:700; }
+.rating-value-label b{ color:var(--gold); font-weight:700; font-size:36px; }
+.rating-value-label .unit{ font-size:15px; color:var(--ink-faint); }
+.rating-value-label.placeholder{ font-size:14px; color:var(--ink-dim); font-family:inherit; height:20px; }
+
+/* ================================================================
+   SLIDER DE NOTATION — /10 par pas de 0.5, plus facile qu'un clic
+   précis dans une moitié d'étoile de 19px de large.
+   ================================================================ */
+.rating-slider{
+  -webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:99px;
+  background: linear-gradient(90deg, var(--gold) var(--rating-fill, 0%), var(--line-strong) var(--rating-fill, 0%));
+  margin:4px 0 6px; cursor:pointer; outline:none;
+}
+.rating-slider::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:24px; height:24px; border-radius:50%;
+  background: var(--gold); border:3px solid var(--bg-raised); box-shadow:0 1px 4px rgba(0,0,0,0.4);
+  cursor:pointer;
+}
+.rating-slider::-moz-range-thumb{
+  width:24px; height:24px; border-radius:50%; background: var(--gold);
+  border:3px solid var(--bg-raised); box-shadow:0 1px 4px rgba(0,0,0,0.4); cursor:pointer;
+}
+.rating-slider-scale{
+  display:flex; justify-content:space-between; font-size:11px; color:var(--ink-faint); margin-bottom:18px;
+}
+.rating-quick-picks{
+  display:flex; justify-content:center; flex-wrap:wrap; gap:6px; margin-bottom:22px;
+}
+.rating-quick-pick{
+  padding:6px 12px; border-radius:99px; border:1px solid var(--line-strong);
+  background:rgba(255,255,255,0.03); color:var(--ink-dim); font-size:12.5px; font-family:inherit;
+  cursor:pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.rating-quick-pick:hover{ border-color: var(--ink-faint); }
+.rating-quick-pick.active{ background: var(--gold); border-color: var(--gold); color:#1a1408; font-weight:600; }
 .modal-actions{ display:flex; gap:12px; justify-content:center; }
 .btn-ghost{
   padding:12px 20px; border-radius:999px; border:1px solid var(--line-strong);
@@ -622,17 +726,24 @@ main{ max-width:1280px; margin:0 auto; }
 .search-box input::placeholder{ color:var(--ink-faint); }
 .search-box .icon{ position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--ink-faint); font-size:14px; }
 
-/* Sous-onglets partagés : type de média pour Parcourir, filtre pour l'historique */
+/* Sous-onglets partagés : type de média pour Parcourir, filtre pour l'historique.
+   max-width:100% + overflow-x:auto plutôt que width:fit-content seul : sur un
+   écran étroit, 5 pastilles (Tout/Films/Séries/Animes/Mes listes) sont plus
+   larges que le viewport — sans ça, le surplus déborde et se fait couper net
+   par le overflow-x:hidden du body (illisible/inaccessible) au lieu de rester
+   atteignable par un défilement horizontal dédié à cette seule ligne. */
 .browse-type-tabs, .history-filter-tabs{
   display:flex; gap:6px; margin-bottom:24px;
   background: rgba(255,255,255,0.03); border:1px solid var(--line);
-  border-radius:999px; padding:4px; width:fit-content;
+  border-radius:999px; padding:4px; width:fit-content; max-width:100%;
+  overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
 }
+.browse-type-tabs::-webkit-scrollbar, .history-filter-tabs::-webkit-scrollbar{ display:none; }
 .browse-type-tab, .history-filter-tab{
   font-size:13px; font-weight:600; letter-spacing:0.02em;
   padding:9px 18px; border-radius:999px; color:var(--ink-dim);
   transition: color 0.25s var(--ease), background 0.25s var(--ease);
-  white-space:nowrap;
+  white-space:nowrap; flex-shrink:0;
 }
 .browse-type-tab.active, .history-filter-tab.active{ background:var(--bordeaux); color:#fff; }
 .browse-type-tab:not(.active):hover, .history-filter-tab:not(.active):hover{ color:var(--ink); }
@@ -1009,6 +1120,30 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 .ad-banner-remove-link:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(207,168,85,0.4); }
 
 /* ================================================================
+   INTERSTITIEL — plein écran, mais uniquement entre deux pages, jamais
+   entre un clic et son résultat serveur (voir maybeShowInterstitialAd).
+   z-index sous la modale d'install (150) : si les deux devaient se
+   déclencher au même instant, l'install (plus rare, décision ponctuelle)
+   prime — voir la garde dans maybeShowInterstitialAd.
+   ================================================================ */
+.interstitial-scrim{
+  position:fixed; inset:0; z-index:145; background:rgba(10,10,11,0.92);
+  backdrop-filter: blur(6px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.35s var(--ease);
+}
+.interstitial-scrim.show{ opacity:1; pointer-events:auto; }
+.interstitial-card{
+  position:relative; width:min(92vw, 480px);
+  background: var(--bg-raised); border:1px solid var(--line-strong); border-radius: var(--radius-lg);
+  padding: 34px 26px 26px;
+  display:flex; flex-direction:column; align-items:center;
+  transform: scale(0.94); transition: transform 0.35s var(--ease);
+}
+.interstitial-scrim.show .interstitial-card{ transform: scale(1); }
+.interstitial-card .ad-slot{ min-height:250px; max-width:100%; }
+
+/* ================================================================
    ANIMATIONS
    ================================================================ */
 @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
@@ -1100,7 +1235,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      TOP NAVIGATION
      ============================================================ -->
 <nav class="topnav">
-  <div class="brand"><span class="dot">●</span>&nbsp;Bobine</div>
+  <div class="brand"><span class="dot"><i class="fa-solid fa-film"></i></span>&nbsp;Bobine</div>
   <div class="nav-tabs" role="tablist">
     <button class="nav-tab active" data-view="today" role="tab" aria-selected="true">Film du jour</button>
     <button class="nav-tab" data-view="browse" role="tab" aria-selected="false">Parcourir</button>
@@ -1108,8 +1243,8 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     <button class="nav-tab" data-view="stats" role="tab" aria-selected="false">Statistiques</button>
   </div>
   <div style="display:flex; gap:8px;">
-    <button class="nav-icon-btn" id="btnProfileSearch" aria-label="Chercher un profil" title="Chercher un profil">⌕</button>
-    <button class="nav-icon-btn" id="btnSettings" aria-label="Réglages" title="Réglages">⚙</button>
+    <button class="nav-icon-btn" id="btnProfileSearch" aria-label="Chercher un profil" title="Chercher un profil"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <button class="nav-icon-btn" id="btnSettings" aria-label="Réglages" title="Réglages"><i class="fa-solid fa-gear"></i></button>
   </div>
 </nav>
 
@@ -1144,7 +1279,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     <div class="section-header">
       <h2 class="section-title">Mon historique<span class="count" id="historyCount"></span></h2>
       <div class="search-box">
-        <span class="icon">⌕</span>
+        <span class="icon"><i class="fa-solid fa-magnifying-glass"></i></span>
         <input type="text" id="historySearch" placeholder="Chercher un film, une série…" aria-label="Rechercher un titre">
       </div>
     </div>
@@ -1179,10 +1314,10 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 
 <!-- Mobile bottom nav -->
 <nav class="bottom-nav">
-  <button data-view="today" class="active"><span class="bn-icon">🎬</span>Aujourd'hui</button>
-  <button data-view="browse"><span class="bn-icon">🔀</span>Parcourir</button>
-  <button data-view="history"><span class="bn-icon">🎞</span>Historique</button>
-  <button data-view="stats"><span class="bn-icon">📊</span>Stats</button>
+  <button data-view="today" class="active"><span class="bn-icon"><i class="fa-solid fa-clapperboard"></i></span>Aujourd'hui</button>
+  <button data-view="browse"><span class="bn-icon"><i class="fa-solid fa-shuffle"></i></span>Parcourir</button>
+  <button data-view="history"><span class="bn-icon"><i class="fa-solid fa-film"></i></span>Historique</button>
+  <button data-view="stats"><span class="bn-icon"><i class="fa-solid fa-chart-column"></i></span>Stats</button>
 </nav>
 
 <!-- ============================================================
@@ -1192,14 +1327,14 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      ============================================================ -->
 <div class="install-scrim" id="installScrim">
   <div class="install-card">
-    <div class="install-icon">🎬</div>
+    <div class="install-icon"><i class="fa-solid fa-clapperboard"></i></div>
     <h3 id="installTitle">Installe Bobine</h3>
     <p id="installSub">Ajoute Bobine à ton écran d'accueil : lancement en un tap, plein écran, comme une vraie app.</p>
 
     <!-- Variante Android/Desktop : bouton d'installation natif -->
     <div id="installNative">
       <div class="install-actions">
-        <button class="btn-primary" id="btnInstallNow">⭳&nbsp;&nbsp;Installer</button>
+        <button class="btn-primary" id="btnInstallNow"><i class="fa-solid fa-download"></i>&nbsp;&nbsp;Installer</button>
         <button class="install-dismiss" id="btnInstallLater">Plus tard</button>
       </div>
     </div>
@@ -1207,9 +1342,9 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     <!-- Variante iOS : pas d'API d'installation, étapes manuelles -->
     <div id="installIOS" hidden>
       <ol class="install-steps">
-        <li><span class="step-num">1</span><span class="step-icon">⎋</span>Appuie sur <strong>Partager</strong> en bas de Safari</li>
-        <li><span class="step-num">2</span><span class="step-icon">➕</span>Choisis <strong>Sur l'écran d'accueil</strong></li>
-        <li><span class="step-num">3</span><span class="step-icon">✓</span>Appuie sur <strong>Ajouter</strong></li>
+        <li><span class="step-num">1</span><span class="step-icon"><i class="fa-solid fa-arrow-up-from-bracket"></i></span>Appuie sur <strong>Partager</strong> en bas de Safari</li>
+        <li><span class="step-num">2</span><span class="step-icon"><i class="fa-solid fa-plus"></i></span>Choisis <strong>Sur l'écran d'accueil</strong></li>
+        <li><span class="step-num">3</span><span class="step-icon"><i class="fa-solid fa-check"></i></span>Appuie sur <strong>Ajouter</strong></li>
       </ol>
       <div class="install-actions">
         <button class="install-dismiss" id="btnInstallLaterIOS" style="margin:0 auto;">J'ai compris</button>
@@ -1226,9 +1361,24 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      ============================================================ -->
 <div class="ad-banner" id="adBanner">
   <span class="ad-banner-label">Publicité</span>
-  <button class="ad-banner-close" id="btnCloseAdBanner" aria-label="Fermer">✕</button>
+  <button class="ad-banner-close" id="btnCloseAdBanner" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
   <div class="ad-slot" id="adSlotContent"></div>
   <button class="ad-banner-remove-link" id="btnRemoveAdsFromBanner">Retirer les pubs · 2,99&nbsp;€</button>
+</div>
+
+<!-- ============================================================
+     INTERSTITIEL — plein écran, mais UNIQUEMENT entre deux pages (voir
+     maybeShowInterstitialAd, appelé depuis switchView), jamais entre un
+     clic et son résultat serveur (🎲, notation...). Occasionnel, pas à
+     chaque changement d'onglet — voir INTERSTITIAL_EVERY_N_NAV.
+     ============================================================ -->
+<div class="interstitial-scrim" id="interstitialScrim">
+  <div class="interstitial-card">
+    <span class="ad-banner-label">Publicité</span>
+    <button class="ad-banner-close" id="btnCloseInterstitial" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    <div class="ad-slot" id="interstitialAdSlotContent"></div>
+    <button class="ad-banner-remove-link" id="btnRemoveAdsFromInterstitial">Retirer les pubs · 2,99&nbsp;€</button>
+  </div>
 </div>
 
 <!-- ============================================================
@@ -1238,9 +1388,11 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   <div class="modal-card">
     <div class="modal-poster-mini"><img id="modalPoster" src="" alt=""></div>
     <h3 id="modalTitle">Note ce film</h3>
-    <p class="modal-sub">Ta note personnelle sur 10 — indépendante de TMDB</p>
-    <div class="star-rating" id="starRating"></div>
+    <p class="modal-sub">Ta note personnelle sur 10, par demi-point — indépendante de TMDB</p>
     <div class="rating-value-label" id="ratingValueLabel">Choisis une note</div>
+    <input type="range" class="rating-slider" id="ratingSlider" min="0" max="10" step="0.5" value="0">
+    <div class="rating-slider-scale"><span>0</span><span>5</span><span>10</span></div>
+    <div class="rating-quick-picks" id="ratingQuickPicks"></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="btnSkipRating">Plus tard</button>
       <button class="btn-primary" id="btnSaveRating" disabled>Enregistrer</button>
@@ -1253,14 +1405,14 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      ============================================================ -->
 <div class="browse-detail-overlay" id="browseDetailOverlay">
   <div class="browse-detail-card">
-    <button class="browse-detail-close" id="btnCloseBrowseDetail" aria-label="Fermer">✕</button>
+    <button class="browse-detail-close" id="btnCloseBrowseDetail" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
     <div class="browse-detail-poster"><img id="browseDetailPoster" src="" alt=""></div>
     <div class="browse-detail-body">
       <h3 id="browseDetailTitle"></h3>
       <div class="movie-meta-row" id="browseDetailMeta"></div>
       <p class="browse-detail-overview" id="browseDetailOverview"></p>
       <div class="browse-detail-actions">
-        <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+        <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         <button class="btn-tertiary" id="btnAddToListFromDetail">+ Ajouter à une liste</button>
       </div>
     </div>
@@ -1270,6 +1422,67 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 <!-- ============================================================
      ADD TO LIST MODAL — choisir ou créer une liste perso
      ============================================================ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-card" style="text-align:left;">
+    <h3 style="text-align:center;">Se connecter</h3>
+    <p class="modal-sub" style="text-align:center;">Retrouve ton compte (pseudo, films vus, achats) sur cet appareil</p>
+    <div class="settings-btn-row" style="margin:18px 0 6px;">
+      <input type="email" id="loginEmailInput" placeholder="Ton email" autocomplete="email"
+        style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+      <input type="password" id="loginPasswordInput" placeholder="Mot de passe" autocomplete="current-password"
+        style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+    </div>
+    <p id="loginError" style="font-size:12px; color:#e07485; margin-bottom:4px; display:none;"></p>
+    <button class="btn-ghost" id="btnForgotPassword" style="font-size:12.5px; padding:4px 0; text-align:left;">Mot de passe oublié ?</button>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="btnCloseLogin">Annuler</button>
+      <button class="btn-primary" id="btnSubmitLogin">Se connecter</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="thankYouModal">
+  <div class="modal-card thank-you-card">
+    <div class="thank-you-confetti" aria-hidden="true">
+      <span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span><span>✦</span>
+    </div>
+    <div class="thank-you-icon"><i class="fa-solid fa-heart"></i></div>
+    <h3>Merci, vraiment.</h3>
+    <p class="modal-sub thank-you-text">
+      Bobine est un projet que je développe seul, et savoir que quelqu'un l'apprécie au point de le soutenir, ça me touche énormément.
+      <br><br>
+      Grâce à toi, l'app est maintenant sans publicité sur ce compte — pour toujours. Merci pour ce petit coup de pouce, il compte plus que tu ne le penses.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-primary" id="btnCloseThankYou" style="width:100%;">
+        <i class="fa-solid fa-heart"></i>&nbsp;&nbsp;Merci à toi
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="tabIntroModal">
+  <div class="modal-card">
+    <div class="tab-intro-icon" id="tabIntroIcon"></div>
+    <h3 id="tabIntroTitle"></h3>
+    <p class="modal-sub" id="tabIntroText" style="text-align:left; line-height:1.6;"></p>
+    <div class="modal-actions">
+      <button class="btn-primary" id="btnCloseTabIntro" style="width:100%;">Compris</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="topFavoritePickerModal">
+  <div class="modal-card" style="max-width:480px; text-align:left;">
+    <h3 style="text-align:center;">Choisir un favori</h3>
+    <p class="modal-sub" style="text-align:center;">Un film ou une série déjà noté dans ton historique</p>
+    <input type="text" id="topFavoritePickerSearch" placeholder="Filtrer ton historique…" autocomplete="off"
+      style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit; margin:14px 0;">
+    <div class="top-favorite-picker-list" id="topFavoritePickerList"></div>
+    <button class="btn-ghost" id="btnCloseTopFavoritePicker" style="margin-top:16px; width:100%;">Fermer</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="addToListModal">
   <div class="modal-card">
     <h3>Ajouter à une liste</h3>
@@ -1287,7 +1500,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      TOAST
      ============================================================ -->
 <div class="toast" id="toast">
-  <span class="check">✓</span>
+  <span class="check"><i class="fa-solid fa-check"></i></span>
   <span id="toastText">Film marqué comme vu</span>
 </div>
 
@@ -1298,7 +1511,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 <div class="settings-panel" id="settingsPanel">
   <div class="settings-head">
     <h3>Réglages</h3>
-    <button class="settings-close" id="btnCloseSettings" aria-label="Fermer">✕</button>
+    <button class="settings-close" id="btnCloseSettings" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
   </div>
 
   <div class="settings-group">
@@ -1324,7 +1537,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       <div class="settings-btn-row">
         <input type="text" id="pseudoInput" placeholder="Ton pseudo" maxlength="20"
           style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
-        <button class="settings-action-btn" id="btnClaimPseudo">👤&nbsp;&nbsp;Créer mon profil</button>
+        <button class="settings-action-btn" id="btnClaimPseudo"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Créer mon profil</button>
       </div>
       <p id="pseudoError" style="font-size:12px; color:#e07485; margin-top:8px; display:none;"></p>
     </div>
@@ -1335,30 +1548,65 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
           <div class="toggle-desc">Ton historique est synchronisé sur ce compte</div>
         </div>
       </div>
+
+      <!-- Sécurisation email/mdp : n'a de sens qu'une fois un profil (pseudo)
+           créé. Deux états : pas encore sécurisé (formulaire) / déjà
+           sécurisé (juste un rappel + bouton mdp oublié, pas de "changer
+           l'email" pour l'instant — hors scope). -->
+      <div id="accountEmailNotSecured">
+        <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin-bottom:12px;">
+          Ajoute un email et un mot de passe pour retrouver ton compte (et tes achats) depuis n'importe quel appareil.
+        </p>
+        <div class="settings-btn-row">
+          <input type="email" id="secureEmailInput" placeholder="Ton email" autocomplete="email"
+            style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+          <input type="password" id="securePasswordInput" placeholder="Mot de passe (6 caractères min.)" autocomplete="new-password"
+            style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+          <button class="settings-action-btn" id="btnSecureAccount"><i class="fa-solid fa-lock"></i>&nbsp;&nbsp;Sécuriser mon compte</button>
+        </div>
+        <p id="secureAccountError" style="font-size:12px; color:#e07485; margin-top:8px; display:none;"></p>
+      </div>
+      <div id="accountEmailSecured" hidden>
+        <p style="font-size:12.5px; color:var(--ink-dim); line-height:1.6;">
+          <i class="fa-solid fa-circle-check"></i>&nbsp; Compte sécurisé par email — connecte-toi avec sur n'importe quel appareil.
+        </p>
+      </div>
     </div>
+
+    <button class="settings-action-btn" id="btnShowLogin" style="margin-top:14px; width:100%;">
+      <i class="fa-solid fa-right-to-bracket"></i>&nbsp;&nbsp;Se connecter à un compte existant
+    </button>
+  </div>
+
+  <div class="settings-group">
+    <h4>Mon Top</h4>
+    <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin-bottom:14px;">
+      Choisis jusqu'à 5 favoris parmi tes films/séries vus. Ils s'affichent en premier sur ton profil public, avant le reste de ton historique.
+    </p>
+    <div class="top-favorites-grid" id="topFavoritesGrid"><!-- 5 slots générés dynamiquement --></div>
   </div>
 
   <div class="settings-group">
     <h4>Publicité</h4>
     <div id="adsStatusActive" hidden>
-      <p style="font-size:13.5px; color:var(--ink-dim); line-height:1.6;">✓ Pubs retirées sur ce compte, merci !</p>
+      <p style="font-size:13.5px; color:var(--ink-dim); line-height:1.6;"><i class="fa-solid fa-check"></i> Pubs retirées sur ce compte, merci !</p>
     </div>
     <div id="adsStatusInactive">
       <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin-bottom:14px;">
         Bobine affiche une pub discrète en bas d'écran après avoir noté un film. Un achat unique les retire définitivement sur ce compte.
       </p>
-      <button class="settings-action-btn" id="btnRemoveAdsFromSettings">✨&nbsp;&nbsp;Retirer les pubs · 2,99&nbsp;€</button>
+      <button class="settings-action-btn" id="btnRemoveAdsFromSettings"><i class="fa-solid fa-wand-magic-sparkles"></i>&nbsp;&nbsp;Retirer les pubs · 2,99&nbsp;€</button>
     </div>
   </div>
 
   <div class="settings-group">
     <h4>Mes données</h4>
     <div class="settings-btn-row">
-      <button class="settings-action-btn" id="btnExport">⭳&nbsp;&nbsp;Exporter mes données (JSON)</button>
-      <button class="settings-action-btn" id="btnImportTrigger">⭱&nbsp;&nbsp;Importer un fichier JSON</button>
+      <button class="settings-action-btn" id="btnExport"><i class="fa-solid fa-download"></i>&nbsp;&nbsp;Exporter mes données (JSON)</button>
+      <button class="settings-action-btn" id="btnImportTrigger"><i class="fa-solid fa-upload"></i>&nbsp;&nbsp;Importer un fichier JSON</button>
       <input type="file" id="importFile" accept="application/json">
-      <button class="settings-action-btn" id="btnClearExcluded">↺&nbsp;&nbsp;Réautoriser les films écartés</button>
-      <button class="settings-action-btn danger" id="btnResetData">🗑&nbsp;&nbsp;Réinitialiser toutes les données</button>
+      <button class="settings-action-btn" id="btnClearExcluded"><i class="fa-solid fa-rotate-left"></i>&nbsp;&nbsp;Réautoriser les films écartés</button>
+      <button class="settings-action-btn danger" id="btnResetData"><i class="fa-solid fa-trash"></i>&nbsp;&nbsp;Réinitialiser toutes les données</button>
     </div>
   </div>
 
@@ -1380,7 +1628,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 <div class="settings-panel" id="profileSearchPanel">
   <div class="settings-head">
     <h3>Chercher un profil</h3>
-    <button class="settings-close" id="btnCloseProfileSearch" aria-label="Fermer">✕</button>
+    <button class="settings-close" id="btnCloseProfileSearch" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
   </div>
 
   <div id="profileSearchView">
@@ -1392,7 +1640,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   </div>
 
   <div id="profileViewContainer" hidden>
-    <button class="settings-action-btn" id="btnBackToProfileSearch" style="margin-bottom:18px;">←&nbsp;&nbsp;Retour à la recherche</button>
+    <button class="settings-action-btn" id="btnBackToProfileSearch" style="margin-bottom:18px;"><i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;Retour à la recherche</button>
     <div id="profileViewContent"></div>
   </div>
 </div>
@@ -1407,7 +1655,8 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, signInAnonymously, onAuthStateChanged,
-    signInWithCustomToken
+    signInWithCustomToken, EmailAuthProvider, linkWithCredential,
+    signInWithEmailAndPassword, sendPasswordResetEmail
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import {
     getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot,
@@ -1511,6 +1760,35 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     return pseudo;
   }
 
+  // Sécurise le compte anonyme courant avec email/mot de passe, via
+  // linkWithCredential plutôt qu'une inscription séparée : ça RATTACHE
+  // l'identité anonyme existante (même uid, donc watched/topFavorites/sansPub
+  // déjà présents ne bougent pas) au lieu de créer un second compte vide.
+  // C'est ce qui permet ensuite de se reconnecter sur un autre appareil et
+  // de retrouver exactement les mêmes données.
+  async function secureAccountWithEmail(email, password){
+    await ensureSession();
+    const credential = EmailAuthProvider.credential(email, password);
+    await linkWithCredential(auth.currentUser, credential);
+    await setDoc(doc(db, "users", currentUser.uid), {
+      hasEmailAuth: true,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+  }
+
+  // Connexion sur un autre appareil (ou après avoir perdu la session locale) :
+  // remplace complètement l'identité anonyme courante par le compte email/mdp
+  // demandé. onAuthStateChanged se charge de propager le changement d'uid —
+  // le reste de l'app (initCloudSession côté script classique) se charge de
+  // rapatrier watched/topFavorites/sansPub du compte retrouvé.
+  async function loginWithEmail(email, password){
+    await signInWithEmailAndPassword(auth, email, password);
+  }
+
+  async function resetPassword(email){
+    await sendPasswordResetEmail(auth, email);
+  }
+
   // Pousse l'état local (movieAppData) vers Firestore. Appelé après chaque
   // saveData() locale si une session cloud est active — voir hook dans le
   // script principal. merge:true pour ne jamais écraser pseudo/sansPub
@@ -1520,6 +1798,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     await setDoc(doc(db, "users", currentUser.uid), {
       watched: movieAppData.watched || [],
       customLists: movieAppData.customLists || [],
+      topFavorites: movieAppData.topFavorites || [],
       updatedAt: serverTimestamp()
     }, { merge: true });
   }
@@ -1549,7 +1828,8 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     const data = snap.data();
     return {
       pseudo: data.pseudo || null,
-      watched: data.watched || []
+      watched: data.watched || [],
+      topFavorites: data.topFavorites || []
     };
   }
 
@@ -1574,6 +1854,9 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     getUserDoc,
     getPrivateStatus,
     buyRemoveAds,
+    secureAccountWithEmail,
+    loginWithEmail,
+    resetPassword,
     get currentUser(){ return currentUser; }
   };
 </script>
@@ -1618,11 +1901,16 @@ let movieAppData = {
   excluded: [],          // ["movie:12345", "tv:6789", ...] entrées explicitement écartées — jamais reproposées, ne comptent pas dans l'historique/stats
   customLists: [],       // [{id, name, createdAt, items: [{id,mediaType,isAnime,title,poster_path,release_date,vote_average,addedAt}]}]
                           // listes perso (ex: "À voir cet été") — indépendantes de watched, un film ici n'est pas forcément vu
+  topFavorites: [],      // [{id,mediaType,title,poster_path,release_date,vote_average}, ...] — max 5, choisis manuellement dans watched.
+                          // Affiché en premier sur le profil public (voir openPublicProfile). On duplique les champs d'affichage ici plutôt
+                          // que de ne garder qu'une référence id/mediaType : ça évite un lookup dans watched au moment du rendu du profil de
+                          // quelqu'un d'autre (on n'a que son topFavorites, pas son watched complet côté recherche de profil).
   settings: {
     minVotes: DEFAULTS.minVotes,
     minYear: DEFAULTS.minYear,
     personalization: DEFAULTS.personalization,
-    onboarded: false
+    onboarded: false,
+    tabIntrosSeen: []   // ["today","browse","history","stats"] — onglets dont la popup d'intro a déjà été montrée
   },
   genreWeights: {}      // { genreId: weightMultiplier } learned from ratings — clé commune films/séries, TMDB partage les IDs de genre entre les deux
 };
@@ -1644,6 +1932,7 @@ function loadData(){
       movieAppData.watched = parsed.watched || [];
       movieAppData.excluded = parsed.excluded || [];
       movieAppData.customLists = parsed.customLists || [];
+      movieAppData.topFavorites = parsed.topFavorites || [];
       movieAppData.genreWeights = parsed.genreWeights || {};
     }
   }catch(e){
@@ -1671,7 +1960,7 @@ function saveData(){
     scheduleCloudSync();
   }catch(e){
     console.error("Erreur de sauvegarde des données:", e);
-    showToast("Impossible de sauvegarder (stockage plein ?)", "⚠");
+    showToast("Impossible de sauvegarder (stockage plein ?)", '<i class="fa-solid fa-triangle-exclamation"></i>');
   }
 }
 
@@ -1711,7 +2000,7 @@ function importData(file){
       renderStats();
     }catch(err){
       console.error(err);
-      showToast("Fichier invalide, import annulé", "⚠");
+      showToast("Fichier invalide, import annulé", '<i class="fa-solid fa-triangle-exclamation"></i>');
     }
   };
   reader.readAsText(file);
@@ -2193,7 +2482,7 @@ function showSlotReel(posterUrls, finalPosterUrl){
           </div>
           <div class="slot-center-line"></div>
         </div>
-        <div class="slot-label"><span class="dice">🎲</span> Tirage en cours…</div>
+        <div class="slot-label"><span class="dice"><i class="fa-solid fa-dice"></i></span> Tirage en cours…</div>
       </div>`;
 
     const stripEl = document.getElementById("slotStrip");
@@ -2224,7 +2513,7 @@ function showSlotReel(posterUrls, finalPosterUrl){
 function showKeyMissing(){
   document.getElementById("todayContent").innerHTML = `
     <div class="key-missing">
-      <div class="icon">🔑</div>
+      <div class="icon"><i class="fa-solid fa-key"></i></div>
       <h2>Clé TMDB manquante</h2>
       <p>Ajoute ta clé TMDB dans index.html pour commencer.</p>
       <code>const TMDB_API_KEY = "TA_CLE_ICI";</code>
@@ -2234,22 +2523,22 @@ function showKeyMissing(){
 function showErrorState(type){
   const messages = {
     NETWORK_ERROR: {
-      icon: "📡",
+      icon: '<i class="fa-solid fa-satellite-dish"></i>',
       title: "Connexion impossible",
       body: "Impossible de joindre TMDB. Vérifie ta connexion internet et réessaie."
     },
     API_KEY_INVALID: {
-      icon: "🔑",
+      icon: '<i class="fa-solid fa-key"></i>',
       title: "Clé API invalide",
       body: "La clé TMDB renseignée semble invalide. Vérifie-la dans le code source."
     },
     NO_RESULTS: {
-      icon: "🎬",
+      icon: '<i class="fa-solid fa-clapperboard"></i>',
       title: "Tu as vraiment tout vu",
       body: "Impossible de trouver un film inédit sur TMDB pour l'instant. Reviens plus tard, TMDB ajoute des films régulièrement."
     },
     UNKNOWN: {
-      icon: "⚠",
+      icon: '<i class="fa-solid fa-triangle-exclamation"></i>',
       title: "Un imprévu s'est glissé",
       body: "Quelque chose s'est mal passé. Réessaie dans un instant."
     }
@@ -2260,7 +2549,7 @@ function showErrorState(type){
       <div class="icon">${m.icon}</div>
       <h3>${m.title}</h3>
       <p>${m.body}</p>
-      <button class="btn-primary" id="btnRetry">🎲 Réessayer</button>
+      <button class="btn-primary" id="btnRetry"><i class="fa-solid fa-dice"></i> Réessayer</button>
     </div>`;
   document.getElementById("btnRetry")?.addEventListener("click", loadNewMovie);
 }
@@ -2291,26 +2580,25 @@ async function renderMovie(movie){
   document.getElementById("todayContent").innerHTML = `
     <div class="hero-row">
       <div class="hero-eyebrow">Ton film du jour</div>
-      <div class="tier-badge"><span class="star">★</span> ${lastTierRating.toFixed(1)}+</div>
     </div>
     <div class="movie-stage">
       <div class="poster-wrap">
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : `<div class="loader-wrap" style="min-height:100%;"><div class="reel"></div></div>`}
         <div class="poster-shine"></div>
-        <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
-        <button class="poster-share-btn" id="btnShareMovie" aria-label="Partager ce film à un ami" title="Partager à un ami">↗</button>
+        <div class="poster-rating-badge"><span class="star"><i class="fa-solid fa-star"></i></span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+        <button class="poster-share-btn" id="btnShareMovie" aria-label="Partager ce film à un ami" title="Partager à un ami"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
         <button class="poster-list-btn" id="btnAddToListToday" aria-label="Ajouter à une liste" title="Ajouter à une liste">+</button>
         <div class="poster-action-row" id="actionRow">
-          <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
-          <button class="btn-secondary" id="btnNewMovie">🎲 <span class="btn-label">Change</span></button>
-          <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film">✕</button>
+          <button class="btn-primary" id="btnMarkWatched"><i class="fa-solid fa-check"></i> J'ai vu ce film</button>
+          <button class="btn-secondary" id="btnNewMovie"><i class="fa-solid fa-dice"></i> <span class="btn-label">Change</span></button>
+          <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
       <div class="movie-info">
         <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
         ${movie.original_title && movie.original_title !== movie.title ? `<div class="movie-original-title">${escapeHtml(movie.original_title)}</div>` : ""}
         <div class="movie-meta-row">
-          <span class="tmdb-score"><span class="star">★</span> TMDB ${movie.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="tmdb-score"><span class="star"><i class="fa-solid fa-star"></i></span> TMDB ${movie.vote_average?.toFixed(1) ?? "—"}</span>
           <span class="meta-sep"></span>
           <span>${year}</span>
           <span class="meta-sep" id="runtimeSep" style="display:none;"></span>
@@ -2321,7 +2609,7 @@ async function renderMovie(movie){
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
         <div class="crew-block" id="crewBlock" style="display:none;"></div>
-        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
       </div>
     </div>
   `;
@@ -2403,13 +2691,18 @@ function handleMarkWatched(){
 function handleSkipMovie(){
   if(!currentMovie) return;
   excludeMovie(currentMovie.id);
-  showToast("Ce film ne sera plus proposé", "🚫");
+  showToast("Ce film ne sera plus proposé", '<i class="fa-solid fa-ban"></i>');
   loadNewMovie();
 }
 
 /* ----------------------------------------------------------------
    7. RATING MODAL
    ---------------------------------------------------------------- */
+// Puces de raccourci sous le slider : les notes qu'on donne le plus souvent
+// en pratique, pour éviter à l'utilisateur de devoir glisser à chaque fois —
+// le slider reste là pour tout le reste (demi-points compris, 0 à 10).
+const RATING_QUICK_PICKS = [10, 9, 8, 7, 6, 5];
+
 function openRatingFlow(movie){
   pendingRatingMovie = movie;
   pendingRatingValue = 0;
@@ -2417,8 +2710,7 @@ function openRatingFlow(movie){
   document.getElementById("modalPoster").src = posterUrl;
   document.getElementById("modalPoster").alt = `Affiche de ${movie.title}`;
   document.getElementById("modalTitle").textContent = movie.title;
-  buildStarRating();
-  updateRatingLabel();
+  buildRatingPicker();
   document.getElementById("btnSaveRating").disabled = true;
   document.getElementById("ratingModal").classList.add("show");
 }
@@ -2431,47 +2723,46 @@ function closeRatingModal(skip){
   pendingRatingMovie = null;
 }
 
-function buildStarRating(){
-  const container = document.getElementById("starRating");
-  container.innerHTML = "";
-  for(let i = 1; i <= 5; i++){
-    const slot = document.createElement("div");
-    slot.className = "star-slot";
-    slot.innerHTML = `
-      <span>★</span>
-      <span class="fill">★</span>
-      <button class="left" data-value="${i - 0.5}" aria-label="${i - 0.5} étoiles"></button>
-      <button class="right" data-value="${i}" aria-label="${i} étoiles"></button>
-    `;
-    container.appendChild(slot);
-  }
-  container.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      pendingRatingValue = parseFloat(btn.dataset.value);
-      renderStarFill();
-      updateRatingLabel();
-      document.getElementById("btnSaveRating").disabled = false;
-    });
+// Construit les puces de raccourci une fois pour toutes (le slider, lui,
+// existe déjà dans le HTML — pas besoin de le regénérer à chaque ouverture).
+function buildRatingPicker(){
+  const picks = document.getElementById("ratingQuickPicks");
+  picks.innerHTML = RATING_QUICK_PICKS.map(v =>
+    `<button class="rating-quick-pick" data-ten="${v}" type="button">${v}</button>`
+  ).join("");
+  picks.querySelectorAll(".rating-quick-pick").forEach(btn => {
+    btn.addEventListener("click", () => setRatingFromTen(parseFloat(btn.dataset.ten)));
   });
+  document.getElementById("ratingSlider").value = 0;
+  updateRatingLabel();
 }
 
-function renderStarFill(){
-  const slots = document.querySelectorAll(".star-slot");
-  slots.forEach((slot, idx) => {
-    const starIndex = idx + 1;
-    const fill = slot.querySelector(".fill");
-    let pct = 0;
-    if(pendingRatingValue >= starIndex) pct = 100;
-    else if(pendingRatingValue >= starIndex - 0.5) pct = 50;
-    fill.style.width = pct + "%";
-  });
+// Note interne stockée sur 0–5 (myRating, historique existant) : le slider,
+// lui, travaille directement en /10 par pas de 0.5 — plus simple à viser
+// qu'un clic précis dans une moitié d'étoile de 19px, tout en gardant la
+// possibilité des demi-points (6.5, 7.5…) que l'ancien système ne permettait
+// pas vraiment (il ne produisait que des dixièmes pairs : 1, 2, 3…10).
+function setRatingFromTen(tenValue){
+  pendingRatingValue = tenValue / 2;
+  document.getElementById("ratingSlider").value = tenValue;
+  updateRatingLabel();
+  document.getElementById("btnSaveRating").disabled = false;
 }
 
 function updateRatingLabel(){
   const label = document.getElementById("ratingValueLabel");
+  const tenValue = pendingRatingValue > 0 ? parseFloat(toTen(pendingRatingValue)) : 0;
+  const slider = document.getElementById("ratingSlider");
+  slider.style.setProperty("--rating-fill", (tenValue / 10 * 100) + "%");
+
+  label.className = pendingRatingValue > 0 ? "rating-value-label" : "rating-value-label placeholder";
   label.innerHTML = pendingRatingValue > 0
-    ? `<b>${toTen(pendingRatingValue)}</b> / 10 <span style="color:var(--ink-faint);">(${pendingRatingValue}★)</span>`
+    ? `<b>${toTen(pendingRatingValue)}</b><span class="unit">/ 10</span>`
     : "Choisis une note";
+
+  document.querySelectorAll(".rating-quick-pick").forEach(btn => {
+    btn.classList.toggle("active", parseFloat(btn.dataset.ten) === tenValue);
+  });
 }
 
 async function finalizeMarkWatched(movie, rating){
@@ -2503,10 +2794,10 @@ async function finalizeMarkWatched(movie, rating){
    8. TOAST
    ---------------------------------------------------------------- */
 let toastTimer = null;
-function showToast(text, icon = "✓"){
+function showToast(text, icon = '<i class="fa-solid fa-check"></i>'){
   const toast = document.getElementById("toast");
   document.getElementById("toastText").textContent = text;
-  toast.querySelector(".check").textContent = icon;
+  toast.querySelector(".check").innerHTML = icon;
   toast.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
@@ -2549,7 +2840,7 @@ async function copyShareLinkFallback(url){
     await navigator.clipboard.writeText(url);
     showToast("Lien copié — colle-le où tu veux");
   }catch(err){
-    showToast("Impossible de copier le lien", "⚠");
+    showToast("Impossible de copier le lien", '<i class="fa-solid fa-triangle-exclamation"></i>');
   }
 }
 
@@ -2597,26 +2888,26 @@ function renderSharedMovie(movie){
       <div class="poster-wrap">
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : ""}
         <div class="poster-shine"></div>
-        <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+        <div class="poster-rating-badge"><span class="star"><i class="fa-solid fa-star"></i></span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
         <div class="poster-action-row" id="actionRow">
           ${alreadyWatched
-            ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
-            : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
-          <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir</button>
+            ? `<button class="btn-secondary" disabled><i class="fa-solid fa-check"></i> Déjà dans tes films vus</button>`
+            : `<button class="btn-primary" id="btnAddSharedWatched"><i class="fa-solid fa-check"></i> J'ai vu ce film</button>`}
+          <button class="btn-secondary" id="btnGoToApp"><i class="fa-solid fa-clapperboard"></i> Découvrir</button>
         </div>
       </div>
       <div class="movie-info">
         <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
         ${movie.original_title && movie.original_title !== movie.title ? `<div class="movie-original-title">${escapeHtml(movie.original_title)}</div>` : ""}
         <div class="movie-meta-row">
-          <span class="tmdb-score"><span class="star">★</span> TMDB ${movie.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="tmdb-score"><span class="star"><i class="fa-solid fa-star"></i></span> TMDB ${movie.vote_average?.toFixed(1) ?? "—"}</span>
           <span class="meta-sep"></span>
           <span>${year}</span>
           ${movie.runtime ? `<span class="meta-sep"></span><span>${formatRuntime(movie.runtime)}</span>` : ""}
         </div>
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
-        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+        <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
       </div>
     </div>
   `;
@@ -2720,10 +3011,10 @@ function renderBrowseDeck(){
     const typeLabel = browseMediaType === "movie" ? "film" : (browseMediaType === "anime" ? "anime" : "série");
     container.innerHTML = `
       <div class="state-card">
-        <div class="icon">🎬</div>
+        <div class="icon"><i class="fa-solid fa-clapperboard"></i></div>
         <h3>Plus rien à parcourir</h3>
         <p>Tu as fait le tour des ${typeLabel}s les mieux notés pour l'instant. Reviens plus tard, TMDB en ajoute régulièrement.</p>
-        <button class="btn-primary" id="btnRetryBrowse">↻ Réessayer</button>
+        <button class="btn-primary" id="btnRetryBrowse"><i class="fa-solid fa-rotate-right"></i> Réessayer</button>
       </div>`;
     document.getElementById("btnRetryBrowse")?.addEventListener("click", async () => {
       container.innerHTML = `<div class="loader-wrap"><div class="reel"></div><div class="loader-label">Recherche…</div></div>`;
@@ -2743,9 +3034,9 @@ function renderBrowseDeck(){
       ${stackItems.map((m, i) => renderSwipeCard(m, i)).reverse().join("")}
     </div>
     <div class="swipe-actions">
-      <button class="swipe-btn swipe-btn-no" id="btnSwipeNo" aria-label="Pas envie">✕</button>
-      <button class="swipe-btn swipe-btn-info" id="btnSwipeInfo" aria-label="Plus d'infos">ⓘ</button>
-      <button class="swipe-btn swipe-btn-yes" id="btnSwipeYes" aria-label="J'ai vu">✓</button>
+      <button class="swipe-btn swipe-btn-no" id="btnSwipeNo" aria-label="Pas envie"><i class="fa-solid fa-xmark"></i></button>
+      <button class="swipe-btn swipe-btn-info" id="btnSwipeInfo" aria-label="Plus d'infos"><i class="fa-solid fa-circle-info"></i></button>
+      <button class="swipe-btn swipe-btn-yes" id="btnSwipeYes" aria-label="J'ai vu"><i class="fa-solid fa-check"></i></button>
     </div>
   `;
 
@@ -2776,7 +3067,7 @@ function renderSwipeCard(m, stackIndex){
       <div class="swipe-card-info">
         <div class="swipe-card-title">${escapeHtml(m.title)}</div>
         <div class="swipe-card-meta">
-          <span class="tmdb-score"><span class="star">★</span> ${m.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="tmdb-score"><span class="star"><i class="fa-solid fa-star"></i></span> ${m.vote_average?.toFixed(1) ?? "—"}</span>
           <span class="meta-sep"></span>
           <span>${year}</span>
         </div>
@@ -2905,7 +3196,7 @@ function openBrowseDetail(movie){
   document.getElementById("browseDetailPoster").alt = `Affiche de ${movie.title}`;
   document.getElementById("browseDetailTitle").textContent = movie.title;
   document.getElementById("browseDetailMeta").innerHTML = `
-    <span class="tmdb-score"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</span>
+    <span class="tmdb-score"><span class="star"><i class="fa-solid fa-star"></i></span> ${movie.vote_average?.toFixed(1) ?? "—"}</span>
     <span class="meta-sep"></span>
     <span>${year}</span>
     <span class="meta-sep"></span>
@@ -2976,6 +3267,122 @@ function handleCreateAndAddToList(){
     showToast(`Liste « ${name} » créée`);
   }
   closeAddToListModal();
+}
+
+/* ----------------------------------------------------------------
+   8quinquies. MON TOP — 5 favoris choisis manuellement dans watched,
+   affichés en tête du profil public (voir openPublicProfile). On stocke
+   une copie des champs d'affichage dans topFavorites (pas juste id/mediaType)
+   pour que la recherche de profil d'un tiers puisse les rendre sans avoir
+   accès à son watched complet.
+   ---------------------------------------------------------------- */
+const TOP_FAVORITES_MAX = 5;
+let pendingTopFavoriteSlotIndex = null; // index (0..4) du slot en cours d'édition dans le picker
+
+function renderTopFavoritesSettings(){
+  const grid = document.getElementById("topFavoritesGrid");
+  if(!grid) return;
+  const favorites = movieAppData.topFavorites || [];
+  grid.innerHTML = Array.from({ length: TOP_FAVORITES_MAX }, (_, i) => {
+    const fav = favorites[i];
+    if(!fav){
+      return `<button class="top-favorite-slot" data-slot="${i}" title="Choisir un favori" aria-label="Choisir un favori"><span class="slot-empty-icon"><i class="fa-solid fa-plus"></i></span></button>`;
+    }
+    const posterUrl = fav.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${fav.poster_path}` : "";
+    return `
+      <div class="top-favorite-slot" data-slot="${i}" title="${escapeHtml(fav.title)}">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(fav.title)}" loading="lazy">` : `<span class="slot-empty-icon"><i class="fa-solid fa-film"></i></span>`}
+        <button class="slot-remove" data-remove-slot="${i}" aria-label="Retirer des favoris"><i class="fa-solid fa-xmark"></i></button>
+      </div>`;
+  }).join("");
+
+  grid.querySelectorAll(".top-favorite-slot").forEach(el => {
+    el.addEventListener("click", (e) => {
+      if(e.target.closest("[data-remove-slot]")) return; // géré séparément ci-dessous
+      openTopFavoritePicker(parseInt(el.dataset.slot));
+    });
+  });
+  grid.querySelectorAll("[data-remove-slot]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      removeTopFavorite(parseInt(btn.dataset.removeSlot));
+    });
+  });
+}
+
+function removeTopFavorite(index){
+  const favorites = (movieAppData.topFavorites || []).slice();
+  favorites.splice(index, 1);
+  movieAppData.topFavorites = favorites;
+  saveData();
+  renderTopFavoritesSettings();
+}
+
+function openTopFavoritePicker(slotIndex){
+  pendingTopFavoriteSlotIndex = slotIndex;
+  document.getElementById("topFavoritePickerSearch").value = "";
+  renderTopFavoritePickerList("");
+  document.getElementById("topFavoritePickerModal").classList.add("show");
+}
+
+function closeTopFavoritePicker(){
+  document.getElementById("topFavoritePickerModal").classList.remove("show");
+  pendingTopFavoriteSlotIndex = null;
+}
+
+function renderTopFavoritePickerList(filterText){
+  const listEl = document.getElementById("topFavoritePickerList");
+  const filter = filterText.trim().toLowerCase();
+  const already = new Set((movieAppData.topFavorites || []).map(f => mediaKey(f.mediaType || "movie", f.id)));
+  const pool = movieAppData.watched
+    .filter(m => !already.has(mediaKey(m.mediaType || "movie", m.id)))
+    .filter(m => !filter || m.title.toLowerCase().includes(filter));
+
+  if(pool.length === 0){
+    listEl.innerHTML = `<p style="font-size:12.5px; color:var(--ink-faint); padding:8px 2px;">${movieAppData.watched.length === 0 ? "Aucun film vu pour l'instant." : "Aucun résultat."}</p>`;
+    return;
+  }
+
+  listEl.innerHTML = pool.slice(0, 40).map(m => {
+    const posterUrl = m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : "";
+    const year = m.release_date ? m.release_date.slice(0,4) : "—";
+    return `
+      <button class="top-favorite-picker-item" data-id="${m.id}" data-media-type="${m.mediaType || "movie"}">
+        ${posterUrl ? `<img src="${posterUrl}" alt="">` : ""}
+        <span>
+          <div class="picker-item-title">${escapeHtml(m.title)}</div>
+          <div class="picker-item-year">${year}</div>
+        </span>
+      </button>`;
+  }).join("");
+
+  listEl.querySelectorAll(".top-favorite-picker-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = parseInt(btn.dataset.id);
+      const mediaType = btn.dataset.mediaType;
+      const movie = movieAppData.watched.find(m => m.id === id && (m.mediaType || "movie") === mediaType);
+      if(movie) setTopFavorite(pendingTopFavoriteSlotIndex, movie);
+      closeTopFavoritePicker();
+    });
+  });
+}
+
+function setTopFavorite(slotIndex, movie){
+  if(slotIndex == null) return;
+  const favorites = (movieAppData.topFavorites || []).slice();
+  favorites[slotIndex] = {
+    id: movie.id,
+    mediaType: movie.mediaType || "movie",
+    title: movie.title,
+    poster_path: movie.poster_path || null,
+    release_date: movie.release_date || null,
+    vote_average: movie.vote_average ?? null
+  };
+  // Retire les emplacements vides laissés par un splice ailleurs (retrait
+  // d'un favori du milieu) pour ne jamais synchroniser de trou dans le tableau.
+  movieAppData.topFavorites = favorites.filter(Boolean);
+  saveData();
+  renderTopFavoritesSettings();
 }
 
 /* ----------------------------------------------------------------
@@ -3050,12 +3457,12 @@ function renderSearchResultCard(m, watchedIds){
         <div class="history-title">${escapeHtml(m.title)}</div>
         <div class="history-year">${year}</div>
         <div class="history-ratings">
-          <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="history-tmdb"><i class="fa-solid fa-star"></i> ${m.vote_average?.toFixed(1) ?? "—"}</span>
         </div>
         <div class="history-actions">
           ${alreadyWatched
-            ? `<span class="icon-btn-sm" style="flex:1; opacity:0.5;" title="Déjà dans ton historique">✓ Déjà vu</span>`
-            : `<button class="icon-btn-sm" data-search-action="watch" data-id="${m.id}" data-media-type="${m.mediaType}" title="Marquer comme vu">✓ Vu</button>`}
+            ? `<span class="icon-btn-sm" style="flex:1; opacity:0.5;" title="Déjà dans ton historique"><i class="fa-solid fa-check"></i> Déjà vu</span>`
+            : `<button class="icon-btn-sm" data-search-action="watch" data-id="${m.id}" data-media-type="${m.mediaType}" title="Marquer comme vu"><i class="fa-solid fa-check"></i> Vu</button>`}
           <button class="icon-btn-sm" data-search-action="list" data-id="${m.id}" data-media-type="${m.mediaType}" title="Ajouter à une liste">+ Liste</button>
         </div>
       </div>
@@ -3092,7 +3499,7 @@ function renderHistory(typeFilter = "all"){
   if(movieAppData.watched.length === 0){
     container.innerHTML = `
       <div class="state-card">
-        <div class="icon">🎞</div>
+        <div class="icon"><i class="fa-solid fa-film"></i></div>
         <h3>Rien dans ton historique pour l'instant</h3>
         <p>Les films, séries et animes que tu marques comme vus apparaîtront ici, avec tes notes personnelles.</p>
       </div>`;
@@ -3101,7 +3508,7 @@ function renderHistory(typeFilter = "all"){
   if(list.length === 0){
     container.innerHTML = `
       <div class="state-card">
-        <div class="icon">⌕</div>
+        <div class="icon"><i class="fa-solid fa-magnifying-glass"></i></div>
         <h3>Aucun résultat</h3>
         <p>Rien de ce type dans ton historique pour l'instant.</p>
       </div>`;
@@ -3142,15 +3549,15 @@ function renderHistoryCard(m){
         <div class="history-title">${escapeHtml(m.title)}</div>
         <div class="history-year">${year}</div>
         <div class="history-ratings">
-          <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
-          <span class="history-mine">${m.myRating != null ? `★ ${toTen(m.myRating)}` : "Non noté"}</span>
+          <span class="history-tmdb"><i class="fa-solid fa-star"></i> ${m.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="history-mine">${m.myRating != null ? `<i class="fa-solid fa-star"></i> ${toTen(m.myRating)}` : "Non noté"}</span>
         </div>
         <div class="history-date">Vu le ${watchedDate}</div>
         <div class="history-actions">
-          <button class="icon-btn-sm" data-action="share" data-id="${m.id}" data-media-type="${mediaType}" title="Partager à un ami">↗</button>
-          <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" data-media-type="${mediaType}" title="Modifier la note">✎</button>
-          <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" data-media-type="${mediaType}" title="Remettre non vu">↺</button>
-          <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" data-media-type="${mediaType}" title="Supprimer">🗑</button>
+          <button class="icon-btn-sm" data-action="share" data-id="${m.id}" data-media-type="${mediaType}" title="Partager à un ami"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+          <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" data-media-type="${mediaType}" title="Modifier la note"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" data-media-type="${mediaType}" title="Remettre non vu"><i class="fa-solid fa-rotate-left"></i></button>
+          <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" data-media-type="${mediaType}" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
     </div>`;
@@ -3213,7 +3620,7 @@ function renderProfileSearchResults(results){
   }
   resultsEl.innerHTML = filtered.map(r => `
     <button class="settings-action-btn" data-uid="${escapeHtml(r.uid)}" style="width:100%; margin-bottom:8px;">
-      👤&nbsp;&nbsp;${escapeHtml(r.pseudo)}
+      <i class="fa-solid fa-user"></i>&nbsp;&nbsp;${escapeHtml(r.pseudo)}
     </button>
   `).join("");
   resultsEl.querySelectorAll("[data-uid]").forEach(btn => {
@@ -3238,11 +3645,20 @@ async function openPublicProfile(uid){
     // watchedAt est une chaîne ISO (voir markAsWatched) : le tri lexicographique
     // suffit, pas besoin de reparser en Date pour un ordre chronologique correct.
     const sorted = profile.watched.slice().sort((a,b) => (b.watchedAt || "").localeCompare(a.watchedAt || ""));
+    const favorites = profile.topFavorites || [];
     content.innerHTML = `
       <h3 style="font-family:var(--font-display); font-size:20px; margin-bottom:4px;">${escapeHtml(profile.pseudo)}</h3>
       <p style="font-size:12.5px; color:var(--ink-faint); margin-bottom:18px;">
         ${profile.watched.length} film${profile.watched.length !== 1 ? "s" : ""} vu${profile.watched.length !== 1 ? "s" : ""}${avg != null ? ` · note moyenne ${toTen(avg)}/10` : ""}
       </p>
+      ${favorites.length === 0 ? "" : `
+        <div style="margin-bottom:22px;">
+          <div style="font-size:12.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+            <i class="fa-solid fa-star"></i>&nbsp; Top de ${escapeHtml(profile.pseudo)}
+          </div>
+          <div class="history-grid">${favorites.map(renderPublicHistoryCard).join("")}</div>
+        </div>
+      `}
       ${profile.watched.length === 0
         ? `<p style="font-size:13px; color:var(--ink-faint);">Aucun film vu pour l'instant.</p>`
         : `<div class="history-grid">${sorted.map(renderPublicHistoryCard).join("")}</div>`}
@@ -3270,8 +3686,8 @@ function renderPublicHistoryCard(m){
         <div class="history-title">${escapeHtml(m.title)}</div>
         <div class="history-year">${year}</div>
         <div class="history-ratings">
-          <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
-          <span class="history-mine">${m.myRating != null ? `★ ${toTen(m.myRating)}` : "Non noté"}</span>
+          <span class="history-tmdb"><i class="fa-solid fa-star"></i> ${m.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="history-mine">${m.myRating != null ? `<i class="fa-solid fa-star"></i> ${toTen(m.myRating)}` : "Non noté"}</span>
         </div>
       </div>
     </div>`;
@@ -3297,7 +3713,7 @@ function renderCustomListsSection(container){
   if(lists.length === 0){
     container.innerHTML = `
       <div class="state-card">
-        <div class="icon">📋</div>
+        <div class="icon"><i class="fa-solid fa-list"></i></div>
         <h3>Aucune liste pour l'instant</h3>
         <p>Crée des listes perso (« À voir cet été », « Films de Noël »…) depuis le bouton + sur un film, dans Film du jour ou Parcourir.</p>
       </div>`;
@@ -3333,17 +3749,17 @@ function renderCustomListsSection(container){
 function renderCustomListDetail(container, list){
   container.innerHTML = `
     <div class="custom-list-detail-header">
-      <button class="btn-ghost" id="btnBackToLists">← Toutes les listes</button>
+      <button class="btn-ghost" id="btnBackToLists"><i class="fa-solid fa-arrow-left"></i> Toutes les listes</button>
       <div class="custom-list-detail-title-row">
         <h3>${escapeHtml(list.name)}</h3>
         <div class="custom-list-detail-actions">
-          <button class="icon-btn-sm" id="btnRenameList" title="Renommer">✎</button>
-          <button class="icon-btn-sm danger" id="btnDeleteList" title="Supprimer la liste">🗑</button>
+          <button class="icon-btn-sm" id="btnRenameList" title="Renommer"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn-sm danger" id="btnDeleteList" title="Supprimer la liste"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
     </div>
     ${list.items.length === 0
-      ? `<div class="state-card"><div class="icon">📋</div><h3>Liste vide</h3><p>Ajoute des films depuis le bouton + sur une fiche film.</p></div>`
+      ? `<div class="state-card"><div class="icon"><i class="fa-solid fa-list"></i></div><h3>Liste vide</h3><p>Ajoute des films depuis le bouton + sur une fiche film.</p></div>`
       : `<div class="history-grid">${list.items.map(item => renderCustomListItemCard(item, list.id)).join("")}</div>`}
   `;
 
@@ -3385,7 +3801,7 @@ function renderCustomListItemCard(item, listId){
         <div class="history-title">${escapeHtml(item.title)}</div>
         <div class="history-year">${year}</div>
         <div class="history-ratings">
-          <span class="history-tmdb">★ ${item.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="history-tmdb"><i class="fa-solid fa-star"></i> ${item.vote_average?.toFixed(1) ?? "—"}</span>
         </div>
         <div class="history-actions">
           <button class="icon-btn-sm danger" data-remove-from-list data-item-id="${item.id}" data-media-type="${mediaType}" title="Retirer de la liste" style="flex:1;">Retirer</button>
@@ -3403,8 +3819,8 @@ function openRatingFromHistory(movieId, mediaType = "movie"){
   document.getElementById("modalPoster").src = posterUrl;
   document.getElementById("modalPoster").alt = `Affiche de ${record.title}`;
   document.getElementById("modalTitle").textContent = record.title;
-  buildStarRating();
-  renderStarFill();
+  buildRatingPicker();
+  document.getElementById("ratingSlider").value = pendingRatingValue > 0 ? parseFloat(toTen(pendingRatingValue)) : 0;
   updateRatingLabel();
   document.getElementById("btnSaveRating").disabled = pendingRatingValue === 0;
   document.getElementById("ratingModal").classList.add("show");
@@ -3420,7 +3836,7 @@ async function renderStats(){
   if(watched.length === 0){
     container.innerHTML = `
       <div class="state-card">
-        <div class="icon">📊</div>
+        <div class="icon"><i class="fa-solid fa-chart-column"></i></div>
         <h3>Pas encore de statistiques</h3>
         <p>Regarde et note quelques films pour voir apparaître tes statistiques ici.</p>
       </div>`;
@@ -3452,7 +3868,7 @@ async function renderStats(){
         <div class="stat-label">Films vus</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${avgRatingTen.toFixed(1)}<span class="unit">★</span></div>
+        <div class="stat-value">${avgRatingTen.toFixed(1)}<span class="unit"><i class="fa-solid fa-star"></i></span></div>
         <div class="stat-label">Moyenne de mes notes</div>
       </div>
       <div class="stat-card">
@@ -3471,7 +3887,7 @@ async function renderStats(){
       <div>
         <div class="label">Mon film le mieux noté</div>
         <div class="title">${escapeHtml(topMovie.title)}</div>
-        <div class="rating">★ ${toTen(topMovie.myRating)} / 10</div>
+        <div class="rating"><i class="fa-solid fa-star"></i> ${toTen(topMovie.myRating)} / 10</div>
       </div>
     </div>` : ""}
 
@@ -3495,6 +3911,7 @@ async function renderStats(){
    11. NAVIGATION
    ---------------------------------------------------------------- */
 function switchView(view){
+  const previousView = currentView;
   currentView = view;
   document.querySelectorAll(".view").forEach(v => v.hidden = true);
   document.getElementById(`view-${view}`).hidden = false;
@@ -3513,6 +3930,68 @@ function switchView(view){
   if(view === "browse") initBrowseIfNeeded();
 
   window.scrollTo({top:0, behavior:"smooth"});
+
+  // Interstitiel : uniquement sur un vrai changement de page, jamais sur un
+  // simple re-clic du même onglet. Voir maybeShowInterstitialAd pour la
+  // fréquence/le cooldown.
+  if(previousView !== view){
+    // La popup d'intro d'onglet (rare : une seule fois par onglet, jamais
+    // revue ensuite) prime sur l'interstitiel pub si les deux tombent sur
+    // la même navigation — jamais deux overlays plein écran empilés.
+    const introShown = maybeShowTabIntro(view);
+    if(!introShown) maybeShowInterstitialAd();
+  }
+}
+
+/* ----------------------------------------------------------------
+   11bis. POPUP D'INTRODUCTION D'ONGLET — une seule fois par onglet, à la
+   première visite (y compris "today" au tout premier chargement). Le
+   statut vu/pas vu vit dans movieAppData.settings.tabIntrosSeen, donc
+   persiste comme le reste des réglages (localStorage + sync cloud).
+   ---------------------------------------------------------------- */
+const TAB_INTRO_CONTENT = {
+  today: {
+    icon: '<i class="fa-solid fa-dice"></i>',
+    title: "Film du jour",
+    text: "Chaque jour, Bobine te propose un film ou une série parmi les mieux notés que tu n'as pas encore vus. Lance le dé pour en tirer un nouveau, marque-le comme vu quand tu l'as regardé, et note-le pour affiner les prochaines suggestions."
+  },
+  browse: {
+    icon: '<i class="fa-solid fa-shuffle"></i>',
+    title: "Parcourir",
+    text: "Fais défiler les films et séries comme des cartes : swipe à droite pour marquer comme vu, à gauche pour écarter (tu ne le reverras plus). Tape une carte pour voir le détail avant de te décider."
+  },
+  history: {
+    icon: '<i class="fa-solid fa-film"></i>',
+    title: "Mon historique",
+    text: "Retrouve ici tout ce que tu as marqué comme vu, filtrable par type (films, séries, animes) ou par tes listes perso. Modifie une note ou reviens en arrière à tout moment."
+  },
+  stats: {
+    icon: '<i class="fa-solid fa-chart-column"></i>',
+    title: "Statistiques",
+    text: "Un aperçu de tes habitudes : nombre de films vus, note moyenne, ton coup de cœur du moment. Ça évolue au fur et à mesure que tu notes de nouveaux films."
+  }
+};
+
+// Retourne true si la popup a effectivement été affichée (permet à l'appelant
+// d'éviter d'empiler un interstitiel pub par-dessus le même changement de page).
+function maybeShowTabIntro(view){
+  const content = TAB_INTRO_CONTENT[view];
+  if(!content) return false;
+  const seen = movieAppData.settings.tabIntrosSeen || [];
+  if(seen.includes(view)) return false;
+
+  document.getElementById("tabIntroIcon").innerHTML = content.icon;
+  document.getElementById("tabIntroTitle").textContent = content.title;
+  document.getElementById("tabIntroText").textContent = content.text;
+  document.getElementById("tabIntroModal").classList.add("show");
+
+  movieAppData.settings.tabIntrosSeen = [...seen, view];
+  saveData();
+  return true;
+}
+
+function closeTabIntro(){
+  document.getElementById("tabIntroModal").classList.remove("show");
 }
 
 /* ----------------------------------------------------------------
@@ -3542,6 +4021,7 @@ function applySettingsToUI(){
    en local, comme avant.
    ---------------------------------------------------------------- */
 let cloudPseudo = null; // pseudo courant si connecté, sinon null
+let hasEmailAuth = false; // true si le compte courant a un provider email/mdp lié (voir secureAccountWithEmail)
 
 function applyAccountToUI(){
   const loggedOut = document.getElementById("accountLoggedOut");
@@ -3555,6 +4035,8 @@ function applyAccountToUI(){
     loggedOut.hidden = false;
     loggedIn.hidden = true;
   }
+  document.getElementById("accountEmailNotSecured").hidden = hasEmailAuth;
+  document.getElementById("accountEmailSecured").hidden = !hasEmailAuth;
 }
 
 // Merge cloud → local au démarrage : si un profil cloud existe déjà pour
@@ -3571,15 +4053,20 @@ async function initCloudSession(){
     ]);
     if(userDoc){
       if(userDoc.pseudo) cloudPseudo = userDoc.pseudo;
+      hasEmailAuth = !!userDoc.hasEmailAuth;
       if(Array.isArray(userDoc.watched) && userDoc.watched.length){
         movieAppData.watched = userDoc.watched;
       }
       if(Array.isArray(userDoc.customLists) && userDoc.customLists.length){
         movieAppData.customLists = userDoc.customLists;
       }
+      if(Array.isArray(userDoc.topFavorites)){
+        movieAppData.topFavorites = userDoc.topFavorites;
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(movieAppData));
       renderHistory();
       renderStats();
+      renderTopFavoritesSettings();
     }
     // Le cloud (posé par le webhook Stripe côté serveur, sous-collection
     // privée) fait toujours autorité sur le statut sans-pub — jamais l'inverse.
@@ -3611,6 +4098,105 @@ async function handleClaimPseudo(){
       PSEUDO_TAKEN: "Ce pseudo est déjà pris."
     };
     errorEl.textContent = messages[e.message] || "Impossible de créer le profil, réessaie.";
+    errorEl.style.display = "block";
+  }
+}
+
+// Lie email/mdp au compte anonyme courant (voir secureAccountWithEmail côté
+// module Firebase) — ne crée jamais un second compte, rattache l'existant.
+async function handleSecureAccount(){
+  const emailInput = document.getElementById("secureEmailInput");
+  const passwordInput = document.getElementById("securePasswordInput");
+  const errorEl = document.getElementById("secureAccountError");
+  errorEl.style.display = "none";
+  if(!window.BobineCloud) return;
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  try{
+    await window.BobineCloud.secureAccountWithEmail(email, password);
+    hasEmailAuth = true;
+    applyAccountToUI();
+    emailInput.value = "";
+    passwordInput.value = "";
+    showToast("Compte sécurisé — tu peux te connecter avec sur n'importe quel appareil");
+  }catch(e){
+    const messages = {
+      "auth/invalid-email": "Adresse email invalide.",
+      "auth/weak-password": "Mot de passe trop court (6 caractères min.).",
+      "auth/email-already-in-use": "Cet email est déjà utilisé par un autre compte — connecte-toi plutôt avec.",
+      "auth/credential-already-in-use": "Cet email est déjà utilisé par un autre compte — connecte-toi plutôt avec."
+    };
+    errorEl.textContent = messages[e.code] || "Impossible de sécuriser le compte, réessaie.";
+    errorEl.style.display = "block";
+  }
+}
+
+/* ----------------------------------------------------------------
+   12bis. CONNEXION — retrouver un compte existant sur cet appareil (voir
+   loginWithEmail côté module Firebase). Remplace l'identité anonyme
+   courante : initCloudSession() est relancé juste après pour rapatrier
+   watched/topFavorites/sansPub du compte retrouvé.
+   ---------------------------------------------------------------- */
+function openLoginModal(){
+  document.getElementById("loginError").style.display = "none";
+  document.getElementById("loginEmailInput").value = "";
+  document.getElementById("loginPasswordInput").value = "";
+  document.getElementById("loginModal").classList.add("show");
+}
+
+function closeLoginModal(){
+  document.getElementById("loginModal").classList.remove("show");
+}
+
+async function handleSubmitLogin(){
+  const emailInput = document.getElementById("loginEmailInput");
+  const passwordInput = document.getElementById("loginPasswordInput");
+  const errorEl = document.getElementById("loginError");
+  errorEl.style.display = "none";
+  if(!window.BobineCloud) return;
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  if(!email || !password){
+    errorEl.textContent = "Email et mot de passe requis.";
+    errorEl.style.display = "block";
+    return;
+  }
+  try{
+    await window.BobineCloud.loginWithEmail(email, password);
+    closeLoginModal();
+    // Le uid vient de changer (onAuthStateChanged côté module Firebase) :
+    // on relance la session cloud pour rapatrier les données du bon compte
+    // plutôt que de garder celles de l'ancienne identité anonyme locale.
+    await initCloudSession();
+    showToast("Connecté — tes données sont synchronisées");
+  }catch(e){
+    const messages = {
+      "auth/invalid-credential": "Email ou mot de passe incorrect.",
+      "auth/user-not-found": "Aucun compte avec cet email.",
+      "auth/wrong-password": "Mot de passe incorrect.",
+      "auth/too-many-requests": "Trop de tentatives, réessaie dans un moment."
+    };
+    errorEl.textContent = messages[e.code] || "Connexion impossible, réessaie.";
+    errorEl.style.display = "block";
+  }
+}
+
+async function handleForgotPassword(){
+  const emailInput = document.getElementById("loginEmailInput");
+  const errorEl = document.getElementById("loginError");
+  const email = emailInput.value.trim();
+  errorEl.style.display = "none";
+  if(!email){
+    errorEl.textContent = "Renseigne ton email d'abord.";
+    errorEl.style.display = "block";
+    return;
+  }
+  if(!window.BobineCloud) return;
+  try{
+    await window.BobineCloud.resetPassword(email);
+    showToast("Email de réinitialisation envoyé");
+  }catch(e){
+    errorEl.textContent = "Impossible d'envoyer l'email, vérifie l'adresse.";
     errorEl.style.display = "block";
   }
 }
@@ -3669,9 +4255,15 @@ function wireEvents(){
     saveData();
     document.getElementById("onboarding").hidden = true;
     loadNewMovie();
+    // Léger délai pour ne pas enchaîner immédiatement sur la fermeture de
+    // l'écran d'onboarding — laisse la transition se terminer visuellement.
+    setTimeout(() => maybeShowTabIntro("today"), 400);
   });
 
   // Rating modal
+  document.getElementById("ratingSlider").addEventListener("input", (e) => {
+    setRatingFromTen(parseFloat(e.target.value));
+  });
   document.getElementById("btnSkipRating").addEventListener("click", () => closeRatingModal(true));
   document.getElementById("btnSaveRating").addEventListener("click", () => {
     document.getElementById("ratingModal").classList.remove("show");
@@ -3746,6 +4338,27 @@ function wireEvents(){
     if(e.key === "Enter") handleCreateAndAddToList();
   });
 
+  // Popup de remerciement (achat "Retirer les pubs")
+  document.getElementById("btnCloseThankYou").addEventListener("click", closeThankYouModal);
+  document.getElementById("thankYouModal").addEventListener("click", (e) => {
+    if(e.target.id === "thankYouModal") closeThankYouModal();
+  });
+
+  // Popup d'introduction d'onglet
+  document.getElementById("btnCloseTabIntro").addEventListener("click", closeTabIntro);
+  document.getElementById("tabIntroModal").addEventListener("click", (e) => {
+    if(e.target.id === "tabIntroModal") closeTabIntro();
+  });
+
+  // Mon Top — modal de sélection de favori
+  document.getElementById("btnCloseTopFavoritePicker").addEventListener("click", closeTopFavoritePicker);
+  document.getElementById("topFavoritePickerModal").addEventListener("click", (e) => {
+    if(e.target.id === "topFavoritePickerModal") closeTopFavoritePicker();
+  });
+  document.getElementById("topFavoritePickerSearch").addEventListener("input", (e) => {
+    renderTopFavoritePickerList(e.target.value);
+  });
+
   // Settings
   document.getElementById("btnSettings").addEventListener("click", openSettings);
   document.getElementById("btnCloseSettings").addEventListener("click", closeSettings);
@@ -3796,6 +4409,24 @@ function wireEvents(){
     if(e.key === "Enter") handleClaimPseudo();
   });
 
+  // Sécurisation du compte (email/mdp)
+  document.getElementById("btnSecureAccount").addEventListener("click", handleSecureAccount);
+  document.getElementById("securePasswordInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") handleSecureAccount();
+  });
+
+  // Connexion à un compte existant
+  document.getElementById("btnShowLogin").addEventListener("click", openLoginModal);
+  document.getElementById("btnCloseLogin").addEventListener("click", closeLoginModal);
+  document.getElementById("loginModal").addEventListener("click", (e) => {
+    if(e.target.id === "loginModal") closeLoginModal();
+  });
+  document.getElementById("btnSubmitLogin").addEventListener("click", handleSubmitLogin);
+  document.getElementById("loginPasswordInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") handleSubmitLogin();
+  });
+  document.getElementById("btnForgotPassword").addEventListener("click", handleForgotPassword);
+
   // Install prompt
   document.getElementById("btnInstallNow").addEventListener("click", triggerNativeInstall);
   document.getElementById("btnInstallLater").addEventListener("click", dismissInstallPrompt);
@@ -3808,6 +4439,10 @@ function wireEvents(){
   document.getElementById("btnCloseAdBanner").addEventListener("click", dismissAdBanner);
   document.getElementById("btnRemoveAdsFromBanner").addEventListener("click", handleRemoveAdsClick);
   document.getElementById("btnRemoveAdsFromSettings").addEventListener("click", handleRemoveAdsClick);
+
+  // Interstitiel
+  document.getElementById("btnCloseInterstitial").addEventListener("click", dismissInterstitialAd);
+  document.getElementById("btnRemoveAdsFromInterstitial").addEventListener("click", handleRemoveAdsClick);
 }
 
 // Stub volontaire : le vrai flux d'achat (Stripe Checkout) arrive avec le
@@ -3820,7 +4455,7 @@ async function handleRemoveAdsClick(){
     return;
   }
   if(!window.BobineCloud){
-    showToast("Fonctionnalité indisponible pour l'instant", "⚠");
+    showToast("Fonctionnalité indisponible pour l'instant", '<i class="fa-solid fa-triangle-exclamation"></i>');
     return;
   }
   const btn = this && this.disabled !== undefined ? this : null;
@@ -3836,7 +4471,7 @@ async function handleRemoveAdsClick(){
       "failed-precondition": "Déjà sans publicité sur ce compte.",
       "unauthenticated": "Session expirée, réessaie."
     };
-    showToast(messages[e.code] || "Impossible de lancer le paiement, réessaie.", "⚠");
+    showToast(messages[e.code] || "Impossible de lancer le paiement, réessaie.", '<i class="fa-solid fa-triangle-exclamation"></i>');
     if(btn) btn.disabled = false;
   }
 }
@@ -3849,8 +4484,8 @@ async function handleRemoveAdsClick(){
 async function handleStripeReturnParams(){
   const params = new URLSearchParams(window.location.search);
   if(params.has("sansPubMerci")){
-    showToast("Merci ! Les pubs sont retirées 🎬");
     await initCloudSession();
+    openThankYouModal();
   }else if(params.has("sansPubAnnule")){
     showToast("Paiement annulé, aucune somme prélevée");
   }else{
@@ -3860,6 +4495,17 @@ async function handleStripeReturnParams(){
   params.delete("sansPubAnnule");
   const clean = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
   window.history.replaceState({}, "", clean);
+}
+
+// Popup de remerciement plein cadre après un achat "Retirer les pubs"
+// réussi — remplace l'ancien simple toast, un achat mérite mieux qu'une
+// notification discrète en bas d'écran.
+function openThankYouModal(){
+  document.getElementById("thankYouModal").classList.add("show");
+}
+
+function closeThankYouModal(){
+  document.getElementById("thankYouModal").classList.remove("show");
 }
 
 /* ----------------------------------------------------------------
@@ -3990,8 +4636,12 @@ function loadAdSenseScript(){
   document.head.appendChild(script);
 }
 
-function renderAdSlot(){
-  const slot = document.getElementById("adSlotContent");
+// Générique : utilisé par la bannière (#adSlotContent) et l'interstitiel
+// (#interstitialAdSlotContent), même bloc AdSense pour l'instant — pas
+// besoin d'un second ID de bloc publicitaire pour démarrer, AdSense
+// dimensionne l'annonce selon le conteneur (data-full-width-responsive).
+function renderAdInto(elId){
+  const slot = document.getElementById(elId);
   if(!slot) return;
   if(!ADSENSE_CONFIGURED){
     slot.innerHTML = `<div style="font-size:11px; color:var(--ink-faint); text-align:center; letter-spacing:0.04em; padding:18px 0;">Emplacement publicitaire — compte AdSense à configurer</div>`;
@@ -4016,7 +4666,7 @@ function maybeShowAdBanner(){
   if(now - lastAdShownAt < AD_COOLDOWN_MS) return;
   lastAdShownAt = now;
   loadAdSenseScript();
-  renderAdSlot();
+  renderAdInto("adSlotContent");
   const closeBtn = document.getElementById("btnCloseAdBanner");
   closeBtn.classList.remove("can-dismiss");
   clearTimeout(adCloseDelayTimer);
@@ -4026,6 +4676,46 @@ function maybeShowAdBanner(){
 
 function dismissAdBanner(){
   document.getElementById("adBanner").classList.remove("show");
+}
+
+/* ----------------------------------------------------------------
+   14quater. INTERSTITIEL — plein écran, UNIQUEMENT entre deux pages.
+   Jamais sur une action serveur (🎲, notation) : voir la garde côté
+   switchView(), qui est le SEUL appelant de maybeShowInterstitialAd.
+   Occasionnel (pas à chaque changement d'onglet) + cooldown temporel,
+   les deux conditions doivent être réunies pour qu'il s'affiche.
+   ---------------------------------------------------------------- */
+const INTERSTITIAL_EVERY_N_NAV = 4;   // se déclenche au mieux 1 changement d'onglet sur 4
+const INTERSTITIAL_COOLDOWN_MS = 4 * 60 * 1000; // et jamais plus d'une fois toutes les 4 min
+const INTERSTITIAL_CLOSE_DELAY_MS = 5000;
+let navCountSinceLastInterstitial = 0;
+let lastInterstitialShownAt = 0;
+let interstitialCloseDelayTimer = null;
+
+function maybeShowInterstitialAd(){
+  if(isSansPub()) return;
+  navCountSinceLastInterstitial++;
+  if(navCountSinceLastInterstitial < INTERSTITIAL_EVERY_N_NAV) return;
+  const now = Date.now();
+  if(now - lastInterstitialShownAt < INTERSTITIAL_COOLDOWN_MS) return;
+  // Ne jamais empiler deux overlays plein écran / quasi plein écran en
+  // même temps — la modale d'install (décision ponctuelle, plus rare)
+  // et la bannière pub gardent la priorité si l'une d'elles est déjà ouverte.
+  if(document.getElementById("installScrim").classList.contains("show")) return;
+
+  navCountSinceLastInterstitial = 0;
+  lastInterstitialShownAt = now;
+  loadAdSenseScript();
+  renderAdInto("interstitialAdSlotContent");
+  const closeBtn = document.getElementById("btnCloseInterstitial");
+  closeBtn.classList.remove("can-dismiss");
+  clearTimeout(interstitialCloseDelayTimer);
+  interstitialCloseDelayTimer = setTimeout(() => closeBtn.classList.add("can-dismiss"), INTERSTITIAL_CLOSE_DELAY_MS);
+  document.getElementById("interstitialScrim").classList.add("show");
+}
+
+function dismissInterstitialAd(){
+  document.getElementById("interstitialScrim").classList.remove("show");
 }
 
 /* ----------------------------------------------------------------
@@ -4075,6 +4765,7 @@ function init(){
   loadData();
   wireEvents();
   applySettingsToUI();
+  renderTopFavoritesSettings();
   setupPWA();
   initCloudSession(); // asynchrone, ne bloque jamais le premier rendu local
   handleStripeReturnParams(); // no-op si l'URL ne porte pas de retour Stripe
@@ -4100,6 +4791,7 @@ function init(){
     document.getElementById("onboarding").hidden = false;
   }else{
     loadNewMovie();
+    maybeShowTabIntro("today");
   }
 
   renderHistory();
