@@ -197,6 +197,10 @@ main{ max-width:1280px; margin:0 auto; }
 .onboarding-sub{
   font-size:16px; color:var(--ink-dim); margin-bottom:40px; line-height:1.6;
 }
+.onboarding-choice-list{
+  display:flex; flex-direction:column; gap:10px; text-align:left;
+}
+.onboarding-choice-list input{ text-align:left; }
 .btn-primary{
   display:inline-flex; align-items:center; gap:10px;
   background: var(--bordeaux); color:#fff;
@@ -1223,11 +1227,65 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      ONBOARDING (first run only)
      ============================================================ -->
 <div class="onboarding" id="onboarding" hidden>
-  <div class="onboarding-card">
+  <div class="onboarding-card" id="onboardingIntro">
     <span class="onboarding-mark">Bobine</span>
     <h1 class="onboarding-title">Un film.<br>Chaque jour.<br>Pas de navet.</h1>
     <p class="onboarding-sub">On choisit pour toi, parmi les mieux notés. Tu regardes, tu notes, on retient tout — jamais deux fois le même film.</p>
     <button class="btn-primary" id="btnStart">Commencer</button>
+  </div>
+
+  <!-- Écran de choix d'entrée : affiché juste après "Commencer", avant tout
+       le reste. But : proposer connexion/création de compte dès le départ
+       plutôt que de le découvrir des écrans plus tard une fois qu'on a déjà
+       accumulé des données en anonyme (voir décision d'Ash du 26/08). -->
+  <div class="onboarding-card" id="onboardingAccountChoice" hidden>
+    <span class="onboarding-mark">Bobine</span>
+    <h1 class="onboarding-title" style="font-size:28px;">Un compte, ou pas ?</h1>
+    <p class="onboarding-sub">Avec un compte, tes films vus et tes notes te suivent partout — sur ton téléphone, ton ordi, n'importe où. Sans compte, ça reste sur cet appareil.</p>
+    <div class="onboarding-choice-list">
+      <button class="settings-action-btn" id="btnOnboardingLogin" style="width:100%;">
+        <i class="fa-solid fa-right-to-bracket"></i>&nbsp;&nbsp;Se connecter à un compte existant
+      </button>
+      <button class="settings-action-btn" id="btnOnboardingCreateAccount" style="width:100%;">
+        <i class="fa-solid fa-lock"></i>&nbsp;&nbsp;Créer un compte (email + pseudo)
+      </button>
+      <button class="settings-action-btn" id="btnOnboardingPseudoOnly" style="width:100%;">
+        <i class="fa-solid fa-user"></i>&nbsp;&nbsp;Juste un pseudo, pour l'instant
+      </button>
+    </div>
+    <button class="install-dismiss" id="btnOnboardingSkip" style="margin:18px auto 0;">Plus tard, je verrai ça dans les réglages</button>
+  </div>
+
+  <!-- Sous-écran "Créer un compte" : pseudo + email + mdp en une fois. -->
+  <div class="onboarding-card" id="onboardingCreateAccount" hidden>
+    <span class="onboarding-mark">Bobine</span>
+    <h1 class="onboarding-title" style="font-size:26px;">Créer un compte</h1>
+    <p class="onboarding-sub">Ton pseudo sera visible si quelqu'un te cherche. L'email sert uniquement à retrouver ton compte ailleurs.</p>
+    <div class="onboarding-choice-list">
+      <input type="text" id="onboardingPseudoInput" placeholder="Ton pseudo" maxlength="20"
+        style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+      <input type="email" id="onboardingEmailInput" placeholder="Ton email" autocomplete="email"
+        style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+      <input type="password" id="onboardingPasswordInput" placeholder="Mot de passe (6 caractères min.)" autocomplete="new-password"
+        style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+      <button class="btn-primary" id="btnOnboardingSubmitAccount" style="width:100%;">Créer mon compte</button>
+    </div>
+    <p id="onboardingAccountError" style="font-size:12px; color:#e07485; margin-top:10px; display:none;"></p>
+    <button class="install-dismiss" id="btnOnboardingBackFromCreate" style="margin:14px auto 0;">Retour</button>
+  </div>
+
+  <!-- Sous-écran "Juste un pseudo" : reprend claimPseudo tel quel. -->
+  <div class="onboarding-card" id="onboardingPseudoOnly" hidden>
+    <span class="onboarding-mark">Bobine</span>
+    <h1 class="onboarding-title" style="font-size:26px;">Choisis ton pseudo</h1>
+    <p class="onboarding-sub">Pour que d'autres puissent retrouver ton profil et voir tes films vus. Tu pourras sécuriser ton compte avec un email plus tard, dans les réglages.</p>
+    <div class="onboarding-choice-list">
+      <input type="text" id="onboardingPseudoOnlyInput" placeholder="Ton pseudo" maxlength="20"
+        style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+      <button class="btn-primary" id="btnOnboardingSubmitPseudo" style="width:100%;">Valider</button>
+    </div>
+    <p id="onboardingPseudoOnlyError" style="font-size:12px; color:#e07485; margin-top:10px; display:none;"></p>
+    <button class="install-dismiss" id="btnOnboardingBackFromPseudo" style="margin:14px auto 0;">Retour</button>
   </div>
 </div>
 
@@ -4079,6 +4137,115 @@ async function initCloudSession(){
   }
 }
 
+/* ----------------------------------------------------------------
+   11ter. ONBOARDING — écran de choix de compte, juste après "Commencer".
+   Quatre sous-écrans dans le même conteneur plein écran #onboarding, un
+   seul visible à la fois (hidden). But : proposer connexion/création de
+   compte dès le tout premier lancement plutôt que de le découvrir plus
+   tard, une fois des données déjà accumulées en anonyme — voir décision
+   d'Ash du 26/08. "Plus tard" reste toujours possible (zéro friction).
+   ---------------------------------------------------------------- */
+let onboardingAwaitingLogin = false; // true si le loginModal a été ouvert DEPUIS l'onboarding (voir handleSubmitLogin)
+
+function showOnboardingScreen(id){
+  ["onboardingIntro", "onboardingAccountChoice", "onboardingCreateAccount", "onboardingPseudoOnly"].forEach(screenId => {
+    document.getElementById(screenId).hidden = (screenId !== id);
+  });
+}
+
+function showOnboardingAccountChoice(){
+  showOnboardingScreen("onboardingAccountChoice");
+}
+
+// Termine l'onboarding et lance l'app normalement — factorisé car atteint
+// depuis plusieurs chemins (skip, création de compte réussie, pseudo créé,
+// connexion réussie).
+function finishOnboarding(){
+  movieAppData.settings.onboarded = true;
+  saveData();
+  document.getElementById("onboarding").hidden = true;
+  loadNewMovie();
+  // Léger délai pour ne pas enchaîner immédiatement sur la fermeture de
+  // l'écran d'onboarding — laisse la transition se terminer visuellement.
+  setTimeout(() => maybeShowTabIntro("today"), 400);
+}
+
+// Créer un compte depuis l'onboarding : pseudo + email/mdp en une fois.
+// Réutilise claimPseudo puis secureAccountWithEmail tels quels (même ordre
+// que si on faisait les deux actions séparément depuis les Réglages) —
+// linkWithCredential rattache toujours l'identité anonyme courante, donc
+// rien n'est perdu même si des films avaient déjà été vus avant ce choix.
+async function handleOnboardingCreateAccount(){
+  const pseudoInput = document.getElementById("onboardingPseudoInput");
+  const emailInput = document.getElementById("onboardingEmailInput");
+  const passwordInput = document.getElementById("onboardingPasswordInput");
+  const errorEl = document.getElementById("onboardingAccountError");
+  errorEl.style.display = "none";
+  if(!window.BobineCloud) return;
+
+  const pseudo = pseudoInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  try{
+    const confirmedPseudo = await window.BobineCloud.claimPseudo(pseudo);
+    cloudPseudo = confirmedPseudo;
+    try{
+      await window.BobineCloud.secureAccountWithEmail(email, password);
+      hasEmailAuth = true;
+    }catch(emailErr){
+      // Le pseudo est déjà réservé à ce stade : on ne bloque pas la création
+      // de compte pour un souci d'email (ex: déjà utilisé) — l'utilisateur
+      // pourra sécuriser son compte plus tard depuis les Réglages.
+      console.error("Sécurisation email échouée pendant l'onboarding:", emailErr);
+      showToast("Pseudo créé, mais l'email n'a pas pu être ajouté — réessaie dans les réglages", '<i class="fa-solid fa-triangle-exclamation"></i>');
+      applyAccountToUI();
+      scheduleCloudSync();
+      finishOnboarding();
+      return;
+    }
+    applyAccountToUI();
+    scheduleCloudSync();
+    showToast(`Compte créé : ${confirmedPseudo}`);
+    finishOnboarding();
+  }catch(e){
+    const messages = {
+      PSEUDO_LENGTH: "Pseudo : 3 à 20 caractères.",
+      PSEUDO_INVALID_CHARS: "Pseudo : lettres, chiffres, espaces, - et _ uniquement.",
+      PSEUDO_TAKEN: "Ce pseudo est déjà pris.",
+      "auth/invalid-email": "Adresse email invalide.",
+      "auth/weak-password": "Mot de passe trop court (6 caractères min.)."
+    };
+    errorEl.textContent = messages[e.message] || messages[e.code] || "Impossible de créer le compte, réessaie.";
+    errorEl.style.display = "block";
+  }
+}
+
+// Juste un pseudo, pas d'email — reprend claimPseudo tel quel.
+async function handleOnboardingPseudoOnly(){
+  const input = document.getElementById("onboardingPseudoOnlyInput");
+  const errorEl = document.getElementById("onboardingPseudoOnlyError");
+  const pseudo = input.value.trim();
+  errorEl.style.display = "none";
+  if(!window.BobineCloud) return;
+  try{
+    const confirmed = await window.BobineCloud.claimPseudo(pseudo);
+    cloudPseudo = confirmed;
+    applyAccountToUI();
+    scheduleCloudSync();
+    showToast(`Profil créé : ${confirmed}`);
+    finishOnboarding();
+  }catch(e){
+    const messages = {
+      PSEUDO_LENGTH: "3 à 20 caractères.",
+      PSEUDO_INVALID_CHARS: "Lettres, chiffres, espaces, - et _ uniquement.",
+      PSEUDO_TAKEN: "Ce pseudo est déjà pris."
+    };
+    errorEl.textContent = messages[e.message] || "Impossible de créer le profil, réessaie.";
+    errorEl.style.display = "block";
+  }
+}
+
 async function handleClaimPseudo(){
   const input = document.getElementById("pseudoInput");
   const errorEl = document.getElementById("pseudoError");
@@ -4146,6 +4313,10 @@ function openLoginModal(){
 
 function closeLoginModal(){
   document.getElementById("loginModal").classList.remove("show");
+  // Annulé sans se connecter : si c'était depuis l'onboarding, on ne doit
+  // pas terminer l'onboarding par erreur — l'utilisateur revient à l'écran
+  // de choix (voir onboardingAwaitingLogin dans handleSubmitLogin).
+  onboardingAwaitingLogin = false;
 }
 
 async function handleSubmitLogin(){
@@ -4163,12 +4334,23 @@ async function handleSubmitLogin(){
   }
   try{
     await window.BobineCloud.loginWithEmail(email, password);
+    // Capturé avant closeLoginModal() : cette dernière remet le drapeau à
+    // false par sécurité pour le cas "annulé sans se connecter" (voir sa
+    // définition), donc il faut lire l'intention AVANT de fermer la modale.
+    const wasFromOnboarding = onboardingAwaitingLogin;
     closeLoginModal();
     // Le uid vient de changer (onAuthStateChanged côté module Firebase) :
     // on relance la session cloud pour rapatrier les données du bon compte
     // plutôt que de garder celles de l'ancienne identité anonyme locale.
     await initCloudSession();
     showToast("Connecté — tes données sont synchronisées");
+    // Si la connexion a été lancée depuis l'écran de choix d'onboarding
+    // (voir showOnboardingAccountChoice), il faut aussi terminer
+    // l'onboarding — sinon l'app resterait bloquée derrière cet écran
+    // malgré une connexion réussie.
+    if(wasFromOnboarding){
+      finishOnboarding();
+    }
   }catch(e){
     const messages = {
       "auth/invalid-credential": "Email ou mot de passe incorrect.",
@@ -4249,15 +4431,34 @@ function wireEvents(){
     el.addEventListener("click", () => switchView(el.dataset.view));
   });
 
-  // Onboarding
-  document.getElementById("btnStart").addEventListener("click", () => {
-    movieAppData.settings.onboarded = true;
-    saveData();
-    document.getElementById("onboarding").hidden = true;
-    loadNewMovie();
-    // Léger délai pour ne pas enchaîner immédiatement sur la fermeture de
-    // l'écran d'onboarding — laisse la transition se terminer visuellement.
-    setTimeout(() => maybeShowTabIntro("today"), 400);
+  // Onboarding — "Commencer" ouvre l'écran de choix de compte plutôt que de
+  // finir directement l'onboarding (voir showOnboardingAccountChoice).
+  document.getElementById("btnStart").addEventListener("click", showOnboardingAccountChoice);
+
+  document.getElementById("btnOnboardingSkip").addEventListener("click", finishOnboarding);
+  document.getElementById("btnOnboardingLogin").addEventListener("click", () => {
+    onboardingAwaitingLogin = true;
+    openLoginModal();
+  });
+  document.getElementById("btnOnboardingCreateAccount").addEventListener("click", () => {
+    showOnboardingScreen("onboardingCreateAccount");
+  });
+  document.getElementById("btnOnboardingPseudoOnly").addEventListener("click", () => {
+    showOnboardingScreen("onboardingPseudoOnly");
+  });
+  document.getElementById("btnOnboardingBackFromCreate").addEventListener("click", () => {
+    showOnboardingScreen("onboardingAccountChoice");
+  });
+  document.getElementById("btnOnboardingBackFromPseudo").addEventListener("click", () => {
+    showOnboardingScreen("onboardingAccountChoice");
+  });
+  document.getElementById("btnOnboardingSubmitAccount").addEventListener("click", handleOnboardingCreateAccount);
+  document.getElementById("onboardingPasswordInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") handleOnboardingCreateAccount();
+  });
+  document.getElementById("btnOnboardingSubmitPseudo").addEventListener("click", handleOnboardingPseudoOnly);
+  document.getElementById("onboardingPseudoOnlyInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") handleOnboardingPseudoOnly();
   });
 
   // Rating modal
