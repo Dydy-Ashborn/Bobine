@@ -971,33 +971,42 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 .ad-banner{
   position:fixed; left:0; right:0; bottom:0; z-index:55;
   display:flex; flex-direction:column; align-items:center;
-  background: var(--bg-raised); border-top:1px solid var(--line-strong);
-  padding: 22px 40px 12px;
+  background: var(--bg-raised); border-top:2px solid var(--bordeaux);
+  padding: 26px 40px 18px;
   transform: translateY(100%); transition: transform 0.4s var(--ease);
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.35);
 }
 .ad-banner.show{ transform: translateY(0); }
 @media (max-width:640px){
   /* Reste au-dessus de la bottom-nav mobile, jamais superposée à elle. */
-  .ad-banner{ bottom:64px; padding-bottom:10px; }
+  .ad-banner{ bottom:64px; padding-bottom:16px; }
 }
 .ad-banner-label{
-  position:absolute; top:5px; left:10px;
-  font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint);
+  position:absolute; top:7px; left:12px;
+  font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint);
 }
 .ad-banner-close{
-  position:absolute; top:2px; right:4px; width:24px; height:24px;
+  position:absolute; top:4px; right:6px; width:26px; height:26px;
   display:flex; align-items:center; justify-content:center;
   font-size:14px; color:var(--ink-faint); border-radius:50%;
+  /* Volontairement inerte pendant quelques secondes (voir maybeShowAdBanner) :
+     on ne peut pas balayer la pub d'un geste sans même l'avoir vue. */
+  opacity:0; pointer-events:none; transition: opacity 0.3s var(--ease);
 }
+.ad-banner-close.can-dismiss{ opacity:1; pointer-events:auto; }
 .ad-banner-close:hover{ background:rgba(255,255,255,0.06); color:var(--ink-dim); }
 .ad-slot{
-  width:100%; max-width:468px; min-height:60px;
+  width:100%; max-width:468px; min-height:100px;
   display:flex; align-items:center; justify-content:center;
 }
 .ad-banner-remove-link{
-  font-size:11.5px; color:var(--gold); margin-top:8px;
-  text-decoration:underline; text-underline-offset:3px;
+  display:inline-flex; align-items:center; gap:6px;
+  margin-top:14px; padding:11px 22px; border-radius:999px;
+  background: var(--gold); color:#1a1408; font-size:13px; font-weight:600;
+  box-shadow: 0 6px 20px rgba(207,168,85,0.3);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
 }
+.ad-banner-remove-link:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(207,168,85,0.4); }
 
 /* ================================================================
    ANIMATIONS
@@ -3998,6 +4007,9 @@ function renderAdSlot(){
   }
 }
 
+const AD_CLOSE_DELAY_MS = 4000; // le X reste inerte le temps que la pub soit au moins vue
+let adCloseDelayTimer = null;
+
 function maybeShowAdBanner(){
   if(isSansPub()) return;
   const now = Date.now();
@@ -4005,6 +4017,10 @@ function maybeShowAdBanner(){
   lastAdShownAt = now;
   loadAdSenseScript();
   renderAdSlot();
+  const closeBtn = document.getElementById("btnCloseAdBanner");
+  closeBtn.classList.remove("can-dismiss");
+  clearTimeout(adCloseDelayTimer);
+  adCloseDelayTimer = setTimeout(() => closeBtn.classList.add("can-dismiss"), AD_CLOSE_DELAY_MS);
   document.getElementById("adBanner").classList.add("show");
 }
 
