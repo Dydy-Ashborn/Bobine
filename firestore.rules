@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// Règles Firestore — Bobine
+// À coller dans Firebase Console → Firestore Database → Règles, puis Publier.
+//
+// Modèle :
+//  - users/{uid}                    : profil public (pseudo, films vus, listes)
+//  - users/{uid}/private/status     : sansPub — jamais lisible par un autre uid
+//  - pseudos/{pseudoKey}            : réservation d'unicité de pseudo (pseudoKey = pseudo normalisé)
+//
+// Principe : chacun ne peut écrire QUE son propre document. La lecture de
+// "users" est ouverte car la recherche de profil par pseudo et l'affichage
+// d'un profil public en dépendent — mais rien de sensible n'y vit : le
+// statut sansPub est isolé dans une sous-collection "private" que même son
+// propriétaire ne peut PAS modifier (lecture seule côté client), pour que
+// personne — pas même en lisant le document brut depuis la console du
+// navigateur — ne puisse voir ou falsifier le statut d'achat de qui que
+// ce soit d'autre.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if false;
+
+      match /private/{document=**} {
+        // Lecture réservée au propriétaire (ex: afficher "déjà sans pub" dans
+        // ses propres réglages). Écriture : jamais côté client — seul le
+        // webhook Stripe (Admin SDK, qui contourne ces règles) peut y écrire,
+        // après vérification de la signature de l'événement.
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false;
+      }
+    }
+
+    match /pseudos/{pseudoKey} {
+      allow read: if true;
+      // Un pseudo ne peut être créé/modifié que par l'utilisateur qui se
+      // l'attribue à lui-même (uid dans le document == uid de la requête).
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update: if request.auth != null && resource.data.uid == request.auth.uid
+                    && request.resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+  }
+}

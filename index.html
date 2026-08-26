@@ -223,22 +223,27 @@ main{ max-width:1280px; margin:0 auto; }
 /* ================================================================
    FILM DU JOUR — HERO
    ================================================================ */
+.hero-row{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin-bottom: 18px;
+}
 .hero-eyebrow{
   font-family:var(--font-display); font-style:italic; font-weight:450;
   color:var(--bordeaux); font-size:14px; letter-spacing:0.1em; text-transform:uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
   opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
 }
+.hero-row .hero-eyebrow{ margin-bottom:0; }
 
 .tier-badge{
-  display:inline-flex; align-items:center; gap:7px;
-  font-size:12.5px; color:var(--ink-dim);
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; color:var(--ink-dim);
   border:1px solid var(--line-strong); border-radius:999px;
-  padding:6px 14px; margin-bottom:22px;
+  padding:5px 12px;
   opacity:0; animation: fadeUp 0.6s var(--ease) forwards;
   animation-delay:0.02s;
 }
-.tier-badge .star{ color:var(--gold); font-size:12px; }
+.tier-badge .star{ color:var(--gold); font-size:11px; }
 
 .movie-stage{
   display:grid;
@@ -287,6 +292,39 @@ main{ max-width:1280px; margin:0 auto; }
   transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
 .poster-share-btn:hover{ background:rgba(184,33,63,0.35); border-color:var(--bordeaux); transform:scale(1.06); }
+
+.poster-list-btn{
+  position:absolute; top:60px; right:14px;
+  width:38px; height:38px; border-radius:50%;
+  background: rgba(10,10,11,0.72); backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,0.14);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:600; color:var(--ink);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.poster-list-btn:hover{ background:rgba(184,33,63,0.35); border-color:var(--bordeaux); transform:scale(1.06); }
+
+/* Barre d'actions superposée en bas de l'affiche — toujours visible, ne
+   dépend d'aucun calcul de hauteur externe (bottom-nav, etc.), et laisse
+   l'affiche occuper un maximum d'espace vertical. */
+.poster-action-row{
+  position:absolute; left:0; right:0; bottom:0; z-index:5;
+  display:flex; gap:8px; padding: 34px 12px 14px;
+  background: linear-gradient(0deg, rgba(6,6,7,0.94) 0%, rgba(6,6,7,0.75) 55%, transparent 100%);
+}
+.poster-action-row .btn-primary,
+.poster-action-row .btn-secondary{
+  flex:1; justify-content:center;
+  padding:12px 10px; font-size:13px; white-space:nowrap;
+}
+.poster-action-row .btn-secondary{
+  background: rgba(255,255,255,0.08); backdrop-filter: blur(6px);
+}
+.poster-action-row .btn-secondary:hover{ background:rgba(255,255,255,0.14); }
+.poster-action-row .btn-skip{
+  width:42px; height:42px; flex-shrink:0; font-size:15px;
+  background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);
+}
 
 /* Perforated "ticket" divider — signature element */
 .ticket-divider{
@@ -347,14 +385,6 @@ main{ max-width:1280px; margin:0 auto; }
 .crew-item .label{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px; }
 .crew-item .value{ font-size:14px; color:var(--ink); line-height:1.5; }
 
-.action-row{
-  grid-column: 2; /* aligné sous la colonne d'infos, pas sous le poster */
-  display:flex; flex-wrap:wrap; gap:14px;
-  margin-top:28px; margin-bottom:16px;
-}
-@media (max-width: 900px){
-  .action-row{ grid-column: 1; }
-}
 .btn-secondary{
   display:inline-flex; align-items:center; gap:9px;
   border:1px solid var(--line-strong); color:var(--ink);
@@ -414,8 +444,13 @@ main{ max-width:1280px; margin:0 auto; }
   min-height: 60vh; gap:26px;
 }
 .slot-window{
+  /* Doit occuper exactement la même largeur que .poster-wrap dans le même
+     contexte, pour que le passage affiche → rouleau → affiche ne donne
+     jamais l'impression que le poster "rétrécit". Desktop : largeur de la
+     colonne poster de la grille .movie-stage. Mobile : voir media query. */
   position:relative;
-  width: min(260px, 68vw);
+  width: 100%;
+  max-width: 380px;
   aspect-ratio: 2/3;
   border-radius: var(--radius-lg);
   overflow:hidden;
@@ -535,6 +570,34 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .btn-ghost:hover{ color:var(--ink); border-color:var(--ink-dim); }
 
+/* Modal "Ajouter à une liste" */
+.add-to-list-options{
+  display:flex; flex-direction:column; gap:8px;
+  max-height:240px; overflow-y:auto;
+  margin-bottom:18px; text-align:left;
+}
+.add-to-list-option{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-radius:10px;
+  border:1px solid var(--line); background:rgba(255,255,255,0.02);
+  font-size:14px; color:var(--ink);
+  transition: border-color 0.2s, background 0.2s;
+}
+.add-to-list-option:hover{ border-color:var(--line-strong); background:rgba(255,255,255,0.05); }
+.add-to-list-option .count{ font-size:12px; color:var(--ink-faint); }
+.add-to-list-empty{
+  font-size:13px; color:var(--ink-faint); text-align:center; padding:16px 0;
+}
+.add-to-list-new{
+  display:flex; gap:10px; margin-bottom:6px;
+}
+.add-to-list-new input{
+  flex:1; background:rgba(255,255,255,0.04); border:1px solid var(--line-strong);
+  border-radius:10px; padding:12px 14px; color:var(--ink); font-size:14px;
+}
+.add-to-list-new input:focus{ outline:none; border-color:var(--bordeaux); }
+.add-to-list-new .btn-primary{ padding:12px 20px; font-size:13.5px; }
+
 /* ================================================================
    MES FILMS (history)
    ================================================================ */
@@ -573,6 +636,40 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .browse-type-tab.active, .history-filter-tab.active{ background:var(--bordeaux); color:#fff; }
 .browse-type-tab:not(.active):hover, .history-filter-tab:not(.active):hover{ color:var(--ink); }
+
+.search-results-label{
+  font-size:12.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em;
+  margin-bottom:14px;
+}
+#searchResultsContent:not(:empty){
+  margin-bottom:32px; padding-bottom:28px; border-bottom:1px solid var(--line);
+}
+
+.custom-lists-grid{
+  display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap:18px;
+}
+.custom-list-card{
+  background: var(--bg-card); border:1px solid var(--line); border-radius:var(--radius-md);
+  overflow:hidden; text-align:left;
+  transition: transform 0.3s var(--ease), border-color 0.3s;
+}
+.custom-list-card:hover{ transform:translateY(-4px); border-color:var(--line-strong); }
+.custom-list-card-covers{
+  display:grid; grid-template-columns:1fr 1fr; aspect-ratio:2/1.4; background:var(--bg-raised);
+}
+.custom-list-card-covers img{ width:100%; height:100%; object-fit:cover; }
+.custom-list-card-cover-empty{ width:100%; height:100%; background:var(--bg-raised); }
+.custom-list-card-name{ font-weight:600; font-size:14.5px; padding:14px 14px 2px; }
+.custom-list-card-count{ font-size:12px; color:var(--ink-faint); padding:0 14px 14px; }
+
+.custom-list-detail-header{ margin-bottom:24px; }
+.custom-list-detail-title-row{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:14px; gap:12px;
+}
+.custom-list-detail-title-row h3{ font-family:var(--font-display); font-size:22px; font-weight:600; }
+.custom-list-detail-actions{ display:flex; gap:8px; }
 
 .history-grid{
   display:grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -622,9 +719,12 @@ main{ max-width:1280px; margin:0 auto; }
    ================================================================ */
 .swipe-deck{
   position:relative;
-  width:min(360px, 100%);
+  width: 100%;
+  max-width: 420px;
+  max-height: 58vh;  /* fallback pour navigateurs sans support de svh */
+  max-height: 58svh; /* priorité à la hauteur dispo pour ne jamais pousser les boutons hors écran */
   aspect-ratio: 2/3;
-  margin: 0 auto 32px;
+  margin: 0 auto 28px;
   touch-action: pan-y; /* laisse le scroll vertical de la page tout en captant le drag horizontal */
 }
 .swipe-card{
@@ -707,10 +807,10 @@ main{ max-width:1280px; margin:0 auto; }
 .browse-detail-body{ padding: 22px 24px 26px; }
 .browse-detail-body h3{ font-family:var(--font-display); font-weight:600; font-size:24px; margin-bottom:12px; }
 .browse-detail-overview{ font-size:14.5px; line-height:1.7; color:var(--ink-dim); margin: 16px 0 18px; }
+.browse-detail-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:18px; }
 
 @media (max-width: 640px){
-  .swipe-deck{ width: min(320px, 88vw); }
-  .swipe-card-title{ font-size:21px; }
+  .swipe-card-title{ font-size:22px; }
 }
 
 /* ================================================================
@@ -807,6 +907,99 @@ footer.app-footer{
 footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-underline-offset:3px; }
 
 /* ================================================================
+   INSTALL PROMPT — popup d'invitation à installer la PWA
+   ================================================================ */
+.install-scrim{
+  position:fixed; inset:0; z-index:150; background:rgba(10,10,11,0.65);
+  backdrop-filter: blur(4px);
+  opacity:0; pointer-events:none; transition:opacity 0.35s var(--ease);
+  display:flex; align-items:flex-end; justify-content:center;
+}
+@media (min-width:700px){
+  .install-scrim{ align-items:center; }
+}
+.install-scrim.show{ opacity:1; pointer-events:auto; }
+.install-card{
+  width:100%; max-width:440px;
+  background: var(--bg-raised); border:1px solid var(--line-strong);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 28px 26px calc(28px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(24px);
+  transition: transform 0.4s var(--ease);
+}
+@media (min-width:700px){
+  .install-card{ border-radius: var(--radius-lg); transform: translateY(0) scale(0.96); }
+}
+.install-scrim.show .install-card{ transform: translateY(0) scale(1); }
+.install-icon{
+  width:56px; height:56px; border-radius:16px;
+  background: var(--bordeaux); display:flex; align-items:center; justify-content:center;
+  font-size:26px; margin-bottom:16px;
+  box-shadow: 0 8px 24px var(--bordeaux-glow);
+}
+.install-card h3{ font-family:var(--font-display); font-size:21px; margin-bottom:8px; }
+.install-card p{ font-size:14px; color:var(--ink-dim); line-height:1.6; margin-bottom:20px; }
+.install-steps{ list-style:none; margin-bottom:22px; }
+.install-steps li{
+  display:flex; align-items:center; gap:12px;
+  font-size:13.5px; color:var(--ink-dim); padding:9px 0;
+  border-bottom:1px solid var(--line);
+}
+.install-steps li:last-child{ border-bottom:none; }
+.install-steps .step-num{
+  flex-shrink:0; width:24px; height:24px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:600;
+}
+.install-steps .step-icon{ font-size:16px; flex-shrink:0; width:20px; text-align:center; }
+.install-actions{ display:flex; gap:10px; }
+.install-actions .btn-primary{ flex:1; justify-content:center; padding:14px 20px; font-size:14px; }
+.install-dismiss{
+  font-size:13px; color:var(--ink-faint); padding:14px 16px;
+  border-radius:999px; transition: color 0.2s;
+}
+.install-dismiss:hover{ color:var(--ink-dim); }
+
+/* ================================================================
+   AD BANNER — publicité déclenchée par événement (voir maybeShowAdBanner)
+   Bannière fixe en bas, jamais un interstitiel plein écran ni un blocage
+   d'une action serveur : c'est un principe posé volontairement, pas un
+   oubli, pour ne jamais casser la confiance sur une app qu'on ouvre
+   plusieurs fois par jour.
+   ================================================================ */
+.ad-banner{
+  position:fixed; left:0; right:0; bottom:0; z-index:55;
+  display:flex; flex-direction:column; align-items:center;
+  background: var(--bg-raised); border-top:1px solid var(--line-strong);
+  padding: 22px 40px 12px;
+  transform: translateY(100%); transition: transform 0.4s var(--ease);
+}
+.ad-banner.show{ transform: translateY(0); }
+@media (max-width:640px){
+  /* Reste au-dessus de la bottom-nav mobile, jamais superposée à elle. */
+  .ad-banner{ bottom:64px; padding-bottom:10px; }
+}
+.ad-banner-label{
+  position:absolute; top:5px; left:10px;
+  font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint);
+}
+.ad-banner-close{
+  position:absolute; top:2px; right:4px; width:24px; height:24px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; color:var(--ink-faint); border-radius:50%;
+}
+.ad-banner-close:hover{ background:rgba(255,255,255,0.06); color:var(--ink-dim); }
+.ad-slot{
+  width:100%; max-width:468px; min-height:60px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ad-banner-remove-link{
+  font-size:11.5px; color:var(--gold); margin-top:8px;
+  text-decoration:underline; text-underline-offset:3px;
+}
+
+/* ================================================================
    ANIMATIONS
    ================================================================ */
 @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
@@ -848,27 +1041,24 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   .bottom-nav button .bn-icon{ font-size:19px; }
   .view{ padding-bottom:110px; }
 
-  /* Barre d'actions du film du jour : fixée juste au-dessus de la bottom-nav,
-     toujours atteignable au pouce sans avoir à scroller — y compris pendant
-     l'animation de tirage, qui se joue en haut de l'écran. */
-  #actionRow.action-row{
-    position:fixed; left:0; right:0; z-index:55;
-    bottom: calc(64px + env(safe-area-inset-bottom));
-    flex-direction:row; gap:10px;
-    margin-top:0; margin-bottom:0; padding: 12px 16px;
-    background: rgba(10,10,11,0.88); backdrop-filter: blur(18px);
-    border-top:1px solid var(--line);
+  /* Compaction verticale sur mobile : chaque pixel gagné en haut de l'écran
+     est un pixel de plus pour l'affiche, la vraie pièce maîtresse. */
+  .hero-eyebrow{ font-size:12px; margin-bottom:8px; }
+  .tier-badge{ padding:5px 12px; margin-bottom:14px; font-size:11.5px; }
+  #view-today{ padding-top:14px; }
+  #view-browse{ padding-top:14px; }
+
+  /* Les boutons d'action sont désormais superposés directement sur
+     l'affiche (.poster-action-row) — sur mobile on les compacte un peu
+     plus et on masque le libellé texte du bouton "Change" pour ne garder
+     que l'icône, l'affiche gagnant ainsi un maximum de hauteur visible. */
+  .poster-action-row{ padding: 28px 10px 12px; gap:6px; }
+  .poster-action-row .btn-primary,
+  .poster-action-row .btn-secondary{
+    padding:11px 8px; font-size:12.5px;
   }
-  #actionRow.action-row .btn-primary,
-  #actionRow.action-row .btn-secondary{
-    justify-content:center; flex:1; padding:14px 12px; font-size:13.5px;
-  }
-  #actionRow.action-row .btn-skip{
-    width:48px; height:48px; flex-shrink:0;
-  }
-  /* Le contenu de la fiche film doit garder assez de marge pour ne pas
-     passer sous la barre d'actions fixe + la bottom-nav. */
-  .movie-stage{ padding-bottom: 84px; }
+  .poster-action-row .btn-secondary .btn-label{ display:none; }
+  .poster-action-row .btn-skip{ width:38px; height:38px; font-size:13px; }
 
   .movie-title{ font-size:30px; }
   .settings-panel{ width:100vw; }
@@ -908,7 +1098,10 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     <button class="nav-tab" data-view="history" role="tab" aria-selected="false">Mon historique</button>
     <button class="nav-tab" data-view="stats" role="tab" aria-selected="false">Statistiques</button>
   </div>
-  <button class="nav-icon-btn" id="btnSettings" aria-label="Réglages" title="Réglages">⚙</button>
+  <div style="display:flex; gap:8px;">
+    <button class="nav-icon-btn" id="btnProfileSearch" aria-label="Chercher un profil" title="Chercher un profil">⌕</button>
+    <button class="nav-icon-btn" id="btnSettings" aria-label="Réglages" title="Réglages">⚙</button>
+  </div>
 </nav>
 
 <!-- ============================================================
@@ -925,13 +1118,10 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
      ============================================================ -->
 <div class="view" id="view-browse" hidden>
   <main>
-    <div class="section-header">
-      <h2 class="section-title">Parcourir</h2>
-      <div class="browse-type-tabs" role="tablist">
-        <button class="browse-type-tab active" data-media-type="movie" role="tab" aria-selected="true">Films</button>
-        <button class="browse-type-tab" data-media-type="tv" role="tab" aria-selected="false">Séries</button>
-        <button class="browse-type-tab" data-media-type="anime" role="tab" aria-selected="false">Anime</button>
-      </div>
+    <div class="browse-type-tabs" role="tablist">
+      <button class="browse-type-tab active" data-media-type="movie" role="tab" aria-selected="true">Films</button>
+      <button class="browse-type-tab" data-media-type="tv" role="tab" aria-selected="false">Séries</button>
+      <button class="browse-type-tab" data-media-type="anime" role="tab" aria-selected="false">Anime</button>
     </div>
     <div id="browseContent"><!-- populated by renderBrowseDeck() --></div>
   </main>
@@ -946,14 +1136,16 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       <h2 class="section-title">Mon historique<span class="count" id="historyCount"></span></h2>
       <div class="search-box">
         <span class="icon">⌕</span>
-        <input type="text" id="historySearch" placeholder="Rechercher dans mon historique…" aria-label="Rechercher dans mon historique">
+        <input type="text" id="historySearch" placeholder="Chercher un film, une série…" aria-label="Rechercher un titre">
       </div>
     </div>
+    <div id="searchResultsContent"><!-- résultats TMDB, affichés uniquement pendant une recherche active --></div>
     <div class="history-filter-tabs" role="tablist">
       <button class="history-filter-tab active" data-filter="all" role="tab" aria-selected="true">Tout</button>
       <button class="history-filter-tab" data-filter="movie" role="tab" aria-selected="false">Films</button>
       <button class="history-filter-tab" data-filter="tv" role="tab" aria-selected="false">Séries</button>
       <button class="history-filter-tab" data-filter="anime" role="tab" aria-selected="false">Animes</button>
+      <button class="history-filter-tab" data-filter="lists" role="tab" aria-selected="false">Mes listes</button>
     </div>
     <div id="historyContent"></div>
   </main>
@@ -985,6 +1177,52 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 </nav>
 
 <!-- ============================================================
+     INSTALL PROMPT — popup d'invitation à installer la PWA.
+     Contenu adapté selon la plateforme (Android/Desktop avec
+     bouton natif vs iOS avec étapes manuelles), voir installPrompt.js.
+     ============================================================ -->
+<div class="install-scrim" id="installScrim">
+  <div class="install-card">
+    <div class="install-icon">🎬</div>
+    <h3 id="installTitle">Installe Bobine</h3>
+    <p id="installSub">Ajoute Bobine à ton écran d'accueil : lancement en un tap, plein écran, comme une vraie app.</p>
+
+    <!-- Variante Android/Desktop : bouton d'installation natif -->
+    <div id="installNative">
+      <div class="install-actions">
+        <button class="btn-primary" id="btnInstallNow">⭳&nbsp;&nbsp;Installer</button>
+        <button class="install-dismiss" id="btnInstallLater">Plus tard</button>
+      </div>
+    </div>
+
+    <!-- Variante iOS : pas d'API d'installation, étapes manuelles -->
+    <div id="installIOS" hidden>
+      <ol class="install-steps">
+        <li><span class="step-num">1</span><span class="step-icon">⎋</span>Appuie sur <strong>Partager</strong> en bas de Safari</li>
+        <li><span class="step-num">2</span><span class="step-icon">➕</span>Choisis <strong>Sur l'écran d'accueil</strong></li>
+        <li><span class="step-num">3</span><span class="step-icon">✓</span>Appuie sur <strong>Ajouter</strong></li>
+      </ol>
+      <div class="install-actions">
+        <button class="install-dismiss" id="btnInstallLaterIOS" style="margin:0 auto;">J'ai compris</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     AD BANNER — publicité déclenchée par événement, voir maybeShowAdBanner().
+     Placeholder tant qu'AdSense n'est pas configuré (voir ADSENSE_CLIENT_ID) :
+     un encart neutre prend la place réelle de l'annonce, pour tester le
+     déclenchement sans dépendre d'un compte approuvé.
+     ============================================================ -->
+<div class="ad-banner" id="adBanner">
+  <span class="ad-banner-label">Publicité</span>
+  <button class="ad-banner-close" id="btnCloseAdBanner" aria-label="Fermer">✕</button>
+  <div class="ad-slot" id="adSlotContent"></div>
+  <button class="ad-banner-remove-link" id="btnRemoveAdsFromBanner">Retirer les pubs · 2,99&nbsp;€</button>
+</div>
+
+<!-- ============================================================
      RATING MODAL
      ============================================================ -->
 <div class="modal-overlay" id="ratingModal">
@@ -1012,8 +1250,27 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       <h3 id="browseDetailTitle"></h3>
       <div class="movie-meta-row" id="browseDetailMeta"></div>
       <p class="browse-detail-overview" id="browseDetailOverview"></p>
-      <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+      <div class="browse-detail-actions">
+        <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
+        <button class="btn-tertiary" id="btnAddToListFromDetail">+ Ajouter à une liste</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADD TO LIST MODAL — choisir ou créer une liste perso
+     ============================================================ -->
+<div class="modal-overlay" id="addToListModal">
+  <div class="modal-card">
+    <h3>Ajouter à une liste</h3>
+    <p class="modal-sub" id="addToListMovieTitle"></p>
+    <div class="add-to-list-options" id="addToListOptions"><!-- listes existantes, générées dynamiquement --></div>
+    <div class="add-to-list-new">
+      <input type="text" id="newListNameInput" placeholder="Nouvelle liste…" maxlength="60">
+      <button class="btn-primary" id="btnCreateAndAdd">Créer</button>
+    </div>
+    <button class="btn-ghost" id="btnCloseAddToList" style="margin-top:16px;">Fermer</button>
   </div>
 </div>
 
@@ -1050,6 +1307,42 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   </div>
 
   <div class="settings-group">
+    <h4>Mon compte</h4>
+    <div id="accountLoggedOut">
+      <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin-bottom:14px;">
+        Choisis un pseudo pour que d'autres puissent retrouver ton profil et voir tes films vus. Sans pseudo, ton historique reste local à cet appareil.
+      </p>
+      <div class="settings-btn-row">
+        <input type="text" id="pseudoInput" placeholder="Ton pseudo" maxlength="20"
+          style="padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit;">
+        <button class="settings-action-btn" id="btnClaimPseudo">👤&nbsp;&nbsp;Créer mon profil</button>
+      </div>
+      <p id="pseudoError" style="font-size:12px; color:#e07485; margin-top:8px; display:none;"></p>
+    </div>
+    <div id="accountLoggedIn" hidden>
+      <div class="toggle-row" style="margin-bottom:14px;">
+        <div>
+          <div class="toggle-label">Connecté en tant que <strong id="accountPseudoLabel"></strong></div>
+          <div class="toggle-desc">Ton historique est synchronisé sur ce compte</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h4>Publicité</h4>
+    <div id="adsStatusActive" hidden>
+      <p style="font-size:13.5px; color:var(--ink-dim); line-height:1.6;">✓ Pubs retirées sur ce compte, merci !</p>
+    </div>
+    <div id="adsStatusInactive">
+      <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin-bottom:14px;">
+        Bobine affiche une pub discrète en bas d'écran après avoir noté un film. Un achat unique les retire définitivement sur ce compte.
+      </p>
+      <button class="settings-action-btn" id="btnRemoveAdsFromSettings">✨&nbsp;&nbsp;Retirer les pubs · 2,99&nbsp;€</button>
+    </div>
+  </div>
+
+  <div class="settings-group">
     <h4>Mes données</h4>
     <div class="settings-btn-row">
       <button class="settings-action-btn" id="btnExport">⭳&nbsp;&nbsp;Exporter mes données (JSON)</button>
@@ -1067,6 +1360,214 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     </p>
   </div>
 </div>
+
+<!-- ============================================================
+     RECHERCHE DE PROFIL — panneau réutilisant le style de settings-panel
+     (mêmes classes CSS, ids différents). Deux vues internes toggle via
+     [hidden] : la recherche (#profileSearchResults) et le profil ouvert
+     (#profileViewContainer), jamais les deux en même temps.
+     ============================================================ -->
+<div class="settings-scrim" id="profileSearchScrim"></div>
+<div class="settings-panel" id="profileSearchPanel">
+  <div class="settings-head">
+    <h3>Chercher un profil</h3>
+    <button class="settings-close" id="btnCloseProfileSearch" aria-label="Fermer">✕</button>
+  </div>
+
+  <div id="profileSearchView">
+    <div class="settings-group">
+      <input type="text" id="profileSearchInput" placeholder="Pseudo..." maxlength="20" autocomplete="off"
+        style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.03); color:var(--ink); font-size:14px; font-family:inherit; margin-bottom:16px;">
+      <div id="profileSearchResults"></div>
+    </div>
+  </div>
+
+  <div id="profileViewContainer" hidden>
+    <button class="settings-action-btn" id="btnBackToProfileSearch" style="margin-bottom:18px;">←&nbsp;&nbsp;Retour à la recherche</button>
+    <div id="profileViewContent"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FIREBASE — Auth (anonyme + pseudo) et Firestore (source de
+     vérité cloud). Module séparé du script principal (classique)
+     car les imports ES modules l'exigent ; expose window.BobineCloud
+     comme pont vers le reste de l'app, qui reste en JS classique.
+     ============================================================ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, signInAnonymously, onAuthStateChanged,
+    signInWithCustomToken
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot,
+    collection, query, where, limit, getDocs, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFunctions, httpsCallable
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4b7Ixiwjcyq22rVfYr-8pd7bwM6f8KAU",
+    authDomain: "bobine-b20ad.firebaseapp.com",
+    projectId: "bobine-b20ad",
+    storageBucket: "bobine-b20ad.firebasestorage.app",
+    messagingSenderId: "590484760229",
+    appId: "1:590484760229:web:ecffb384a9c8abb785cf4c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  // Région alignée avec les Cloud Functions (voir functions/index.js) —
+  // sans ça, httpsCallable viserait la région par défaut (us-central1) et
+  // échouerait à trouver la fonction.
+  const functions = getFunctions(app, "europe-west1");
+
+  let currentUser = null;
+  let authReadyResolve;
+  const authReady = new Promise((res) => { authReadyResolve = res; });
+
+  // Normalise un pseudo pour l'unicité : minuscule, sans accents, sans espaces
+  // superflus. On garde le pseudo "affiché" séparément (voir claimPseudo).
+  function normalizePseudo(pseudo){
+    return (pseudo || "")
+      .trim()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .toLowerCase();
+  }
+
+  // Démarre (ou récupère) une session : connexion anonyme si personne n'est
+  // encore connecté. C'est la base de tout — même un utilisateur qui ne
+  // choisit jamais de pseudo a un uid Firebase pour synchroniser ses données
+  // et, plus tard, rattacher un achat "sans pub".
+  async function ensureSession(){
+    if(currentUser) return currentUser;
+    if(!auth.currentUser){
+      await signInAnonymously(auth);
+    }
+    return authReady;
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    authReadyResolve(user);
+    document.dispatchEvent(new CustomEvent("bobine-auth-changed", { detail: { user } }));
+  });
+
+  // Récupère le document utilisateur Firestore, ou null s'il n'existe pas
+  // encore (cas normal juste après signInAnonymously).
+  async function getUserDoc(){
+    if(!currentUser) return null;
+    const snap = await getDoc(doc(db, "users", currentUser.uid));
+    return snap.exists() ? snap.data() : null;
+  }
+
+  // Statut sansPub : vit dans une sous-collection privée (voir
+  // firestore.rules), jamais dans le document users/{uid} public — lisible
+  // uniquement par son propriétaire, écrit uniquement par le webhook Stripe
+  // côté Cloud Function (Admin SDK).
+  async function getPrivateStatus(){
+    if(!currentUser) return null;
+    const snap = await getDoc(doc(db, "users", currentUser.uid, "private", "status"));
+    return snap.exists() ? snap.data() : null;
+  }
+
+  // Réserve un pseudo pour l'utilisateur courant. Unicité vérifiée via une
+  // collection dédiée "pseudos" (clé = pseudo normalisé) plutôt qu'une requête
+  // sur "users", pour pouvoir la garantir par une simple création de document
+  // (échec atomique si déjà pris) sans transaction complexe.
+  async function claimPseudo(pseudoBrut){
+    await ensureSession();
+    const pseudo = (pseudoBrut || "").trim();
+    if(pseudo.length < 3 || pseudo.length > 20){
+      throw new Error("PSEUDO_LENGTH");
+    }
+    if(!/^[a-zA-Z0-9_ÀÂÄÉÈÊËÎÏÔÖÙÛÜÇàâäéèêëîïôöùûüç.\-]+$/.test(pseudo)){
+      throw new Error("PSEUDO_INVALID_CHARS");
+    }
+    const key = normalizePseudo(pseudo);
+    const pseudoRef = doc(db, "pseudos", key);
+    const existing = await getDoc(pseudoRef);
+    if(existing.exists() && existing.data().uid !== currentUser.uid){
+      throw new Error("PSEUDO_TAKEN");
+    }
+    await setDoc(pseudoRef, { uid: currentUser.uid, pseudo });
+    await setDoc(doc(db, "users", currentUser.uid), {
+      pseudo,
+      pseudoKey: key,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+    return pseudo;
+  }
+
+  // Pousse l'état local (movieAppData) vers Firestore. Appelé après chaque
+  // saveData() locale si une session cloud est active — voir hook dans le
+  // script principal. merge:true pour ne jamais écraser pseudo/sansPub
+  // gérés ailleurs.
+  async function syncPush(movieAppData){
+    if(!currentUser) return;
+    await setDoc(doc(db, "users", currentUser.uid), {
+      watched: movieAppData.watched || [],
+      customLists: movieAppData.customLists || [],
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+  }
+
+  // Recherche par pseudo (préfixe, insensible à la casse/accents) pour la
+  // fonctionnalité "chercher un profil". Limité à 10 résultats.
+  async function findByPseudo(pseudoRecherche){
+    const key = normalizePseudo(pseudoRecherche);
+    if(key.length < 2) return [];
+    const q = query(
+      collection(db, "users"),
+      where("pseudoKey", ">=", key),
+      where("pseudoKey", "<=", key + ""),
+      limit(10)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+  }
+
+  // Profil public en lecture seule : uniquement les champs nécessaires à
+  // l'affichage (pseudo, films vus + notes) — jamais sansPub, uid interne, etc.
+  // La restriction réelle vit dans les règles Firestore (le doc peut contenir
+  // plus, ce getter choisit ce qu'on en montre côté app).
+  async function getPublicProfile(uid){
+    const snap = await getDoc(doc(db, "users", uid));
+    if(!snap.exists()) return null;
+    const data = snap.data();
+    return {
+      pseudo: data.pseudo || null,
+      watched: data.watched || []
+    };
+  }
+
+  // Lance l'achat unique "Retirer les pubs" : demande une session Stripe
+  // Checkout à la Cloud Function createCheckoutSession, puis redirige vers
+  // la page hébergée par Stripe. Aucune donnée de carte ne transite par
+  // Bobine — tout se passe côté Stripe après cette redirection.
+  async function buyRemoveAds(){
+    await ensureSession();
+    const createCheckoutSession = httpsCallable(functions, "createCheckoutSession");
+    const returnUrl = window.location.origin + window.location.pathname;
+    const result = await createCheckoutSession({ returnUrl });
+    window.location.href = result.data.url;
+  }
+
+  window.BobineCloud = {
+    ensureSession,
+    claimPseudo,
+    syncPush,
+    findByPseudo,
+    getPublicProfile,
+    getUserDoc,
+    getPrivateStatus,
+    buyRemoveAds,
+    get currentUser(){ return currentUser; }
+  };
+</script>
 
 <script>
 /* ================================================================
@@ -1089,6 +1590,14 @@ const DEFAULTS = {
   personalization: true
 };
 
+// PUBLICITÉ (AdSense) — aucune pub réelle ne s'affiche tant que ces deux
+// valeurs restent au placeholder : un encart neutre les remplace (voir
+// renderAdSlot), pour pouvoir tester le déclenchement/emplacement sans
+// dépendre d'un compte AdSense déjà approuvé.
+const ADSENSE_CLIENT_ID = "ca-pub-6190008837134567";
+const ADSENSE_AD_SLOT   = "4808961742";
+const ADSENSE_CONFIGURED = !ADSENSE_CLIENT_ID.includes("XXXX") && !ADSENSE_AD_SLOT.includes("XXXX");
+
 /* ----------------------------------------------------------------
    1. STATE + PERSISTENCE (localStorage)
    ---------------------------------------------------------------- */
@@ -1098,6 +1607,8 @@ let movieAppData = {
   watched: [],          // [{id,mediaType,isAnime,title,original_title,poster_path,backdrop_path,release_date,vote_average,vote_count,genre_ids,genres,runtime,director,cast,overview,watchedAt,myRating}]
                           // mediaType: "movie" | "tv" — un id TMDB seul n'est pas unique entre les deux, donc on clé toujours sur "mediaType:id"
   excluded: [],          // ["movie:12345", "tv:6789", ...] entrées explicitement écartées — jamais reproposées, ne comptent pas dans l'historique/stats
+  customLists: [],       // [{id, name, createdAt, items: [{id,mediaType,isAnime,title,poster_path,release_date,vote_average,addedAt}]}]
+                          // listes perso (ex: "À voir cet été") — indépendantes de watched, un film ici n'est pas forcément vu
   settings: {
     minVotes: DEFAULTS.minVotes,
     minYear: DEFAULTS.minYear,
@@ -1123,6 +1634,7 @@ function loadData(){
       movieAppData.settings = Object.assign({}, movieAppData.settings, parsed.settings || {});
       movieAppData.watched = parsed.watched || [];
       movieAppData.excluded = parsed.excluded || [];
+      movieAppData.customLists = parsed.customLists || [];
       movieAppData.genreWeights = parsed.genreWeights || {};
     }
   }catch(e){
@@ -1130,9 +1642,24 @@ function loadData(){
   }
 }
 
+// Debounce du push cloud : évite une écriture Firestore à chaque petite
+// mutation locale (ex. plusieurs films notés d'affilée) en regroupant les
+// appels rapprochés en une seule synchronisation.
+let cloudSyncTimer = null;
+function scheduleCloudSync(){
+  if(!window.BobineCloud || !window.BobineCloud.currentUser) return;
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => {
+    window.BobineCloud.syncPush(movieAppData).catch((e) => {
+      console.error("Erreur de synchronisation cloud:", e);
+    });
+  }, 1500);
+}
+
 function saveData(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(movieAppData));
+    scheduleCloudSync();
   }catch(e){
     console.error("Erreur de sauvegarde des données:", e);
     showToast("Impossible de sauvegarder (stockage plein ?)", "⚠");
@@ -1164,6 +1691,7 @@ function importData(file){
       movieAppData = {
         watched: parsed.watched || [],
         excluded: parsed.excluded || [],
+        customLists: parsed.customLists || [],
         settings: Object.assign({}, movieAppData.settings, parsed.settings || {}),
         genreWeights: parsed.genreWeights || {}
       };
@@ -1221,6 +1749,7 @@ async function fetchGenres(mediaType = "movie"){
 // No fixed threshold: we always ask TMDB for its best, then filter locally.
 // Fonctionne pour films ("movie") et séries ("tv") via le même endpoint
 // /discover/<type>, qui partage la même forme de réponse côté TMDB.
+// Utilisé uniquement par "Film du jour", qui priorise la qualité (note).
 async function fetchTopRatedByType(mediaType, page, extraParams = {}){
   const settings = movieAppData.settings;
   const dateField = mediaType === "tv" ? "first_air_date.gte" : "primary_release_date.gte";
@@ -1239,12 +1768,33 @@ async function fetchTopRatedMovies(page){
   return fetchTopRatedByType("movie", page);
 }
 
+// Fetch les candidats les plus POPULAIRES du moment (pas les mieux notés).
+// Utilisé par "Parcourir" : c'est un flux d'exploration façon petit jeu,
+// pas une sélection qualité — on veut de la variété et de l'actualité,
+// pas systématiquement les meilleures notes.
+async function fetchPopularByType(mediaType, page, extraParams = {}){
+  return tmdbFetch(`/discover/${mediaType}`, {
+    sort_by: "popularity.desc",
+    "vote_count.gte": 50, // filtre léger, juste pour écarter le vrai bruit (0-1 vote)
+    include_adult: "false",
+    page,
+    ...extraParams
+  });
+}
+
 // Anime = séries TV genre "Animation" (id 16 côté TMDB) originaires du Japon.
 // TMDB n'a pas de catégorie "anime" propre ; c'est l'approche standard pour
 // l'approximer, fiable dans l'immense majorité des cas.
 const TMDB_ANIMATION_GENRE_ID = 16;
 async function fetchTopRatedAnime(page){
   return fetchTopRatedByType("tv", page, {
+    with_genres: TMDB_ANIMATION_GENRE_ID,
+    with_origin_country: "JP"
+  });
+}
+
+async function fetchPopularAnime(page){
+  return fetchPopularByType("tv", page, {
     with_genres: TMDB_ANIMATION_GENRE_ID,
     with_origin_country: "JP"
   });
@@ -1268,6 +1818,20 @@ async function fetchDetailsByType(mediaType, id){
 // Compat: l'ancien nom, toujours utilisé par le flux "Film du jour".
 async function fetchMovieDetails(movieId){
   return fetchDetailsByType("movie", movieId);
+}
+
+// Recherche TMDB multi-type (films + séries) par titre, pour la barre de
+// recherche de "Mon historique". /search/multi couvre aussi les personnes,
+// qu'on filtre pour ne garder que movie/tv.
+async function searchTmdbMulti(query){
+  const data = await tmdbFetch("/search/multi", {
+    query,
+    include_adult: "false"
+  });
+  const results = (data.results || []).filter(r =>
+    (r.media_type === "movie" || r.media_type === "tv") && r.poster_path
+  );
+  return results.map(r => normalizeMedia(r, r.media_type, false));
 }
 
 /* ----------------------------------------------------------------
@@ -1428,6 +1992,19 @@ async function getRecommendation(){
   candidatePool = candidatePool.filter(m => m.id !== chosen.id);
   sessionShownIds.add(mediaKey("movie", chosen.id));
 
+  // Réapprovisionne tout de suite en arrière-plan si le pool devient trop
+  // court, pour que le PROCHAIN "Change de film" ait déjà assez d'affiches
+  // sous la main pour jouer l'animation de tirage sans interruption.
+  if(candidatePool.length < 3){
+    buildCandidatePoolFromTop().then(fresh => {
+      // fusionne sans dupliquer, au cas où un appel concurrent aurait déjà ajouté des candidats
+      const seen = new Set(candidatePool.map(m => m.id));
+      fresh.forEach(m => { if(!seen.has(m.id)){ seen.add(m.id); candidatePool.push(m); } });
+    }).catch(() => {
+      // échec silencieux : le prochain getRecommendation() réessaiera normalement
+    });
+  }
+
   return chosen;
 }
 
@@ -1499,6 +2076,71 @@ function excludeMovie(id, mediaType = "movie"){
   if(mediaType === "movie"){
     candidatePool = candidatePool.filter(m => m.id !== id);
   }
+}
+
+/* ----------------------------------------------------------------
+   5bis. LISTES PERSO — création et gestion (ex: "À voir cet été")
+   Indépendantes de l'historique : un film ici n'est pas forcément vu.
+   ---------------------------------------------------------------- */
+function getCustomLists(){
+  if(!movieAppData.customLists) movieAppData.customLists = [];
+  return movieAppData.customLists;
+}
+
+function createCustomList(name){
+  const trimmed = name.trim();
+  if(!trimmed) return null;
+  const list = {
+    id: `list_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
+    name: trimmed,
+    createdAt: new Date().toISOString(),
+    items: []
+  };
+  getCustomLists().push(list);
+  saveData();
+  return list;
+}
+
+function renameCustomList(listId, newName){
+  const list = getCustomLists().find(l => l.id === listId);
+  if(!list) return;
+  const trimmed = newName.trim();
+  if(!trimmed) return;
+  list.name = trimmed;
+  saveData();
+}
+
+function deleteCustomList(listId){
+  movieAppData.customLists = getCustomLists().filter(l => l.id !== listId);
+  saveData();
+}
+
+// Ajoute un film/série à une liste ; ignore silencieusement s'il y est déjà.
+function addToCustomList(listId, movie){
+  const list = getCustomLists().find(l => l.id === listId);
+  if(!list) return false;
+  const mediaType = movie.mediaType || "movie";
+  const alreadyIn = list.items.some(item => item.id === movie.id && (item.mediaType || "movie") === mediaType);
+  if(alreadyIn) return false;
+  list.items.unshift({
+    id: movie.id,
+    mediaType,
+    isAnime: !!movie.isAnime,
+    title: movie.title,
+    poster_path: movie.poster_path,
+    release_date: movie.release_date,
+    vote_average: movie.vote_average,
+    addedAt: new Date().toISOString()
+  });
+  saveData();
+  return true;
+}
+
+function removeFromCustomList(listId, itemId, mediaType){
+  const list = getCustomLists().find(l => l.id === listId);
+  if(!list) return;
+  list.items = list.items.filter(item => !(item.id === itemId && (item.mediaType || "movie") === mediaType));
+  saveData();
 }
 
 /* ----------------------------------------------------------------
@@ -1638,14 +2280,22 @@ async function renderMovie(movie){
   const posterUrl = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : "";
 
   document.getElementById("todayContent").innerHTML = `
-    <div class="hero-eyebrow">Ton film du jour</div>
-    <div class="tier-badge"><span class="star">★</span> Sélection actuelle : ${lastTierRating.toFixed(1)}+</div>
+    <div class="hero-row">
+      <div class="hero-eyebrow">Ton film du jour</div>
+      <div class="tier-badge"><span class="star">★</span> ${lastTierRating.toFixed(1)}+</div>
+    </div>
     <div class="movie-stage">
       <div class="poster-wrap">
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : `<div class="loader-wrap" style="min-height:100%;"><div class="reel"></div></div>`}
         <div class="poster-shine"></div>
         <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
         <button class="poster-share-btn" id="btnShareMovie" aria-label="Partager ce film à un ami" title="Partager à un ami">↗</button>
+        <button class="poster-list-btn" id="btnAddToListToday" aria-label="Ajouter à une liste" title="Ajouter à une liste">+</button>
+        <div class="poster-action-row" id="actionRow">
+          <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
+          <button class="btn-secondary" id="btnNewMovie">🎲 <span class="btn-label">Change</span></button>
+          <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film">✕</button>
+        </div>
       </div>
       <div class="movie-info">
         <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
@@ -1664,11 +2314,6 @@ async function renderMovie(movie){
         <div class="crew-block" id="crewBlock" style="display:none;"></div>
         <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
       </div>
-      <div class="action-row" id="actionRow">
-        <button class="btn-primary" id="btnMarkWatched">✓ J'ai vu ce film</button>
-        <button class="btn-secondary" id="btnNewMovie">🎲 Change de film</button>
-        <button class="btn-skip" id="btnSkipMovie" aria-label="Pas envie de voir ce film" title="Pas envie de voir ce film">✕</button>
-      </div>
     </div>
   `;
 
@@ -1676,6 +2321,7 @@ async function renderMovie(movie){
   document.getElementById("btnNewMovie").addEventListener("click", loadNewMovie);
   document.getElementById("btnSkipMovie").addEventListener("click", handleSkipMovie);
   document.getElementById("btnShareMovie").addEventListener("click", () => shareMovie(movie));
+  document.getElementById("btnAddToListToday").addEventListener("click", () => openAddToListModal(movie));
 
   // Fetch extra details (runtime/director/cast) without blocking initial paint
   try{
@@ -1827,6 +2473,15 @@ async function finalizeMarkWatched(movie, rating){
   showToast(rating != null ? "Film noté et enregistré" : "Film marqué comme vu");
   renderHistory();
   renderStats();
+  // Moment d'engagement le plus naturel pour proposer l'installation ET
+  // exposer une pub : la personne vient de terminer un cycle complet
+  // (dé → film → note), c'est le signal le plus fort qu'elle reviendra —
+  // et c'est le moment garanti d'un parcours normal. Voir
+  // maybeShowInstallPrompt / maybeShowAdBanner.
+  if(rating != null){
+    maybeShowInstallPrompt();
+    maybeShowAdBanner();
+  }
   if(movie._fromBrowse){
     // Le deck a déjà retiré la carte au moment du swipe (commitSwipe) ;
     // ici on ne fait que garder les vues à jour, pas relancer "Film du jour".
@@ -1934,6 +2589,12 @@ function renderSharedMovie(movie){
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : ""}
         <div class="poster-shine"></div>
         <div class="poster-rating-badge"><span class="star">★</span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+        <div class="poster-action-row" id="actionRow">
+          ${alreadyWatched
+            ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
+            : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
+          <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir</button>
+        </div>
       </div>
       <div class="movie-info">
         <h1 class="movie-title">${escapeHtml(movie.title)}</h1>
@@ -1947,12 +2608,6 @@ function renderSharedMovie(movie){
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
         <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB ↗</a>
-      </div>
-      <div class="action-row" id="actionRow">
-        ${alreadyWatched
-          ? `<button class="btn-secondary" disabled>✓ Déjà dans tes films vus</button>`
-          : `<button class="btn-primary" id="btnAddSharedWatched">✓ J'ai vu ce film</button>`}
-        <button class="btn-secondary" id="btnGoToApp">🎬 Découvrir Bobine</button>
       </div>
     </div>
   `;
@@ -2001,8 +2656,11 @@ function resolveBrowseFetchType(uiType){
 }
 
 async function fetchBrowsePage(uiType, page){
-  if(uiType === "anime") return fetchTopRatedAnime(page);
-  return fetchTopRatedByType(uiType, page);
+  // Parcourir privilégie la popularité du moment, pas la note : c'est un
+  // flux d'exploration/découverte, pas une sélection de qualité stricte
+  // comme "Film du jour".
+  if(uiType === "anime") return fetchPopularAnime(page);
+  return fetchPopularByType(uiType, page);
 }
 
 async function refillBrowsePool(uiType){
@@ -2192,11 +2850,14 @@ function commitSwipe(cardEl, movie, direction){
   cardEl.style.opacity = "0";
 
   if(direction === "left"){
-    excludeMovie(movie.id, movie.mediaType);
+    // "Suivant" — ne rien enregistrer nulle part : ni historique, ni
+    // exclusion définitive. Le film reste éligible aux futures propositions
+    // (Film du jour comme Parcourir) ; on évite juste de le remontrer
+    // immédiatement dans cette session.
     sessionShownIds.add(mediaKey(movie.mediaType, movie.id));
   }
-  // Pour "right", l'exclusion/l'ajout à l'historique se fait via la modale
-  // de notation (openRatingFlowForBrowse → finalizeMarkWatched), pas ici.
+  // Pour "right", l'ajout à l'historique (vu + note) se fait via la modale
+  // de notation (openRatingFlowForBrowse → finalizeMarkWatched).
 
   // Retire la carte du pool visuel tout de suite : si c'est un swipe à
   // droite, la modale de notation s'ouvre par-dessus dans la foulée ; si
@@ -2252,11 +2913,159 @@ function closeBrowseDetail(){
 }
 
 /* ----------------------------------------------------------------
+   8ter. MODAL "AJOUTER À UNE LISTE"
+   ---------------------------------------------------------------- */
+let pendingListMovie = null;
+
+function openAddToListModal(movie){
+  pendingListMovie = movie;
+  document.getElementById("addToListMovieTitle").textContent = movie.title;
+  renderAddToListOptions();
+  document.getElementById("newListNameInput").value = "";
+  document.getElementById("addToListModal").classList.add("show");
+}
+
+function closeAddToListModal(){
+  document.getElementById("addToListModal").classList.remove("show");
+  pendingListMovie = null;
+}
+
+function renderAddToListOptions(){
+  const container = document.getElementById("addToListOptions");
+  const lists = getCustomLists();
+  if(lists.length === 0){
+    container.innerHTML = `<div class="add-to-list-empty">Aucune liste pour l'instant — crée-en une ci-dessous.</div>`;
+    return;
+  }
+  container.innerHTML = lists.map(list => `
+    <button class="add-to-list-option" data-list-id="${list.id}">
+      <span>${escapeHtml(list.name)}</span>
+      <span class="count">${list.items.length} film${list.items.length !== 1 ? 's' : ''}</span>
+    </button>
+  `).join("");
+
+  container.querySelectorAll(".add-to-list-option").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if(!pendingListMovie) return;
+      const added = addToCustomList(btn.dataset.listId, pendingListMovie);
+      showToast(added ? "Ajouté à la liste" : "Déjà dans cette liste");
+      closeAddToListModal();
+    });
+  });
+}
+
+function handleCreateAndAddToList(){
+  const input = document.getElementById("newListNameInput");
+  const name = input.value.trim();
+  if(!name){
+    input.focus();
+    return;
+  }
+  const list = createCustomList(name);
+  if(list && pendingListMovie){
+    addToCustomList(list.id, pendingListMovie);
+    showToast(`Liste « ${name} » créée`);
+  }
+  closeAddToListModal();
+}
+
+/* ----------------------------------------------------------------
+   8quater. RECHERCHE TMDB — barre de recherche de "Mon historique"
+   ---------------------------------------------------------------- */
+let searchDebounceToken = 0; // ignore les réponses de recherches devenues obsolètes (frappe rapide)
+
+async function performTmdbSearch(query){
+  const container = document.getElementById("searchResultsContent");
+  if(!query){
+    container.innerHTML = "";
+    return;
+  }
+
+  const myToken = ++searchDebounceToken;
+  container.innerHTML = `<div class="loader-wrap" style="min-height:auto; padding:24px 0;"><div class="reel" style="width:32px; height:32px;"></div></div>`;
+
+  try{
+    const results = await searchTmdbMulti(query);
+    if(myToken !== searchDebounceToken) return; // une recherche plus récente a été lancée entre-temps
+    renderSearchResults(results, query);
+  }catch(e){
+    if(myToken !== searchDebounceToken) return;
+    console.error(e);
+    container.innerHTML = `<p style="color:var(--ink-faint); font-size:13.5px; padding:8px 0 20px;">Recherche indisponible pour l'instant.</p>`;
+  }
+}
+
+function renderSearchResults(results, query){
+  const container = document.getElementById("searchResultsContent");
+  if(results.length === 0){
+    container.innerHTML = `<p style="color:var(--ink-faint); font-size:13.5px; padding:8px 0 20px;">Aucun résultat pour « ${escapeHtml(query)} ».</p>`;
+    return;
+  }
+
+  const watchedIds = getWatchedIds();
+  container.innerHTML = `
+    <div class="search-results-label">Résultats pour « ${escapeHtml(query)} »</div>
+    <div class="history-grid">
+      ${results.slice(0, 12).map(m => renderSearchResultCard(m, watchedIds)).join("")}
+    </div>
+  `;
+
+  container.querySelectorAll("[data-search-action]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = parseInt(btn.dataset.id);
+      const mediaType = btn.dataset.mediaType;
+      const movie = results.find(m => m.id === id && m.mediaType === mediaType);
+      if(!movie) return;
+      const action = btn.dataset.searchAction;
+      if(action === "watch"){
+        openRatingFlow(movie);
+      }else if(action === "list"){
+        openAddToListModal(movie);
+      }
+    });
+  });
+}
+
+function renderSearchResultCard(m, watchedIds){
+  const posterUrl = m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : "";
+  const year = m.release_date ? m.release_date.slice(0,4) : "—";
+  const typeLabel = m.mediaType === "tv" ? "Série" : "Film";
+  const alreadyWatched = watchedIds.has(mediaKey(m.mediaType, m.id));
+  return `
+    <div class="history-card">
+      <div class="history-poster">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(m.title)}" loading="lazy">` : ""}
+        <span class="history-type-badge">${typeLabel}</span>
+      </div>
+      <div class="history-body">
+        <div class="history-title">${escapeHtml(m.title)}</div>
+        <div class="history-year">${year}</div>
+        <div class="history-ratings">
+          <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
+        </div>
+        <div class="history-actions">
+          ${alreadyWatched
+            ? `<span class="icon-btn-sm" style="flex:1; opacity:0.5;" title="Déjà dans ton historique">✓ Déjà vu</span>`
+            : `<button class="icon-btn-sm" data-search-action="watch" data-id="${m.id}" data-media-type="${m.mediaType}" title="Marquer comme vu">✓ Vu</button>`}
+          <button class="icon-btn-sm" data-search-action="list" data-id="${m.id}" data-media-type="${m.mediaType}" title="Ajouter à une liste">+ Liste</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ----------------------------------------------------------------
    9. RENDERING — MES FILMS VUS
    ---------------------------------------------------------------- */
-function renderHistory(filter = "", typeFilter = "all"){
+function renderHistory(typeFilter = "all"){
   const container = document.getElementById("historyContent");
   const countEl = document.getElementById("historyCount");
+
+  if(typeFilter === "lists"){
+    countEl.textContent = "";
+    renderCustomListsSection(container);
+    return;
+  }
+
   let list = movieAppData.watched;
 
   if(typeFilter !== "all"){
@@ -2269,10 +3078,6 @@ function renderHistory(filter = "", typeFilter = "all"){
     }
   }
 
-  if(filter.trim()){
-    const q = filter.trim().toLowerCase();
-    list = list.filter(m => m.title.toLowerCase().includes(q));
-  }
   countEl.textContent = `${movieAppData.watched.length} entrée${movieAppData.watched.length !== 1 ? 's' : ''}`;
 
   if(movieAppData.watched.length === 0){
@@ -2289,7 +3094,7 @@ function renderHistory(filter = "", typeFilter = "all"){
       <div class="state-card">
         <div class="icon">⌕</div>
         <h3>Aucun résultat</h3>
-        <p>${filter.trim() ? `Aucune entrée ne correspond à « ${escapeHtml(filter)} ».` : "Rien de ce type dans ton historique pour l'instant."}</p>
+        <p>Rien de ce type dans ton historique pour l'instant.</p>
       </div>`;
     return;
   }
@@ -2337,6 +3142,244 @@ function renderHistoryCard(m){
           <button class="icon-btn-sm" data-action="rate" data-id="${m.id}" data-media-type="${mediaType}" title="Modifier la note">✎</button>
           <button class="icon-btn-sm" data-action="unwatch" data-id="${m.id}" data-media-type="${mediaType}" title="Remettre non vu">↺</button>
           <button class="icon-btn-sm danger" data-action="remove" data-id="${m.id}" data-media-type="${mediaType}" title="Supprimer">🗑</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ----------------------------------------------------------------
+   9ter. RECHERCHE DE PROFIL — chercher un utilisateur par pseudo et
+   consulter son profil public (films vus + notes) en lecture seule.
+   Repose sur window.BobineCloud.findByPseudo / getPublicProfile
+   (module Firebase, voir plus bas dans le <body>).
+   ---------------------------------------------------------------- */
+let profileSearchDebounce = null;
+
+function openProfileSearch(){
+  document.getElementById("profileSearchPanel").classList.add("open");
+  document.getElementById("profileSearchScrim").classList.add("show");
+  showProfileSearchView();
+  document.getElementById("profileSearchInput").focus();
+}
+
+function closeProfileSearch(){
+  document.getElementById("profileSearchPanel").classList.remove("open");
+  document.getElementById("profileSearchScrim").classList.remove("show");
+}
+
+function showProfileSearchView(){
+  document.getElementById("profileSearchView").hidden = false;
+  document.getElementById("profileViewContainer").hidden = true;
+}
+
+function handleProfileSearchInput(e){
+  clearTimeout(profileSearchDebounce);
+  const value = e.target.value.trim();
+  const resultsEl = document.getElementById("profileSearchResults");
+  if(value.length < 2){
+    resultsEl.innerHTML = "";
+    return;
+  }
+  profileSearchDebounce = setTimeout(async () => {
+    if(!window.BobineCloud) return;
+    resultsEl.innerHTML = `<p style="font-size:12.5px; color:var(--ink-faint);">Recherche…</p>`;
+    try{
+      const results = await window.BobineCloud.findByPseudo(value);
+      renderProfileSearchResults(results);
+    }catch(err){
+      console.error("Erreur de recherche de profil:", err);
+      resultsEl.innerHTML = `<p style="font-size:12.5px; color:var(--ink-faint);">Recherche indisponible pour l'instant.</p>`;
+    }
+  }, 350);
+}
+
+function renderProfileSearchResults(results){
+  const resultsEl = document.getElementById("profileSearchResults");
+  // Exclut les comptes sans pseudo : anonymes qui n'ont jamais réclamé de
+  // profil, ils n'apparaissent volontairement dans aucune recherche.
+  const filtered = (results || []).filter(r => r.pseudo);
+  if(filtered.length === 0){
+    resultsEl.innerHTML = `<p style="font-size:12.5px; color:var(--ink-faint);">Aucun profil trouvé.</p>`;
+    return;
+  }
+  resultsEl.innerHTML = filtered.map(r => `
+    <button class="settings-action-btn" data-uid="${escapeHtml(r.uid)}" style="width:100%; margin-bottom:8px;">
+      👤&nbsp;&nbsp;${escapeHtml(r.pseudo)}
+    </button>
+  `).join("");
+  resultsEl.querySelectorAll("[data-uid]").forEach(btn => {
+    btn.addEventListener("click", () => openPublicProfile(btn.dataset.uid));
+  });
+}
+
+async function openPublicProfile(uid){
+  document.getElementById("profileSearchView").hidden = true;
+  document.getElementById("profileViewContainer").hidden = false;
+  const content = document.getElementById("profileViewContent");
+  content.innerHTML = `<p style="font-size:13px; color:var(--ink-faint);">Chargement…</p>`;
+  if(!window.BobineCloud) return;
+  try{
+    const profile = await window.BobineCloud.getPublicProfile(uid);
+    if(!profile || !profile.pseudo){
+      content.innerHTML = `<p style="font-size:13px; color:var(--ink-faint);">Profil introuvable.</p>`;
+      return;
+    }
+    const rated = profile.watched.filter(m => m.myRating != null);
+    const avg = rated.length ? (rated.reduce((s,m) => s + m.myRating, 0) / rated.length) : null;
+    // watchedAt est une chaîne ISO (voir markAsWatched) : le tri lexicographique
+    // suffit, pas besoin de reparser en Date pour un ordre chronologique correct.
+    const sorted = profile.watched.slice().sort((a,b) => (b.watchedAt || "").localeCompare(a.watchedAt || ""));
+    content.innerHTML = `
+      <h3 style="font-family:var(--font-display); font-size:20px; margin-bottom:4px;">${escapeHtml(profile.pseudo)}</h3>
+      <p style="font-size:12.5px; color:var(--ink-faint); margin-bottom:18px;">
+        ${profile.watched.length} film${profile.watched.length !== 1 ? "s" : ""} vu${profile.watched.length !== 1 ? "s" : ""}${avg != null ? ` · note moyenne ${toTen(avg)}/10` : ""}
+      </p>
+      ${profile.watched.length === 0
+        ? `<p style="font-size:13px; color:var(--ink-faint);">Aucun film vu pour l'instant.</p>`
+        : `<div class="history-grid">${sorted.map(renderPublicHistoryCard).join("")}</div>`}
+    `;
+  }catch(err){
+    console.error("Erreur de chargement du profil public:", err);
+    content.innerHTML = `<p style="font-size:13px; color:var(--ink-faint);">Impossible de charger ce profil pour l'instant.</p>`;
+  }
+}
+
+// Variante lecture-seule de renderHistoryCard : jamais d'action de partage,
+// de modification ou de suppression — ce sont les films de quelqu'un d'autre.
+function renderPublicHistoryCard(m){
+  const posterUrl = m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : "";
+  const year = m.release_date ? m.release_date.slice(0,4) : "—";
+  const mediaType = m.mediaType || "movie";
+  const typeLabel = m.isAnime ? "Anime" : (mediaType === "tv" ? "Série" : "Film");
+  return `
+    <div class="history-card">
+      <div class="history-poster">
+        ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(m.title)}" loading="lazy">` : ""}
+        <span class="history-type-badge">${typeLabel}</span>
+      </div>
+      <div class="history-body">
+        <div class="history-title">${escapeHtml(m.title)}</div>
+        <div class="history-year">${year}</div>
+        <div class="history-ratings">
+          <span class="history-tmdb">★ ${m.vote_average?.toFixed(1) ?? "—"}</span>
+          <span class="history-mine">${m.myRating != null ? `★ ${toTen(m.myRating)}` : "Non noté"}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ----------------------------------------------------------------
+   9bis. RENDERING — MES LISTES (onglet "Mes listes" de l'historique)
+   ---------------------------------------------------------------- */
+let openCustomListId = null; // liste actuellement ouverte en détail, null = vue d'ensemble
+
+function renderCustomListsSection(container){
+  const lists = getCustomLists();
+
+  if(openCustomListId){
+    const list = lists.find(l => l.id === openCustomListId);
+    if(list){
+      renderCustomListDetail(container, list);
+      return;
+    }
+    openCustomListId = null; // la liste a été supprimée entre-temps
+  }
+
+  if(lists.length === 0){
+    container.innerHTML = `
+      <div class="state-card">
+        <div class="icon">📋</div>
+        <h3>Aucune liste pour l'instant</h3>
+        <p>Crée des listes perso (« À voir cet été », « Films de Noël »…) depuis le bouton + sur un film, dans Film du jour ou Parcourir.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="custom-lists-grid">
+      ${lists.map(list => `
+        <button class="custom-list-card" data-list-id="${list.id}">
+          <div class="custom-list-card-covers">
+            ${list.items.slice(0, 4).map(item =>
+              item.poster_path
+                ? `<img src="${IMG_BASE}/${POSTER_SIZE}${item.poster_path}" alt="" loading="lazy">`
+                : `<div class="custom-list-card-cover-empty"></div>`
+            ).join("") || `<div class="custom-list-card-cover-empty"></div>`}
+          </div>
+          <div class="custom-list-card-name">${escapeHtml(list.name)}</div>
+          <div class="custom-list-card-count">${list.items.length} film${list.items.length !== 1 ? 's' : ''}</div>
+        </button>
+      `).join("")}
+    </div>
+  `;
+
+  container.querySelectorAll(".custom-list-card").forEach(card => {
+    card.addEventListener("click", () => {
+      openCustomListId = card.dataset.listId;
+      renderHistory("lists");
+    });
+  });
+}
+
+function renderCustomListDetail(container, list){
+  container.innerHTML = `
+    <div class="custom-list-detail-header">
+      <button class="btn-ghost" id="btnBackToLists">← Toutes les listes</button>
+      <div class="custom-list-detail-title-row">
+        <h3>${escapeHtml(list.name)}</h3>
+        <div class="custom-list-detail-actions">
+          <button class="icon-btn-sm" id="btnRenameList" title="Renommer">✎</button>
+          <button class="icon-btn-sm danger" id="btnDeleteList" title="Supprimer la liste">🗑</button>
+        </div>
+      </div>
+    </div>
+    ${list.items.length === 0
+      ? `<div class="state-card"><div class="icon">📋</div><h3>Liste vide</h3><p>Ajoute des films depuis le bouton + sur une fiche film.</p></div>`
+      : `<div class="history-grid">${list.items.map(item => renderCustomListItemCard(item, list.id)).join("")}</div>`}
+  `;
+
+  document.getElementById("btnBackToLists").addEventListener("click", () => {
+    openCustomListId = null;
+    renderHistory("lists");
+  });
+  document.getElementById("btnRenameList").addEventListener("click", () => {
+    const newName = prompt("Renommer la liste :", list.name);
+    if(newName && newName.trim()){
+      renameCustomList(list.id, newName);
+      renderHistory("lists");
+    }
+  });
+  document.getElementById("btnDeleteList").addEventListener("click", () => {
+    if(confirm(`Supprimer la liste « ${list.name} » ? Les films eux-mêmes ne sont pas affectés.`)){
+      deleteCustomList(list.id);
+      openCustomListId = null;
+      renderHistory("lists");
+    }
+  });
+
+  container.querySelectorAll("[data-remove-from-list]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      removeFromCustomList(list.id, parseInt(btn.dataset.itemId), btn.dataset.mediaType);
+      renderHistory("lists");
+    });
+  });
+}
+
+function renderCustomListItemCard(item, listId){
+  const posterUrl = item.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${item.poster_path}` : "";
+  const year = item.release_date ? item.release_date.slice(0,4) : "—";
+  const mediaType = item.mediaType || "movie";
+  return `
+    <div class="history-card">
+      <div class="history-poster">${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(item.title)}" loading="lazy">` : ""}</div>
+      <div class="history-body">
+        <div class="history-title">${escapeHtml(item.title)}</div>
+        <div class="history-year">${year}</div>
+        <div class="history-ratings">
+          <span class="history-tmdb">★ ${item.vote_average?.toFixed(1) ?? "—"}</span>
+        </div>
+        <div class="history-actions">
+          <button class="icon-btn-sm danger" data-remove-from-list data-item-id="${item.id}" data-media-type="${mediaType}" title="Retirer de la liste" style="flex:1;">Retirer</button>
         </div>
       </div>
     </div>`;
@@ -2456,7 +3499,7 @@ function switchView(view){
     b.classList.toggle("active", b.dataset.view === view);
   });
 
-  if(view === "history") renderHistory(document.getElementById("historySearch").value, historyFilter);
+  if(view === "history") renderHistory(historyFilter);
   if(view === "stats") renderStats();
   if(view === "browse") initBrowseIfNeeded();
 
@@ -2479,6 +3522,88 @@ function applySettingsToUI(){
   const s = movieAppData.settings;
   document.getElementById("togglePersonalization").classList.toggle("on", !!s.personalization);
   document.getElementById("togglePersonalization").setAttribute("aria-checked", !!s.personalization);
+  applyAdsStatusToUI(); // reflète le cache local sansPub dès le premier rendu, avant même le retour du réseau
+}
+
+/* ----------------------------------------------------------------
+   12bis. COMPTE / CLOUD
+   Pont avec window.BobineCloud (module Firebase séparé, voir plus haut
+   dans le <head>/<body>). L'app reste utilisable sans jamais toucher à
+   cette section : un utilisateur qui ne crée pas de pseudo garde tout
+   en local, comme avant.
+   ---------------------------------------------------------------- */
+let cloudPseudo = null; // pseudo courant si connecté, sinon null
+
+function applyAccountToUI(){
+  const loggedOut = document.getElementById("accountLoggedOut");
+  const loggedIn = document.getElementById("accountLoggedIn");
+  if(!loggedOut || !loggedIn) return;
+  if(cloudPseudo){
+    loggedOut.hidden = true;
+    loggedIn.hidden = false;
+    document.getElementById("accountPseudoLabel").textContent = cloudPseudo;
+  }else{
+    loggedOut.hidden = false;
+    loggedIn.hidden = true;
+  }
+}
+
+// Merge cloud → local au démarrage : si un profil cloud existe déjà pour
+// cet utilisateur (reconnexion sur un autre appareil, ou simple reload),
+// ses films vus/listes remplacent l'état local, qui n'a alors aucune
+// raison d'être en avance (le cloud est poussé à chaque saveData()).
+async function initCloudSession(){
+  if(!window.BobineCloud) return;
+  try{
+    await window.BobineCloud.ensureSession();
+    const [userDoc, privateStatus] = await Promise.all([
+      window.BobineCloud.getUserDoc(),
+      window.BobineCloud.getPrivateStatus()
+    ]);
+    if(userDoc){
+      if(userDoc.pseudo) cloudPseudo = userDoc.pseudo;
+      if(Array.isArray(userDoc.watched) && userDoc.watched.length){
+        movieAppData.watched = userDoc.watched;
+      }
+      if(Array.isArray(userDoc.customLists) && userDoc.customLists.length){
+        movieAppData.customLists = userDoc.customLists;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(movieAppData));
+      renderHistory();
+      renderStats();
+    }
+    // Le cloud (posé par le webhook Stripe côté serveur, sous-collection
+    // privée) fait toujours autorité sur le statut sans-pub — jamais l'inverse.
+    setSansPubCache(!!(privateStatus && privateStatus.sansPub));
+    applyAccountToUI();
+  }catch(e){
+    // Pas de réseau, Firebase indisponible, etc. — l'app continue en local,
+    // c'est le principe même du repli localStorage.
+    console.error("Session cloud indisponible:", e);
+  }
+}
+
+async function handleClaimPseudo(){
+  const input = document.getElementById("pseudoInput");
+  const errorEl = document.getElementById("pseudoError");
+  const pseudo = input.value.trim();
+  errorEl.style.display = "none";
+  if(!window.BobineCloud) return;
+  try{
+    const confirmed = await window.BobineCloud.claimPseudo(pseudo);
+    cloudPseudo = confirmed;
+    applyAccountToUI();
+    scheduleCloudSync();
+    showToast(`Profil créé : ${confirmed}`);
+  }catch(e){
+    const messages = {
+      PSEUDO_LENGTH: "3 à 20 caractères.",
+      PSEUDO_INVALID_CHARS: "Lettres, chiffres, espaces, - et _ uniquement.",
+      PSEUDO_TAKEN: "Ce pseudo est déjà pris."
+    };
+    errorEl.textContent = messages[e.message] || "Impossible de créer le profil, réessaie.";
+    errorEl.style.display = "block";
+  }
 }
 
 /* ----------------------------------------------------------------
@@ -2545,7 +3670,7 @@ function wireEvents(){
       if(pendingRatingMovie.fromHistory){
         rateMovie(pendingRatingMovie.id, pendingRatingValue, pendingRatingMovie.mediaType || "movie");
         showToast("Note mise à jour");
-        renderHistory(document.getElementById("historySearch").value, historyFilter);
+        renderHistory(historyFilter);
         renderStats();
       }else{
         finalizeMarkWatched(pendingRatingMovie, pendingRatingValue);
@@ -2557,12 +3682,12 @@ function wireEvents(){
     if(e.target.id === "ratingModal") closeRatingModal(true);
   });
 
-  // History search
+  // History search — interroge TMDB (films + séries), pas juste l'historique local
   document.getElementById("historySearch").addEventListener("input", debounce((e) => {
-    renderHistory(e.target.value, historyFilter);
-  }, 200));
+    performTmdbSearch(e.target.value.trim());
+  }, 350));
 
-  // History filter tabs (Tout / Films / Séries / Animes)
+  // History filter tabs (Tout / Films / Séries / Animes / Mes listes)
   document.querySelectorAll(".history-filter-tab").forEach(tab => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".history-filter-tab").forEach(t => {
@@ -2570,7 +3695,10 @@ function wireEvents(){
         t.setAttribute("aria-selected", t === tab);
       });
       historyFilter = tab.dataset.filter;
-      renderHistory(document.getElementById("historySearch").value, historyFilter);
+      if(historyFilter !== "lists") openCustomListId = null; // repart de la vue d'ensemble si on revient plus tard
+      document.getElementById("searchResultsContent").innerHTML = "";
+      document.getElementById("historySearch").value = "";
+      renderHistory(historyFilter);
     });
   });
 
@@ -2593,11 +3721,33 @@ function wireEvents(){
   document.getElementById("browseDetailOverlay").addEventListener("click", (e) => {
     if(e.target.id === "browseDetailOverlay") closeBrowseDetail();
   });
+  document.getElementById("btnAddToListFromDetail").addEventListener("click", () => {
+    const overlay = document.getElementById("browseDetailOverlay");
+    const movie = overlay.dataset.currentMovie ? JSON.parse(overlay.dataset.currentMovie) : null;
+    if(movie) openAddToListModal(movie);
+  });
+
+  // Add to list modal
+  document.getElementById("btnCloseAddToList").addEventListener("click", closeAddToListModal);
+  document.getElementById("addToListModal").addEventListener("click", (e) => {
+    if(e.target.id === "addToListModal") closeAddToListModal();
+  });
+  document.getElementById("btnCreateAndAdd").addEventListener("click", handleCreateAndAddToList);
+  document.getElementById("newListNameInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") handleCreateAndAddToList();
+  });
 
   // Settings
   document.getElementById("btnSettings").addEventListener("click", openSettings);
   document.getElementById("btnCloseSettings").addEventListener("click", closeSettings);
   document.getElementById("settingsScrim").addEventListener("click", closeSettings);
+
+  // Recherche de profil
+  document.getElementById("btnProfileSearch").addEventListener("click", openProfileSearch);
+  document.getElementById("btnCloseProfileSearch").addEventListener("click", closeProfileSearch);
+  document.getElementById("profileSearchScrim").addEventListener("click", closeProfileSearch);
+  document.getElementById("profileSearchInput").addEventListener("input", handleProfileSearchInput);
+  document.getElementById("btnBackToProfileSearch").addEventListener("click", showProfileSearchView);
 
   document.getElementById("togglePersonalization").addEventListener("click", () => {
     movieAppData.settings.personalization = !movieAppData.settings.personalization;
@@ -2630,6 +3780,236 @@ function wireEvents(){
       location.reload();
     }
   });
+
+  // Compte / pseudo
+  document.getElementById("btnClaimPseudo").addEventListener("click", handleClaimPseudo);
+  document.getElementById("pseudoInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") handleClaimPseudo();
+  });
+
+  // Install prompt
+  document.getElementById("btnInstallNow").addEventListener("click", triggerNativeInstall);
+  document.getElementById("btnInstallLater").addEventListener("click", dismissInstallPrompt);
+  document.getElementById("btnInstallLaterIOS").addEventListener("click", dismissInstallPrompt);
+  document.getElementById("installScrim").addEventListener("click", (e) => {
+    if(e.target.id === "installScrim") dismissInstallPrompt();
+  });
+
+  // Ad banner
+  document.getElementById("btnCloseAdBanner").addEventListener("click", dismissAdBanner);
+  document.getElementById("btnRemoveAdsFromBanner").addEventListener("click", handleRemoveAdsClick);
+  document.getElementById("btnRemoveAdsFromSettings").addEventListener("click", handleRemoveAdsClick);
+}
+
+// Stub volontaire : le vrai flux d'achat (Stripe Checkout) arrive avec le
+// chantier "Achat unique sans pub" — cette fonction sera réécrite en
+// entier à ce moment-là plutôt que patchée. En attendant, elle renvoie
+// vers les réglages plutôt que de laisser le lien ne rien faire.
+async function handleRemoveAdsClick(){
+  if(isSansPub()){
+    showToast("Tu es déjà sans pub sur ce compte");
+    return;
+  }
+  if(!window.BobineCloud){
+    showToast("Fonctionnalité indisponible pour l'instant", "⚠");
+    return;
+  }
+  const btn = this && this.disabled !== undefined ? this : null;
+  if(btn) btn.disabled = true;
+  showToast("Redirection vers le paiement…");
+  try{
+    // Redirige vers Stripe Checkout ; le retour se gère dans
+    // handleStripeReturnParams() au prochain chargement de la page.
+    await window.BobineCloud.buyRemoveAds();
+  }catch(e){
+    console.error("Erreur lors du lancement du paiement:", e);
+    const messages = {
+      "failed-precondition": "Déjà sans publicité sur ce compte.",
+      "unauthenticated": "Session expirée, réessaie."
+    };
+    showToast(messages[e.code] || "Impossible de lancer le paiement, réessaie.", "⚠");
+    if(btn) btn.disabled = false;
+  }
+}
+
+// Gère le retour depuis Stripe Checkout (succès ou annulation), signalé
+// par un paramètre dans l'URL de retour construite côté Cloud Function
+// (voir createCheckoutSession). Le webhook Stripe pose sansPub:true de
+// façon asynchrone ; on relance une session cloud pour aller le chercher
+// dès que possible plutôt que de supposer qu'il est déjà là.
+async function handleStripeReturnParams(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.has("sansPubMerci")){
+    showToast("Merci ! Les pubs sont retirées 🎬");
+    await initCloudSession();
+  }else if(params.has("sansPubAnnule")){
+    showToast("Paiement annulé, aucune somme prélevée");
+  }else{
+    return;
+  }
+  params.delete("sansPubMerci");
+  params.delete("sansPubAnnule");
+  const clean = window.location.pathname + (params.toString() ? `?${params.toString()}` : "");
+  window.history.replaceState({}, "", clean);
+}
+
+/* ----------------------------------------------------------------
+   14bis. INSTALL PROMPT — popup d'invitation à installer la PWA
+   Ne s'affiche jamais au premier chargement (trop intrusif) : on capture
+   l'événement natif tôt, mais on ne montre la popup qu'après un signal
+   d'engagement réel (première notation d'un film dans la session), et
+   jamais si déjà installé, déjà refusé "plus tard" trois fois, ou déjà
+   affiché durant la session en cours.
+   ---------------------------------------------------------------- */
+const INSTALL_DISMISS_KEY = "bobineInstallDismissCount";
+const INSTALL_DISMISS_MAX = 3; // au-delà, on arrête de demander pour ne pas agacer
+let deferredInstallPrompt = null;
+let installPromptShownThisSession = false;
+
+function isStandalone(){
+  return window.matchMedia("(display-mode: standalone)").matches
+    || window.navigator.standalone === true; // iOS Safari
+}
+
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent)
+    // iPadOS 13+ se déclare comme "Macintosh" mais a le multi-touch
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function getInstallDismissCount(){
+  return parseInt(localStorage.getItem(INSTALL_DISMISS_KEY) || "0", 10);
+}
+
+function registerInstallCapture(){
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    document.getElementById("installScrim").classList.remove("show");
+  });
+}
+
+// Appelé sur un événement d'engagement (voir maybeShowInstallPrompt côté
+// appelant) plutôt qu'au chargement : demander à un utilisateur qui vient
+// d'arriver de s'engager avant même d'avoir vu un film convertit très mal.
+function maybeShowInstallPrompt(){
+  if(installPromptShownThisSession) return;
+  if(isStandalone()) return; // déjà installé, rien à faire
+  if(getInstallDismissCount() >= INSTALL_DISMISS_MAX) return;
+  if(!isIOS() && !deferredInstallPrompt) return; // Android/Desktop : rien à proposer tant que l'événement n'est pas capturé
+
+  installPromptShownThisSession = true;
+  const scrim = document.getElementById("installScrim");
+  const nativeBlock = document.getElementById("installNative");
+  const iosBlock = document.getElementById("installIOS");
+
+  if(isIOS()){
+    nativeBlock.hidden = true;
+    iosBlock.hidden = false;
+    document.getElementById("installSub").textContent =
+      "Ajoute Bobine à ton écran d'accueil : lancement en un tap, plein écran, comme une vraie app. Ça prend dix secondes.";
+  }else{
+    nativeBlock.hidden = false;
+    iosBlock.hidden = true;
+  }
+  scrim.classList.add("show");
+}
+
+function dismissInstallPrompt(){
+  document.getElementById("installScrim").classList.remove("show");
+  localStorage.setItem(INSTALL_DISMISS_KEY, String(getInstallDismissCount() + 1));
+}
+
+async function triggerNativeInstall(){
+  if(!deferredInstallPrompt){
+    dismissInstallPrompt();
+    return;
+  }
+  document.getElementById("installScrim").classList.remove("show");
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+}
+
+/* ----------------------------------------------------------------
+   14ter. PUBLICITÉ — bannière déclenchée par événement
+   Un parcours normal (🎲 → film → note → fermeture) doit exposer au moins
+   une pub. Choix volontaire : une bannière fixe en bas, jamais un
+   interstitiel plein écran ni un blocage d'une action serveur — voir le
+   commentaire CSS .ad-banner. Se déclenche au même moment que la
+   proposition d'installation (juste après une notation) ; ils ne se
+   gênent pas visuellement grâce au z-index de la modale d'install (150 >
+   55), qui passe simplement par-dessus le temps qu'elle est ouverte.
+   ---------------------------------------------------------------- */
+const AD_COOLDOWN_MS = 3 * 60 * 1000; // espacement mini entre deux bannières si plusieurs films notés d'affilée
+const SANS_PUB_CACHE_KEY = "bobineSansPubCache";
+let adScriptLoaded = false;
+let lastAdShownAt = 0;
+// Reflète users/{uid}.sansPub (voir initCloudSession). Mis en cache local
+// pour ne jamais dépendre d'un aller-retour réseau au moment précis où on
+// déciderait d'afficher une pub, et pour rester correct hors-ligne.
+let sansPubCached = localStorage.getItem(SANS_PUB_CACHE_KEY) === "1";
+
+function isSansPub(){
+  return sansPubCached === true;
+}
+
+function setSansPubCache(value){
+  sansPubCached = !!value;
+  localStorage.setItem(SANS_PUB_CACHE_KEY, sansPubCached ? "1" : "0");
+  applyAdsStatusToUI();
+}
+
+function applyAdsStatusToUI(){
+  const active = document.getElementById("adsStatusActive");
+  const inactive = document.getElementById("adsStatusInactive");
+  if(!active || !inactive) return;
+  active.hidden = !isSansPub();
+  inactive.hidden = isSansPub();
+}
+
+function loadAdSenseScript(){
+  if(adScriptLoaded || !ADSENSE_CONFIGURED) return;
+  adScriptLoaded = true;
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
+  script.crossOrigin = "anonymous";
+  document.head.appendChild(script);
+}
+
+function renderAdSlot(){
+  const slot = document.getElementById("adSlotContent");
+  if(!slot) return;
+  if(!ADSENSE_CONFIGURED){
+    slot.innerHTML = `<div style="font-size:11px; color:var(--ink-faint); text-align:center; letter-spacing:0.04em; padding:18px 0;">Emplacement publicitaire — compte AdSense à configurer</div>`;
+    return;
+  }
+  slot.innerHTML = `<ins class="adsbygoogle" style="display:block; width:100%;"
+      data-ad-client="${ADSENSE_CLIENT_ID}" data-ad-slot="${ADSENSE_AD_SLOT}"
+      data-ad-format="auto" data-full-width-responsive="true"></ins>`;
+  try{
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  }catch(e){
+    console.error("Erreur d'affichage AdSense:", e);
+  }
+}
+
+function maybeShowAdBanner(){
+  if(isSansPub()) return;
+  const now = Date.now();
+  if(now - lastAdShownAt < AD_COOLDOWN_MS) return;
+  lastAdShownAt = now;
+  loadAdSenseScript();
+  renderAdSlot();
+  document.getElementById("adBanner").classList.add("show");
+}
+
+function dismissAdBanner(){
+  document.getElementById("adBanner").classList.remove("show");
 }
 
 /* ----------------------------------------------------------------
@@ -2675,10 +4055,13 @@ function setupPWA(){
    16. INIT
    ---------------------------------------------------------------- */
 function init(){
+  registerInstallCapture(); // le plus tôt possible : beforeinstallprompt peut arriver dès le premier tick
   loadData();
   wireEvents();
   applySettingsToUI();
   setupPWA();
+  initCloudSession(); // asynchrone, ne bloque jamais le premier rendu local
+  handleStripeReturnParams(); // no-op si l'URL ne porte pas de retour Stripe
 
   if(!TMDB_API_KEY || TMDB_API_KEY === "MA_CLE_API_TMDB" || TMDB_API_KEY.trim() === ""){
     document.getElementById("onboarding").hidden = true;
