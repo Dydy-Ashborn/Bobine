@@ -117,7 +117,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .topnav{
   position:sticky; top:0; z-index:40;
   display:flex; align-items:center; justify-content:space-between;
-  padding: 18px clamp(18px, 4vw, 48px);
+  /* env(safe-area-inset-top) : en PWA installée (apple-mobile-web-app-
+     status-bar-style="black-translucent" + viewport-fit=cover), le contenu
+     passe SOUS la barre de statut/l'encoche par défaut — sans cette marge,
+     le topnav se retrouve caché derrière l'heure/la batterie (rapporté par
+     Ash le 01/09). Vaut 0px sur un appareil sans encoche/hors PWA, donc pas
+     de régression ailleurs. */
+  padding: calc(18px + env(safe-area-inset-top)) clamp(18px, 4vw, 48px) 18px;
   backdrop-filter: blur(16px) saturate(1.2);
   background: rgba(10,10,11,0.55);
   border-bottom: 1px solid var(--line);
@@ -165,7 +171,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
   position:relative; z-index:5;
   min-height: calc(100vh - 74px);
   padding: clamp(20px, 4vw, 48px);
-  padding-bottom: 100px;
+  /* Simple respiration interne : la pub et le pied de page suivent la vue
+     dans le flux (refonte de conformité AdSense du 02/09), et c'est le
+     pied de page qui réserve l'espace de la .bottom-nav fixe sur mobile. */
+  padding-bottom: 60px;
 }
 .view[hidden]{ display:none; }
 main{ max-width:1280px; margin:0 auto; }
@@ -202,7 +211,11 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .onboarding-choice-list input{ text-align:left; }
 .btn-primary{
-  display:inline-flex; align-items:center; gap:10px;
+  /* justify-content:center indispensable : dès qu'un bouton est étiré
+     (width:100% dans une modale, flex:1 dans une rangée), sans lui le
+     contenu se colle à gauche au lieu d'être centré (signalé par Ash le
+     02/09). align-items gère la hauteur, justify-content la largeur. */
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
   background: var(--bordeaux); color:#fff;
   font-weight:600; font-size:15px; letter-spacing:0.02em;
   padding: 16px 36px; border-radius:999px;
@@ -395,8 +408,41 @@ main{ max-width:1280px; margin:0 auto; }
 .crew-item .label{ font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px; }
 .crew-item .value{ font-size:14px; color:var(--ink); line-height:1.5; }
 
+/* ================================================================
+   PLATEFORMES DE STREAMING (TMDB /watch/providers, région FR) — "où le
+   regarder", visible en un coup d'œil : logos ronds cliquables (renvoient
+   vers TMDB, qui liste les liens directs par plateforme — TMDB n'expose
+   pas de deep-link direct par service dans sa réponse JSON), voir
+   fetchWatchProviders()/renderProvidersRow() plus bas dans le JS.
+   ================================================================ */
+.providers-row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:24px; }
+.providers-row .providers-label{
+  font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint);
+  width:100%; margin-bottom:2px;
+}
+.provider-logo{
+  width:40px; height:40px; border-radius:11px; overflow:hidden;
+  border:1px solid var(--line); flex-shrink:0;
+  transition: transform 0.2s var(--ease), border-color 0.2s;
+}
+.provider-logo img{ width:100%; height:100%; display:block; }
+.provider-logo:hover{ transform:translateY(-2px) scale(1.05); border-color:var(--ink-dim); }
+.providers-none{ font-size:12.5px; color:var(--ink-faint); }
+
+/* Version miniature superposée sur une affiche (film du jour, carte swipe,
+   fiche détail) — coup d'œil avant même de lire le reste de la fiche. */
+.poster-providers{
+  position:absolute; left:14px; bottom:14px; z-index:3;
+  display:flex; gap:6px;
+}
+.poster-providers .provider-logo{
+  width:30px; height:30px; border-radius:9px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+}
+.poster-providers .provider-logo:hover{ transform:translateY(-2px) scale(1.08); }
+
 .btn-secondary{
-  display:inline-flex; align-items:center; gap:9px;
+  display:inline-flex; align-items:center; justify-content:center; gap:9px;
   border:1px solid var(--line-strong); color:var(--ink);
   font-weight:600; font-size:14.5px;
   padding:15px 26px; border-radius:999px;
@@ -414,7 +460,7 @@ main{ max-width:1280px; margin:0 auto; }
 }
 .btn-skip:hover{ background:rgba(224,90,112,0.1); border-color:#e05a70; color:#e05a70; transform:translateY(-2px); }
 .btn-tertiary{
-  display:inline-flex; align-items:center; gap:7px;
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
   font-size:13px; font-weight:500; color:var(--ink-faint);
   padding:10px 4px; border-bottom:1px solid transparent;
   transition: color 0.2s, border-color 0.2s;
@@ -672,6 +718,7 @@ main{ max-width:1280px; margin:0 auto; }
 .rating-quick-pick.active{ background: var(--gold); border-color: var(--gold); color:#1a1408; font-weight:600; }
 .modal-actions{ display:flex; gap:12px; justify-content:center; }
 .btn-ghost{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
   padding:12px 20px; border-radius:999px; border:1px solid var(--line-strong);
   font-size:13.5px; font-weight:600; color:var(--ink-dim);
   transition: border-color 0.2s, color 0.2s;
@@ -972,7 +1019,9 @@ main{ max-width:1280px; margin:0 auto; }
   position:fixed; top:0; right:0; bottom:0; z-index:120;
   width: min(400px, 100vw);
   background: var(--bg-raised); border-left:1px solid var(--line-strong);
-  padding: 26px 26px 40px; overflow-y:auto;
+  /* Même souci d'encoche/barre de statut que .topnav (voir plus haut) :
+     ce panneau touche aussi top:0. */
+  padding: calc(26px + env(safe-area-inset-top)) 26px 40px; overflow-y:auto;
   transform: translateX(100%); transition: transform 0.4s var(--ease);
 }
 .settings-panel.open{ transform: translateX(0); }
@@ -1013,6 +1062,33 @@ input[type="file"]{ display:none; }
 .settings-slider-row{ margin-top:16px; }
 .settings-slider-row label{ font-size:13.5px; color:var(--ink-dim); display:flex; justify-content:space-between; margin-bottom:10px; }
 .settings-slider-row input[type="range"]{ width:100%; accent-color:var(--bordeaux); }
+
+/* ================================================================
+   PANNEAU LÉGAL — politique de confidentialité / CGV / CGU-mentions
+   légales, regroupées dans un seul panneau (#legalPanel) à onglets
+   internes pour ne pas multiplier les settings-panel. Réutilise le même
+   pattern visuel que #settingsPanel/#profileSearchPanel.
+   ================================================================ */
+.legal-tabs{ display:flex; gap:6px; margin-bottom:22px; flex-wrap:wrap; }
+.legal-tab{
+  padding:8px 13px; border-radius:999px; border:1px solid var(--line-strong);
+  font-size:12.5px; font-weight:600; color:var(--ink-faint);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.legal-tab.active{ background:var(--bordeaux); border-color:var(--bordeaux); color:#fff; }
+.legal-tab:not(.active):hover{ color:var(--ink); border-color:var(--ink-faint); }
+.legal-doc{ font-size:13px; line-height:1.75; color:var(--ink-dim); }
+.legal-doc h4{
+  font-size:14.5px; color:var(--ink); margin:22px 0 8px;
+  font-family:var(--font-display); font-weight:600;
+}
+.legal-doc h4:first-child{ margin-top:0; }
+.legal-doc p{ margin-bottom:10px; }
+.legal-doc ul{ margin:8px 0 14px 20px; }
+.legal-doc li{ margin-bottom:6px; }
+.legal-doc strong{ color:var(--ink); }
+.legal-doc a{ color:var(--ink); text-decoration:underline; text-underline-offset:3px; }
+.legal-doc .legal-updated{ font-size:11.5px; color:var(--ink-faint); margin-bottom:18px; }
 
 footer.app-footer{
   position:relative; z-index:5;
@@ -1077,75 +1153,77 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 .install-dismiss:hover{ color:var(--ink-dim); }
 
 /* ================================================================
-   AD BANNER — publicité déclenchée par événement (voir maybeShowAdBanner)
-   Bannière fixe en bas, jamais un interstitiel plein écran ni un blocage
-   d'une action serveur : c'est un principe posé volontairement, pas un
-   oubli, pour ne jamais casser la confiance sur une app qu'on ouvre
-   plusieurs fois par jour.
+   PUBLICITÉ — emplacement unique, dans le flux, conforme AdSense
+   (refonte du 02/09, voir le commentaire HTML de #adPermanent pour le
+   détail des règles Google en jeu).
+
+   Contraintes de conformité traduites en CSS :
+   - Plus AUCUN position:fixed pour la pub : elle vit dans le flux normal
+     du document, en fin de page, et défile avec le contenu. Elle ne peut
+     donc jamais recouvrir un contrôle ni apparaître sous le doigt.
+   - Marges généreuses (margin) pour garantir une séparation nette avec le
+     contenu au-dessus et le pied de page en dessous : Google sanctionne
+     la proximité avec les zones de forte interaction.
+   - Le bouton "Retirer les pubs" garde une marge importante sous le slot
+     d'annonce, pour qu'un doigt visant ce bouton ne touche jamais la pub.
    ================================================================ */
-.ad-banner{
-  position:fixed; left:0; right:0; bottom:0; z-index:55;
+:root{
+  /* Hauteur de contenu figée de .bottom-nav — icône 19px + gap 4px + label
+     ~12px de haut + le padding interne des boutons (12px), arrondi
+     généreux plutôt que pixel-perfect pour ne jamais sous-estimer (voir
+     .bottom-nav en media query mobile). Sert à réserver l'espace sous le
+     pied de page pour que rien ne se cache derrière la barre fixe. */
+  --bottom-nav-content-h: 54px;
+}
+.ad-strip{
+  overflow:hidden; max-height:0; opacity:0;
+  transition: max-height 0.4s var(--ease), opacity 0.3s var(--ease);
+  background: var(--bg-raised);
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  position:relative;
+  /* Séparation nette avec le contenu autour — exigence de conformité,
+     pas seulement esthétique. */
+  margin: 40px 0 8px;
+}
+/* Le slot AdSense peut dépasser sa min-height une fois une vraie créative
+   chargée, et le bouton "Retirer les pubs" vit sous lui : plafond
+   généreux plutôt qu'un calcul pixel-perfect fragile (un plafond trop
+   juste coupait le bouton, bug du 31/08). */
+.ad-strip.show{ max-height:400px; opacity:1; }
+.ad-strip-inner{
   display:flex; flex-direction:column; align-items:center;
-  background: var(--bg-raised); border-top:2px solid var(--bordeaux);
-  padding: 26px 40px 18px;
-  transform: translateY(100%); transition: transform 0.4s var(--ease);
-  box-shadow: 0 -12px 40px rgba(0,0,0,0.35);
+  padding: 22px 40px 16px;
 }
-.ad-banner.show{ transform: translateY(0); }
-@media (max-width:640px){
-  /* Reste au-dessus de la bottom-nav mobile, jamais superposée à elle. */
-  .ad-banner{ bottom:64px; padding-bottom:16px; }
-}
-.ad-banner-label{
+.ad-strip-label{
   position:absolute; top:7px; left:12px;
   font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint);
 }
-.ad-banner-close{
-  position:absolute; top:4px; right:6px; width:26px; height:26px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:14px; color:var(--ink-faint); border-radius:50%;
-  /* Volontairement inerte pendant quelques secondes (voir maybeShowAdBanner) :
-     on ne peut pas balayer la pub d'un geste sans même l'avoir vue. */
-  opacity:0; pointer-events:none; transition: opacity 0.3s var(--ease);
+.ad-strip-close{
+  position:absolute; top:5px; right:8px; z-index:2;
+  width:26px; height:26px; display:flex; align-items:center; justify-content:center;
+  border-radius:50%; color:var(--ink-faint); font-size:12px;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
 }
-.ad-banner-close.can-dismiss{ opacity:1; pointer-events:auto; }
-.ad-banner-close:hover{ background:rgba(255,255,255,0.06); color:var(--ink-dim); }
+.ad-strip-close:hover{ color:var(--ink); background: var(--bg-hover, rgba(255,255,255,0.06)); }
 .ad-slot{
-  width:100%; max-width:468px; min-height:100px;
+  width:100%; max-width:468px; min-height:90px;
   display:flex; align-items:center; justify-content:center;
+  margin: 14px auto 0;
 }
-.ad-banner-remove-link{
-  display:inline-flex; align-items:center; gap:6px;
-  margin-top:14px; padding:11px 22px; border-radius:999px;
+.ad-strip-remove-link{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  /* 26px de marge au-dessus : sépare franchement ce bouton du slot
+     d'annonce, pour qu'un doigt qui le vise ne puisse pas retomber sur la
+     pub (clic accidentel = violation AdSense). */
+  margin:26px auto 16px; padding:11px 22px; border-radius:999px;
   background: var(--gold); color:#1a1408; font-size:13px; font-weight:600;
   box-shadow: 0 6px 20px rgba(207,168,85,0.3);
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
 }
-.ad-banner-remove-link:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(207,168,85,0.4); }
-
-/* ================================================================
-   INTERSTITIEL — plein écran, mais uniquement entre deux pages, jamais
-   entre un clic et son résultat serveur (voir maybeShowInterstitialAd).
-   z-index sous la modale d'install (150) : si les deux devaient se
-   déclencher au même instant, l'install (plus rare, décision ponctuelle)
-   prime — voir la garde dans maybeShowInterstitialAd.
-   ================================================================ */
-.interstitial-scrim{
-  position:fixed; inset:0; z-index:145; background:rgba(10,10,11,0.92);
-  backdrop-filter: blur(6px);
-  display:flex; align-items:center; justify-content:center;
-  opacity:0; pointer-events:none; transition:opacity 0.35s var(--ease);
+.ad-strip-remove-link:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(207,168,85,0.4); }
+@media (max-width:640px){
+  .ad-strip-inner{ padding: 16px 20px 14px; }
 }
-.interstitial-scrim.show{ opacity:1; pointer-events:auto; }
-.interstitial-card{
-  position:relative; width:min(92vw, 480px);
-  background: var(--bg-raised); border:1px solid var(--line-strong); border-radius: var(--radius-lg);
-  padding: 34px 26px 26px;
-  display:flex; flex-direction:column; align-items:center;
-  transform: scale(0.94); transition: transform 0.35s var(--ease);
-}
-.interstitial-scrim.show .interstitial-card{ transform: scale(1); }
-.interstitial-card .ad-slot{ min-height:250px; max-width:100%; }
 
 /* ================================================================
    ANIMATIONS
@@ -1171,11 +1249,18 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
    ================================================================ */
 @media (max-width: 640px){
   .nav-tabs{ display:none; }
-  .topnav{ padding:16px 18px; }
+  .topnav{ padding: calc(16px + env(safe-area-inset-top)) 18px 16px; }
   .bottom-nav{
     display:flex; position:fixed; bottom:0; left:0; right:0; z-index:60;
     background: rgba(19,18,21,0.9); backdrop-filter: blur(18px);
     border-top:1px solid var(--line);
+    /* Hauteur déterminée organiquement par le contenu + ce padding :
+       padding-top fixe (8px), padding-bottom = base fixe (10px) + la vraie
+       safe-area en bas. Le pied de page réserve exactement cette même somme
+       (--bottom-nav-content-h + 18px + la même env(safe-area-inset-bottom))
+       pour que rien ne se cache derrière cette barre fixe — d'où l'intérêt
+       de garder --bottom-nav-content-h légèrement généreux plutôt que
+       pixel-perfect. */
     padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
     justify-content:space-around;
   }
@@ -1187,7 +1272,18 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   }
   .bottom-nav button.active{ color:var(--ink); }
   .bottom-nav button .bn-icon{ font-size:19px; }
-  .view{ padding-bottom:110px; }
+  /* La pub et le pied de page suivent maintenant les .view dans le flux
+     (refonte de conformité AdSense du 02/09) : c'est donc le pied de page,
+     dernier élément, qui doit réserver l'espace de la .bottom-nav fixe —
+     voir footer.app-footer ci-dessous. La .view n'a plus besoin que d'une
+     respiration interne normale. */
+  .view{ padding-bottom: 60px; }
+  /* Réserve exactement la hauteur de .bottom-nav (contenu + ses 8px/10px
+     de padding + la safe-area) pour que ni le pied de page ni la pub
+     juste au-dessus ne se cachent derrière la barre fixe. */
+  footer.app-footer{
+    padding-bottom: calc(40px + var(--bottom-nav-content-h) + 18px + env(safe-area-inset-bottom));
+  }
 
   /* Compaction verticale sur mobile : chaque pixel gagné en haut de l'écran
      est un pixel de plus pour l'affiche, la vraie pièce maîtresse. */
@@ -1365,9 +1461,40 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   </main>
 </div>
 
+<!-- ============================================================
+     PUBLICITÉ — emplacement UNIQUE, dans le flux du document, en fin de
+     contenu et avant le pied de page. Refonte de conformité AdSense du
+     02/09 (voir bloc CSS "PUBLICITÉ" et section JS 14ter) :
+
+     Le système précédent (dock fixe collé à la barre de navigation +
+     rechargement d'une annonce à chaque clic de bouton et à chaque
+     changement d'onglet) cumulait plusieurs violations des règles Google
+     menant à la FERMETURE du compte :
+       - "Don't refresh pages or ads without user request" — un
+         adsbygoogle.push() était déclenché à chaque interaction ;
+       - "placing ads too close to elements that require heavy mouse or
+         touch interaction" — le bandeau était collé à la bottom-nav ;
+       - inflation d'impressions à visibilité quasi nulle (3,5 s), profil
+         type détecté comme trafic invalide.
+
+     Nouvelle règle de ce projet : UNE annonce, chargée UNE fois par
+     chargement de page, dans le flux, à distance des zones de navigation.
+     Ne jamais réintroduire de pub déclenchée par une interaction.
+     ============================================================ -->
+<div class="ad-strip" id="adPermanent">
+  <button class="ad-strip-close" id="btnCloseAdPermanent" aria-label="Fermer la publicité"><i class="fa-solid fa-xmark"></i></button>
+  <div class="ad-strip-inner">
+    <span class="ad-strip-label">Publicité</span>
+    <div class="ad-slot" id="adPermanentSlot"></div>
+    <button class="ad-strip-remove-link" id="btnRemoveAdsFromPermanent">Retirer les pubs · 1,99&nbsp;€</button>
+  </div>
+</div>
+
 <footer class="app-footer">
   This product uses the TMDB API but is not endorsed or certified by TMDB.<br>
   <a href="https://www.themoviedb.org" target="_blank" rel="noopener">themoviedb.org</a>
+  <br><br>
+  <a href="#" data-open-legal="privacy">Confidentialité</a> · <a href="#" data-open-legal="terms">CGV</a> · <a href="#" data-open-legal="legal">Mentions légales</a>
 </footer>
 
 <!-- Mobile bottom nav -->
@@ -1412,34 +1539,6 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 </div>
 
 <!-- ============================================================
-     AD BANNER — publicité déclenchée par événement, voir maybeShowAdBanner().
-     Placeholder tant qu'AdSense n'est pas configuré (voir ADSENSE_CLIENT_ID) :
-     un encart neutre prend la place réelle de l'annonce, pour tester le
-     déclenchement sans dépendre d'un compte approuvé.
-     ============================================================ -->
-<div class="ad-banner" id="adBanner">
-  <span class="ad-banner-label">Publicité</span>
-  <button class="ad-banner-close" id="btnCloseAdBanner" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
-  <div class="ad-slot" id="adSlotContent"></div>
-  <button class="ad-banner-remove-link" id="btnRemoveAdsFromBanner">Retirer les pubs · 2,99&nbsp;€</button>
-</div>
-
-<!-- ============================================================
-     INTERSTITIEL — plein écran, mais UNIQUEMENT entre deux pages (voir
-     maybeShowInterstitialAd, appelé depuis switchView), jamais entre un
-     clic et son résultat serveur (🎲, notation...). Occasionnel, pas à
-     chaque changement d'onglet — voir INTERSTITIAL_EVERY_N_NAV.
-     ============================================================ -->
-<div class="interstitial-scrim" id="interstitialScrim">
-  <div class="interstitial-card">
-    <span class="ad-banner-label">Publicité</span>
-    <button class="ad-banner-close" id="btnCloseInterstitial" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
-    <div class="ad-slot" id="interstitialAdSlotContent"></div>
-    <button class="ad-banner-remove-link" id="btnRemoveAdsFromInterstitial">Retirer les pubs · 2,99&nbsp;€</button>
-  </div>
-</div>
-
-<!-- ============================================================
      RATING MODAL
      ============================================================ -->
 <div class="modal-overlay" id="ratingModal">
@@ -1468,6 +1567,7 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     <div class="browse-detail-body">
       <h3 id="browseDetailTitle"></h3>
       <div class="movie-meta-row" id="browseDetailMeta"></div>
+      <div id="browseDetailProviders"><!-- rempli dès que fetchWatchProviders() répond --></div>
       <p class="browse-detail-overview" id="browseDetailOverview"></p>
       <div class="browse-detail-actions">
         <a class="btn-tmdb-link" id="browseDetailTmdbLink" href="#" target="_blank" rel="noopener">Voir sur TMDB <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
@@ -1515,6 +1615,23 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       <button class="btn-primary" id="btnCloseThankYou" style="width:100%;">
         <i class="fa-solid fa-heart"></i>&nbsp;&nbsp;Merci à toi
       </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="purchaseConfirmModal">
+  <div class="modal-card" style="max-width:420px;">
+    <h3>Retirer les pubs</h3>
+    <p class="modal-sub" style="text-align:left; line-height:1.65;">
+      Achat unique de <strong>1,99&nbsp;€ TTC</strong>, paiement sécurisé par Stripe. Les pubs disparaissent immédiatement et définitivement sur ce compte après confirmation.
+      <br><br>
+      Ce contenu numérique est activé immédiatement après paiement : en confirmant, tu demandes cette exécution immédiate et <strong>renonces à ton droit de rétractation de 14 jours</strong> pour cet achat (article L221-28 du Code de la consommation).
+      <br><br>
+      <a href="#" data-open-legal="terms" style="color:var(--ink); text-decoration:underline;">Lire les conditions générales de vente</a>
+    </p>
+    <div class="modal-actions" style="display:flex; gap:10px; margin-top:18px;">
+      <button class="btn-secondary" id="btnCancelPurchase" style="flex:1;">Annuler</button>
+      <button class="btn-primary" id="btnConfirmPurchase" style="flex:1;">Confirmer et payer</button>
     </div>
   </div>
 </div>
@@ -1651,9 +1768,18 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
     </div>
     <div id="adsStatusInactive">
       <p style="font-size:12.5px; color:var(--ink-faint); line-height:1.6; margin-bottom:14px;">
-        Bobine affiche une pub discrète en bas d'écran après avoir noté un film. Un achat unique les retire définitivement sur ce compte.
+        Bobine affiche une publicité en bas de page pour rester gratuite. Un achat unique la retire définitivement sur ce compte.
       </p>
-      <button class="settings-action-btn" id="btnRemoveAdsFromSettings"><i class="fa-solid fa-wand-magic-sparkles"></i>&nbsp;&nbsp;Retirer les pubs · 2,99&nbsp;€</button>
+      <button class="settings-action-btn" id="btnRemoveAdsFromSettings"><i class="fa-solid fa-wand-magic-sparkles"></i>&nbsp;&nbsp;Retirer les pubs · 1,99&nbsp;€</button>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h4>Informations légales</h4>
+    <div class="settings-btn-row">
+      <button class="settings-action-btn" data-open-legal="privacy"><i class="fa-solid fa-shield-halved"></i>&nbsp;&nbsp;Politique de confidentialité</button>
+      <button class="settings-action-btn" data-open-legal="terms"><i class="fa-solid fa-file-contract"></i>&nbsp;&nbsp;Conditions générales de vente</button>
+      <button class="settings-action-btn" data-open-legal="legal"><i class="fa-solid fa-building"></i>&nbsp;&nbsp;Mentions légales</button>
     </div>
   </div>
 
@@ -1700,6 +1826,109 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   <div id="profileViewContainer" hidden>
     <button class="settings-action-btn" id="btnBackToProfileSearch" style="margin-bottom:18px;"><i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;Retour à la recherche</button>
     <div id="profileViewContent"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PANNEAU LÉGAL — politique de confidentialité, CGV, CGU/mentions
+     légales. Trois documents, un seul panneau, onglets internes (voir
+     wireEvents pour le switch et openLegalPanel(docId) pour l'ouverture
+     directe sur un document précis depuis le footer/settings).
+     ============================================================ -->
+<div class="settings-scrim" id="legalScrim"></div>
+<div class="settings-panel" id="legalPanel">
+  <div class="settings-head">
+    <h3>Informations légales</h3>
+    <button class="settings-close" id="btnCloseLegal" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="legal-tabs" role="tablist">
+    <button class="legal-tab active" data-doc="privacy" role="tab" aria-selected="true">Confidentialité</button>
+    <button class="legal-tab" data-doc="terms" role="tab" aria-selected="false">CGV</button>
+    <button class="legal-tab" data-doc="legal" role="tab" aria-selected="false">Mentions légales</button>
+  </div>
+
+  <div class="legal-doc" id="legalDocPrivacy">
+    <p class="legal-updated">Dernière mise à jour : 31 août 2026</p>
+
+    <h4>Qui traite tes données</h4>
+    <p>Bobine est édité par <strong>DB Digital</strong>, SIRET 102&nbsp;527&nbsp;264&nbsp;00018, contact : <a href="mailto:dbartisandigital@gmail.com">dbartisandigital@gmail.com</a>. C'est le responsable du traitement des données décrites ci-dessous, au sens du RGPD.</p>
+
+    <h4>Quelles données sont collectées</h4>
+    <ul>
+      <li><strong>Sur ton appareil (localStorage)</strong> : films/séries vus, notes, listes personnalisées, favoris, réglages — jamais transmis à qui que ce soit tant que tu n'utilises pas de compte.</li>
+      <li><strong>Si tu crées un profil (pseudo)</strong> : un identifiant technique anonyme (Firebase Auth), ton pseudo, et une copie de ton historique/listes/favoris sont synchronisés sur nos serveurs (Firebase, Google Cloud) pour rendre ton profil consultable et sauvegardé entre appareils.</li>
+      <li><strong>Si tu sécurises ton compte par email</strong> : ton adresse email et un mot de passe (stocké de façon chiffrée par Firebase Authentication, jamais en clair, jamais accessible par nous).</li>
+      <li><strong>Si tu achètes le retrait des pubs</strong> : le paiement est traité entièrement par <strong>Stripe</strong> — Bobine ne reçoit et ne stocke aucune donnée bancaire (numéro de carte, CVV…). Nous recevons uniquement la confirmation que l'achat a réussi, pour activer le retrait des pubs sur ton compte.</li>
+      <li><strong>Publicité</strong> : Bobine affiche des annonces via <strong>Google AdSense</strong>, tant que le retrait des pubs n'a pas été acheté. Google peut déposer des cookies/identifiants techniques pour afficher et mesurer ces annonces — voir la politique de confidentialité de Google.</li>
+      <li><strong>Recommandations de films</strong> : Bobine interroge l'API de <strong>TMDB</strong> (The Movie Database) pour obtenir affiches, notes et fiches de films — aucune donnée personnelle te concernant n'est envoyée à TMDB, seules des requêtes de recherche/catalogue.</li>
+    </ul>
+
+    <h4>Pourquoi ces données</h4>
+    <p>Uniquement pour faire fonctionner l'app : te proposer des films non déjà vus, sauvegarder ton historique et tes listes, retrouver ton compte sur un autre appareil, traiter un achat, et financer le service via la publicité tant que tu n'as pas retiré les pubs. Aucune donnée n'est vendue à des tiers ni utilisée à des fins de profilage publicitaire en dehors du fonctionnement standard d'AdSense.</p>
+
+    <h4>Combien de temps</h4>
+    <p>Tes données locales restent sur ton appareil tant que tu ne vides pas les données du site/n'utilises pas "Réinitialiser toutes les données" dans les réglages. Les données de compte (Firebase) sont conservées tant que ton compte existe ; tu peux en demander la suppression à tout moment (voir ci-dessous).</p>
+
+    <h4>Tes droits</h4>
+    <p>Conformément au RGPD, tu peux à tout moment :</p>
+    <ul>
+      <li>Exporter tes données depuis les réglages (bouton "Exporter mes données").</li>
+      <li>Demander la suppression de ton compte et des données associées, en écrivant à <a href="mailto:dbartisandigital@gmail.com">dbartisandigital@gmail.com</a>.</li>
+      <li>Accéder, rectifier ou t'opposer au traitement de tes données, par le même contact.</li>
+      <li>Introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>) si tu estimes que tes droits ne sont pas respectés.</li>
+    </ul>
+
+    <h4>Sous-traitants et hébergement</h4>
+    <p>Firebase/Google Cloud (hébergement des comptes et données de compte), Stripe (paiement), Google AdSense (publicité), TMDB (catalogue de films). Chacun de ces services applique sa propre politique de confidentialité pour les données qu'il traite en tant que sous-traitant.</p>
+  </div>
+
+  <div class="legal-doc" id="legalDocTerms" hidden>
+    <p class="legal-updated">Dernière mise à jour : 31 août 2026</p>
+
+    <h4>Objet</h4>
+    <p>Les présentes conditions générales de vente (CGV) s'appliquent à l'achat unique "Retirer les pubs" proposé dans l'application Bobine, éditée par <strong>DB Digital</strong>, SIRET 102&nbsp;527&nbsp;264&nbsp;00018, contact : <a href="mailto:dbartisandigital@gmail.com">dbartisandigital@gmail.com</a>.</p>
+
+    <h4>Produit vendu</h4>
+    <p>Un achat unique (paiement unique, non récurrent, sans abonnement) au prix de <strong>1,99&nbsp;€ TTC</strong>, qui retire définitivement l'affichage des publicités sur le compte concerné, tant que ce compte existe.</p>
+
+    <h4>Prix et paiement</h4>
+    <p>Le prix est indiqué en euros TTC avant validation de l'achat. Le paiement est traité par <strong>Stripe</strong>, prestataire de paiement tiers, via une page de paiement sécurisée. Bobine ne stocke aucune donnée bancaire.</p>
+
+    <h4>Droit de rétractation</h4>
+    <p>Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne s'applique pas aux contenus numériques fournis sur un support immatériel dont l'exécution a commencé après accord préalable exprès du consommateur, qui renonce ainsi à son droit de rétractation. En validant l'achat, tu confirmes vouloir un accès immédiat au retrait des pubs et renonces à ton droit de rétractation de 14 jours pour cet achat.</p>
+    <p>Si un problème technique empêche le retrait effectif des pubs après un paiement réussi, contacte <a href="mailto:dbartisandigital@gmail.com">dbartisandigital@gmail.com</a> pour un remboursement ou une correction.</p>
+
+    <h4>Livraison / activation</h4>
+    <p>L'activation du retrait des pubs est automatique dès la confirmation du paiement par Stripe, sur le compte utilisé au moment de l'achat. Si tu n'as pas de compte (pseudo/email), l'achat est rattaché à l'identifiant anonyme de l'appareil utilisé — nous recommandons de sécuriser un compte par email avant achat pour le retrouver sur d'autres appareils.</p>
+
+    <h4>Réclamations et litiges</h4>
+    <p>Pour toute question ou réclamation, contacte <a href="mailto:dbartisandigital@gmail.com">dbartisandigital@gmail.com</a>. À défaut de résolution amiable, les litiges relèvent des tribunaux français compétents, et le droit applicable est le droit français.</p>
+  </div>
+
+  <div class="legal-doc" id="legalDocLegal" hidden>
+    <p class="legal-updated">Dernière mise à jour : 31 août 2026</p>
+
+    <h4>Éditeur</h4>
+    <p><strong>DB Digital</strong><br>
+    SIRET : 102&nbsp;527&nbsp;264&nbsp;00018<br>
+    Contact : <a href="mailto:dbartisandigital@gmail.com">dbartisandigital@gmail.com</a></p>
+
+    <h4>Hébergement</h4>
+    <p>Application hébergée par GitHub Pages (GitHub, Inc.). Données de compte hébergées par Firebase/Google Cloud Platform (Google Ireland Limited).</p>
+
+    <h4>Conditions générales d'utilisation</h4>
+    <p>L'utilisation de Bobine est gratuite. L'app propose des recommandations de films/séries/anime à partir de données fournies par TMDB, à titre indicatif — Bobine n'est ni affilié ni certifié par TMDB. L'utilisateur est responsable de l'exactitude des informations qu'il fournit (pseudo, email) et s'engage à un usage normal du service, sans tentative de contournement des mécanismes techniques (quotas, publicité, authentification).</p>
+    <p>Un pseudo ne doit pas être injurieux, trompeur (usurpation d'identité) ou contraire à l'ordre public. DB Digital se réserve le droit de suspendre un compte en cas d'usage abusif du service.</p>
+
+    <h4>Propriété intellectuelle</h4>
+    <p>Le code, le design et la marque "Bobine" sont la propriété de DB Digital. Les affiches, titres et informations de films proviennent de TMDB et restent la propriété de leurs ayants droit respectifs.</p>
+
+    <h4>Responsabilité</h4>
+    <p>Bobine est fourni "en l'état". DB Digital ne garantit pas une disponibilité continue du service et ne pourra être tenu responsable d'une interruption temporaire, d'une erreur dans les données TMDB, ou d'une perte de données locales (localStorage) due à une action de l'utilisateur ou de son navigateur.</p>
+
+    <h4>Voir aussi</h4>
+    <p>Politique de confidentialité et CGV : onglets ci-dessus.</p>
   </div>
 </div>
 
@@ -1873,7 +2102,12 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
       limit(10)
     );
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+    // Liste blanche explicite plutôt qu'un spread du document entier :
+    // users/{uid} est lisible par tous (nécessaire pour cette recherche),
+    // et un spread renverrait aussi watched, customLists, hasEmailAuth… et
+    // surtout TOUT champ ajouté au document à l'avenir, automatiquement.
+    // On ne renvoie donc que ce dont la liste de résultats a besoin.
+    return snap.docs.map(d => ({ uid: d.id, pseudo: d.data().pseudo || null }));
   }
 
   // Profil public en lecture seule : uniquement les champs nécessaires à
@@ -2174,6 +2408,83 @@ async function fetchDetailsByType(mediaType, id){
 // Compat: l'ancien nom, toujours utilisé par le flux "Film du jour".
 async function fetchMovieDetails(movieId){
   return fetchDetailsByType("movie", movieId);
+}
+
+/* ----------------------------------------------------------------
+   8bis. PLATEFORMES DE STREAMING — "où le regarder" (TMDB
+   /movie|tv/{id}/watch/providers), région FR uniquement pour l'instant
+   (voir décision produit). Cache mémoire par "mediaType:id" : un swipe
+   deck affiche jusqu'à 3 cartes à la fois, cache évite de re-fetcher au
+   moindre re-render (changement de filtre, retour en arrière, etc.).
+   ---------------------------------------------------------------- */
+const watchProvidersCache = {};
+const PROVIDER_LOGO_BASE = `${IMG_BASE}/w92`;
+
+// Renvoie un tableau normalisé et dédupliqué [{id, name, logoPath}], en ne
+// gardant que les offres de streaming par abonnement ("flatrate" — Netflix,
+// Prime Video, Disney+…), pas la location/l'achat à l'unité : c'est ce qui
+// correspond le mieux à "où le regarder tout de suite" pour ce genre d'app.
+// Si aucune offre flatrate n'existe en FR, on retombe sur location/achat
+// plutôt que de n'afficher rien — mieux vaut montrer "disponible en
+// location" que de laisser croire qu'il n'existe aucun moyen de le voir.
+async function fetchWatchProviders(mediaType, id){
+  const cacheKey = `${mediaType}:${id}`;
+  if(watchProvidersCache[cacheKey]) return watchProvidersCache[cacheKey];
+  try{
+    const data = await tmdbFetch(`/${mediaType}/${id}/watch/providers`);
+    const fr = data.results?.FR;
+    const list = fr ? (fr.flatrate || fr.rent || fr.buy || []) : [];
+    const seen = new Set();
+    const normalized = list.filter(p => {
+      if(seen.has(p.provider_id)) return false;
+      seen.add(p.provider_id);
+      return true;
+    }).map(p => ({
+      id: p.provider_id,
+      name: p.provider_name,
+      logoPath: p.logo_path,
+      // Lien TMDB régional : TMDB ne fournit pas de deep-link par service
+      // dans cette réponse, seul un lien "page TMDB des offres" existe
+      // (fr.link) — un seul lien pour tous les logos de ce media, géré par
+      // l'appelant plutôt que dupliqué par provider ici.
+    }));
+    watchProvidersCache[cacheKey] = { providers: normalized, tmdbLink: fr?.link || null };
+    return watchProvidersCache[cacheKey];
+  }catch(e){
+    // Silencieux — l'absence d'info de streaming n'est jamais bloquante.
+    watchProvidersCache[cacheKey] = { providers: [], tmdbLink: null };
+    return watchProvidersCache[cacheKey];
+  }
+}
+
+// Rendu "pleine largeur" (fiche détaillée) : logos + libellé, cliquables
+// vers la page TMDB listant les offres (justificatif exact plus haut).
+function renderProvidersRow({ providers, tmdbLink }){
+  if(!providers.length){
+    return `<div class="providers-row"><span class="providers-none">Pas encore disponible en streaming en France</span></div>`;
+  }
+  const logos = providers.slice(0, 8).map(p => `
+    <a class="provider-logo" href="${tmdbLink || '#'}" target="_blank" rel="noopener" title="${escapeHtml(p.name)}">
+      <img src="${PROVIDER_LOGO_BASE}${p.logoPath}" alt="${escapeHtml(p.name)}" loading="lazy">
+    </a>`).join("");
+  return `
+    <div class="providers-row">
+      <span class="providers-label">Où le regarder</span>
+      ${logos}
+    </div>`;
+}
+
+// Rendu "miniature" superposé sur une affiche (coup d'œil, film du jour /
+// carte swipe / fiche détail) : jusqu'à 3 logos, rien si indisponible —
+// pas de message "pas dispo" qui alourdirait une affiche déjà chargée
+// d'autres badges (note, boutons).
+function renderPosterProviders({ providers, tmdbLink }){
+  if(!providers.length) return "";
+  const logos = providers.slice(0, 3).map(p => `
+    <a class="provider-logo" href="${tmdbLink || '#'}" target="_blank" rel="noopener" title="${escapeHtml(p.name)}" onclick="event.stopPropagation()">
+      <img src="${PROVIDER_LOGO_BASE}${p.logoPath}" alt="${escapeHtml(p.name)}" loading="lazy">
+    </a>`).join("");
+  return `<div class="poster-providers">${logos}</div>`;
 }
 
 // Recherche TMDB multi-type (films + séries) par titre, pour la barre de
@@ -2527,9 +2838,13 @@ function showSlotReel(posterUrls, finalPosterUrl){
   return new Promise((resolve) => {
     const POSTER_H_RATIO = 1.5; // aspect-ratio 2/3 → hauteur = largeur * 1.5
     const strip = [...posterUrls, finalPosterUrl].filter(Boolean);
-    // Répète la bande pour qu'elle soit assez longue à faire défiler
+    // Répète la bande pour qu'elle soit assez longue à faire défiler. 40
+    // vignettes (au lieu de 18) sur une durée un peu plus longue : le
+    // rouleau fait défiler beaucoup plus d'affiches, ce qui rend le tirage
+    // plus spectaculaire — demande d'Ash le 02/09. Le nombre d'affiches
+    // DISTINCTES vient de poolSnapshot (16 au lieu de 8, voir loadNewMovie).
     const repeated = [];
-    while(repeated.length < 18) repeated.push(...strip);
+    while(repeated.length < 40) repeated.push(...strip);
     repeated.push(finalPosterUrl); // la toute dernière image = le résultat
 
     document.getElementById("todayContent").innerHTML = `
@@ -2554,7 +2869,7 @@ function showSlotReel(posterUrls, finalPosterUrl){
       const finalIndex = repeated.length - 1;
       const targetY = -(finalIndex * posterHeight) + (windowHeight / 2 - posterHeight / 2);
 
-      stripEl.style.transition = "transform 2.1s cubic-bezier(0.13, 0.72, 0.1, 1)";
+      stripEl.style.transition = "transform 2.6s cubic-bezier(0.13, 0.72, 0.1, 1)";
       stripEl.style.transform = `translateY(${targetY}px)`;
 
       const done = () => {
@@ -2562,8 +2877,9 @@ function showSlotReel(posterUrls, finalPosterUrl){
         resolve();
       };
       stripEl.addEventListener("transitionend", done);
-      // Filet de sécurité si transitionend ne se déclenche pas (onglet en arrière-plan, etc.)
-      setTimeout(resolve, 2400);
+      // Filet de sécurité si transitionend ne se déclenche pas (onglet en
+      // arrière-plan, etc.) — doit rester > à la durée de transition ci-dessus.
+      setTimeout(resolve, 2900);
     });
   });
 }
@@ -2644,6 +2960,7 @@ async function renderMovie(movie){
         ${posterUrl ? `<img src="${posterUrl}" alt="Affiche de ${escapeHtml(movie.title)}">` : `<div class="loader-wrap" style="min-height:100%;"><div class="reel"></div></div>`}
         <div class="poster-shine"></div>
         <div class="poster-rating-badge"><span class="star"><i class="fa-solid fa-star"></i></span> ${movie.vote_average?.toFixed(1) ?? "—"}</div>
+        <div id="posterProvidersToday"><!-- rempli dès que fetchWatchProviders() répond --></div>
         <button class="poster-share-btn" id="btnShareMovie" aria-label="Partager ce film à un ami" title="Partager à un ami"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
         <button class="poster-list-btn" id="btnAddToListToday" aria-label="Ajouter à une liste" title="Ajouter à une liste">+</button>
         <div class="poster-action-row" id="actionRow">
@@ -2665,6 +2982,7 @@ async function renderMovie(movie){
           <span>${(movie.vote_count || 0).toLocaleString('fr-FR')} votes</span>
         </div>
         <div class="genre-pills">${genreNames.map(g => `<span class="genre-pill">${escapeHtml(g)}</span>`).join("")}</div>
+        <div id="providersRowToday"><!-- rempli dès que fetchWatchProviders() répond --></div>
         <p class="movie-synopsis">${escapeHtml(movie.overview || "Synopsis non disponible.")}</p>
         <div class="crew-block" id="crewBlock" style="display:none;"></div>
         <a class="btn-tmdb-link" href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" rel="noopener">Voir sur TMDB <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
@@ -2677,6 +2995,15 @@ async function renderMovie(movie){
   document.getElementById("btnSkipMovie").addEventListener("click", handleSkipMovie);
   document.getElementById("btnShareMovie").addEventListener("click", () => shareMovie(movie));
   document.getElementById("btnAddToListToday").addEventListener("click", () => openAddToListModal(movie));
+
+  // Où le regarder — requête à part de fetchMovieDetails (endpoint distinct
+  // côté TMDB), en parallèle plutôt qu'en série pour ne pas retarder
+  // l'affichage du casting/réalisateur qui n'en dépend pas.
+  fetchWatchProviders("movie", movie.id).then(result => {
+    if(currentMovie?.id !== movie.id) return; // user already moved on
+    document.getElementById("posterProvidersToday").innerHTML = renderPosterProviders(result);
+    document.getElementById("providersRowToday").innerHTML = renderProvidersRow(result);
+  });
 
   // Fetch extra details (runtime/director/cast) without blocking initial paint
   try{
@@ -2708,7 +3035,7 @@ async function loadNewMovie(){
   // Si un pool est déjà en mémoire, on a des affiches à faire défiler :
   // animation de tirage au sort. Sinon (tout premier film, ou pool à
   // reconstituer depuis TMDB), loader classique le temps de la requête.
-  const poolSnapshot = candidatePool.slice(0, 8).map(m =>
+  const poolSnapshot = candidatePool.slice(0, 16).map(m =>
     m.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${m.poster_path}` : null
   ).filter(Boolean);
   const useSlotReel = poolSnapshot.length >= 3;
@@ -2831,14 +3158,12 @@ async function finalizeMarkWatched(movie, rating){
   showToast(rating != null ? "Film noté et enregistré" : "Film marqué comme vu");
   renderHistory();
   renderStats();
-  // Moment d'engagement le plus naturel pour proposer l'installation ET
-  // exposer une pub : la personne vient de terminer un cycle complet
-  // (dé → film → note), c'est le signal le plus fort qu'elle reviendra —
-  // et c'est le moment garanti d'un parcours normal. Voir
-  // maybeShowInstallPrompt / maybeShowAdBanner.
+  // Moment d'engagement le plus naturel pour proposer l'installation : la
+  // personne vient de terminer un cycle complet (dé → film → note). Aucune
+  // publicité n'est déclenchée ici ni ailleurs sur une action utilisateur
+  // (règle de conformité AdSense, voir section 14ter).
   if(rating != null){
     maybeShowInstallPrompt();
-    maybeShowAdBanner();
   }
   if(movie._fromBrowse){
     // Le deck a déjà retiré la carte au moment du swipe (commitSwipe) ;
@@ -3106,6 +3431,17 @@ function renderBrowseDeck(){
   document.getElementById("btnSwipeInfo").addEventListener("click", () => {
     if(pool[0]) openBrowseDetail(pool[0]);
   });
+
+  // Où le regarder, en mini logos sur chaque carte visible du stack — au
+  // plus 3 requêtes en parallèle (stackSize plafonné plus haut), jamais
+  // pour tout le pool bufferisé. Cache mémoire (fetchWatchProviders) évite
+  // de re-fetcher au prochain renderBrowseDeck() si la carte revient.
+  stackItems.forEach(m => {
+    fetchWatchProviders(m.mediaType, m.id).then(result => {
+      const el = document.getElementById(`posterProviders-${m.mediaType}-${m.id}`);
+      if(el) el.outerHTML = renderPosterProviders(result) || `<div id="posterProviders-${m.mediaType}-${m.id}"></div>`;
+    });
+  });
 }
 
 function renderSwipeCard(m, stackIndex){
@@ -3121,6 +3457,7 @@ function renderSwipeCard(m, stackIndex){
         <div class="swipe-card-gradient"></div>
         <div class="swipe-stamp swipe-stamp-no">PASSE</div>
         <div class="swipe-stamp swipe-stamp-yes">VU</div>
+        <div id="posterProviders-${m.mediaType}-${m.id}"><!-- rempli par renderBrowseDeck() une fois la carte dans le DOM --></div>
       </div>
       <div class="swipe-card-info">
         <div class="swipe-card-title">${escapeHtml(m.title)}</div>
@@ -3264,6 +3601,16 @@ function openBrowseDetail(movie){
   document.getElementById("browseDetailTmdbLink").href = `https://www.themoviedb.org/${movie.mediaType}/${movie.id}`;
   document.getElementById("browseDetailOverlay").classList.add("show");
   document.getElementById("browseDetailOverlay").dataset.currentMovie = JSON.stringify(movie);
+
+  const providersEl = document.getElementById("browseDetailProviders");
+  providersEl.innerHTML = "";
+  fetchWatchProviders(movie.mediaType, movie.id).then(result => {
+    // Garde anti-race : si la fiche a changé de film entre-temps (fermée
+    // puis rouverte sur un autre), ne pas écraser avec une réponse tardive.
+    const stillSameMovie = document.getElementById("browseDetailOverlay").dataset.currentMovie
+      && JSON.parse(document.getElementById("browseDetailOverlay").dataset.currentMovie).id === movie.id;
+    if(stillSameMovie) providersEl.innerHTML = renderProvidersRow(result);
+  });
 }
 
 function closeBrowseDetail(){
@@ -3641,6 +3988,36 @@ function closeProfileSearch(){
   document.getElementById("profileSearchScrim").classList.remove("show");
 }
 
+/* ----------------------------------------------------------------
+   PANNEAU LÉGAL — politique de confidentialité / CGV / mentions légales.
+   openLegalPanel(docId) permet d'ouvrir directement sur un document précis
+   (ex: depuis le footer, un lien direct "CGV" saute le clic d'onglet).
+   docId ∈ "privacy" | "terms" | "legal", défaut "privacy".
+   ---------------------------------------------------------------- */
+function openLegalPanel(docId = "privacy"){
+  document.getElementById("legalPanel").classList.add("open");
+  document.getElementById("legalScrim").classList.add("show");
+  switchLegalDoc(docId);
+}
+
+function closeLegalPanel(){
+  document.getElementById("legalPanel").classList.remove("open");
+  document.getElementById("legalScrim").classList.remove("show");
+}
+
+function switchLegalDoc(docId){
+  const docs = { privacy: "legalDocPrivacy", terms: "legalDocTerms", legal: "legalDocLegal" };
+  Object.entries(docs).forEach(([id, elId]) => {
+    document.getElementById(elId).hidden = (id !== docId);
+  });
+  document.querySelectorAll(".legal-tab").forEach(tab => {
+    const active = tab.dataset.doc === docId;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", active);
+  });
+  document.getElementById("legalPanel").scrollTop = 0;
+}
+
 function showProfileSearchView(){
   document.getElementById("profileSearchView").hidden = false;
   document.getElementById("profileViewContainer").hidden = true;
@@ -3989,15 +4366,11 @@ function switchView(view){
 
   window.scrollTo({top:0, behavior:"smooth"});
 
-  // Interstitiel : uniquement sur un vrai changement de page, jamais sur un
-  // simple re-clic du même onglet. Voir maybeShowInterstitialAd pour la
-  // fréquence/le cooldown.
+  // Aucune publicité déclenchée ici : un changement d'onglet ne doit jamais
+  // provoquer de demande d'annonce (règle de conformité AdSense, voir la
+  // section 14ter). L'emplacement unique est chargé une fois au démarrage.
   if(previousView !== view){
-    // La popup d'intro d'onglet (rare : une seule fois par onglet, jamais
-    // revue ensuite) prime sur l'interstitiel pub si les deux tombent sur
-    // la même navigation — jamais deux overlays plein écran empilés.
-    const introShown = maybeShowTabIntro(view);
-    if(!introShown) maybeShowInterstitialAd();
+    maybeShowTabIntro(view);
   }
 }
 
@@ -4103,6 +4476,10 @@ function applyAccountToUI(){
 // raison d'être en avance (le cloud est poussé à chaque saveData()).
 async function initCloudSession(){
   if(!window.BobineCloud) return;
+  // Snapshot pris AVANT le premier await : sert à détecter un retour de
+  // Stripe (voir plus bas) même si handleStripeReturnParams() nettoie
+  // l'URL en parallèle pendant qu'on attend le réseau ici.
+  const cameFromStripeSuccess = window.location.search.includes("sansPubMerci");
   try{
     await window.BobineCloud.ensureSession();
     const [userDoc, privateStatus] = await Promise.all([
@@ -4128,7 +4505,22 @@ async function initCloudSession(){
     }
     // Le cloud (posé par le webhook Stripe côté serveur, sous-collection
     // privée) fait toujours autorité sur le statut sans-pub — jamais l'inverse.
-    setSansPubCache(!!(privateStatus && privateStatus.sansPub));
+    // Au tout premier rendu (applySettingsToUI, synchrone), on affiche selon
+    // le cache localStorage — qui peut dire "avec pubs" par défaut sur un
+    // navigateur/appareil qui n'a encore jamais vu ce compte. Le temps que
+    // cet appel réseau revienne (~1 à quelques secondes), la pub permanente
+    // peut donc apparaître puis disparaître d'elle-même dès que le cloud
+    // confirme un achat déjà fait ailleurs — comportement correct, pas un
+    // bug, mais silencieux et déroutant sans explication (rapporté comme
+    // "les bandeaux se ferment tout seuls" par Ash le 01/09). D'où le toast
+    // ci-dessous, seulement quand ce n'est PAS déjà annoncé par la popup de
+    // remerciement d'un achat qui vient d'être fait à l'instant.
+    const wasSansPub = isSansPub();
+    const nowSansPub = !!(privateStatus && privateStatus.sansPub);
+    setSansPubCache(nowSansPub);
+    if(!wasSansPub && nowSansPub && !cameFromStripeSuccess){
+      showToast("Ce compte est déjà sans publicité — pubs retirées automatiquement", '<i class="fa-solid fa-circle-check"></i>');
+    }
     applyAccountToUI();
   }catch(e){
     // Pas de réseau, Firebase indisponible, etc. — l'app continue en local,
@@ -4572,6 +4964,19 @@ function wireEvents(){
   document.getElementById("profileSearchInput").addEventListener("input", handleProfileSearchInput);
   document.getElementById("btnBackToProfileSearch").addEventListener("click", showProfileSearchView);
 
+  // Panneau légal (confidentialité / CGV / mentions légales)
+  document.getElementById("btnCloseLegal").addEventListener("click", closeLegalPanel);
+  document.getElementById("legalScrim").addEventListener("click", closeLegalPanel);
+  document.querySelectorAll(".legal-tab").forEach(tab => {
+    tab.addEventListener("click", () => switchLegalDoc(tab.dataset.doc));
+  });
+  document.querySelectorAll("[data-open-legal]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      openLegalPanel(el.dataset.openLegal);
+    });
+  });
+
   document.getElementById("togglePersonalization").addEventListener("click", () => {
     movieAppData.settings.personalization = !movieAppData.settings.personalization;
     saveData();
@@ -4636,21 +5041,32 @@ function wireEvents(){
     if(e.target.id === "installScrim") dismissInstallPrompt();
   });
 
-  // Ad banner
-  document.getElementById("btnCloseAdBanner").addEventListener("click", dismissAdBanner);
-  document.getElementById("btnRemoveAdsFromBanner").addEventListener("click", handleRemoveAdsClick);
+  // Achat "Retirer les pubs" — depuis l'emplacement publicitaire ou les réglages.
+  document.getElementById("btnRemoveAdsFromPermanent").addEventListener("click", handleRemoveAdsClick);
   document.getElementById("btnRemoveAdsFromSettings").addEventListener("click", handleRemoveAdsClick);
 
-  // Interstitiel
-  document.getElementById("btnCloseInterstitial").addEventListener("click", dismissInterstitialAd);
-  document.getElementById("btnRemoveAdsFromInterstitial").addEventListener("click", handleRemoveAdsClick);
+  // ⚠️ Il n'y a volontairement AUCUN listener de clic global déclenchant une
+  // publicité ici. Le listener qui existait à cet endroit affichait une
+  // annonce à chaque clic de bouton : c'est la violation AdSense principale
+  // corrigée le 02/09 (voir section 14ter). Ne pas le réintroduire.
+
+  // Fermeture manuelle de l'emplacement publicitaire (bouton ×).
+  document.getElementById("btnCloseAdPermanent")?.addEventListener("click", closeAdStrip);
+
+  // Confirmation d'achat "Retirer les pubs" — voir handleRemoveAdsClick.
+  document.getElementById("btnCancelPurchase").addEventListener("click", closePurchaseConfirm);
+  document.getElementById("btnConfirmPurchase").addEventListener("click", confirmPurchase);
+  document.getElementById("purchaseConfirmModal").addEventListener("click", (e) => {
+    if(e.target.id === "purchaseConfirmModal") closePurchaseConfirm();
+  });
 }
 
-// Stub volontaire : le vrai flux d'achat (Stripe Checkout) arrive avec le
-// chantier "Achat unique sans pub" — cette fonction sera réécrite en
-// entier à ce moment-là plutôt que patchée. En attendant, elle renvoie
-// vers les réglages plutôt que de laisser le lien ne rien faire.
-async function handleRemoveAdsClick(){
+// Clic sur "Retirer les pubs" (permanente ou réglages) : n'ouvre plus
+// directement Stripe, passe d'abord par #purchaseConfirmModal — nécessaire
+// pour recueillir un consentement explicite à la renonciation au droit de
+// rétractation (contenu numérique à exécution immédiate, article L221-28
+// du Code de la consommation) avant tout paiement, voir CGV.
+function handleRemoveAdsClick(){
   if(isSansPub()){
     showToast("Tu es déjà sans pub sur ce compte");
     return;
@@ -4659,8 +5075,19 @@ async function handleRemoveAdsClick(){
     showToast("Fonctionnalité indisponible pour l'instant", '<i class="fa-solid fa-triangle-exclamation"></i>');
     return;
   }
-  const btn = this && this.disabled !== undefined ? this : null;
-  if(btn) btn.disabled = true;
+  document.getElementById("purchaseConfirmModal").classList.add("show");
+}
+
+function closePurchaseConfirm(){
+  document.getElementById("purchaseConfirmModal").classList.remove("show");
+}
+
+// Déclenché uniquement par "Confirmer et payer" — c'est ce clic qui vaut
+// consentement exprès à l'exécution immédiate / renonciation au droit de
+// rétractation, texte affiché juste au-dessus dans la modale.
+async function confirmPurchase(){
+  const btn = document.getElementById("btnConfirmPurchase");
+  btn.disabled = true;
   showToast("Redirection vers le paiement…");
   try{
     // Redirige vers Stripe Checkout ; le retour se gère dans
@@ -4673,7 +5100,7 @@ async function handleRemoveAdsClick(){
       "unauthenticated": "Session expirée, réessaie."
     };
     showToast(messages[e.code] || "Impossible de lancer le paiement, réessaie.", '<i class="fa-solid fa-triangle-exclamation"></i>');
-    if(btn) btn.disabled = false;
+    btn.disabled = false;
   }
 }
 
@@ -4791,19 +5218,37 @@ async function triggerNativeInstall(){
 }
 
 /* ----------------------------------------------------------------
-   14ter. PUBLICITÉ — bannière déclenchée par événement
-   Un parcours normal (🎲 → film → note → fermeture) doit exposer au moins
-   une pub. Choix volontaire : une bannière fixe en bas, jamais un
-   interstitiel plein écran ni un blocage d'une action serveur — voir le
-   commentaire CSS .ad-banner. Se déclenche au même moment que la
-   proposition d'installation (juste après une notation) ; ils ne se
-   gênent pas visuellement grâce au z-index de la modale d'install (150 >
-   55), qui passe simplement par-dessus le temps qu'elle est ouverte.
+   14ter. PUBLICITÉ — UN SEUL emplacement (#adPermanent), dans le flux du
+   document, chargé UNE SEULE FOIS par chargement de page.
+
+   ⚠️ RÈGLE DE CONFORMITÉ ADSENSE — NE PAS CONTOURNER (refonte du 02/09).
+   Le système précédent affichait une annonce supplémentaire à chaque clic
+   de bouton et à chaque changement d'onglet, chacune déclenchant un
+   nouveau adsbygoogle.push(). Cela cumulait trois violations figurant
+   explicitement dans la liste Google des causes de FERMETURE de compte :
+     1. rechargement d'annonces sans demande de l'utilisateur
+        ("Don't refresh pages or ads without user request") ;
+     2. annonces trop proches des zones de forte interaction tactile
+        (le bandeau était collé à la barre de navigation) ;
+     3. inflation d'impressions à visibilité quasi nulle (3,5 s par
+        annonce), profil type du trafic invalide.
+
+   Contraintes à respecter pour toute évolution future :
+     - JAMAIS de pub déclenchée par une interaction (clic, navigation,
+       scroll, ouverture de modale…) ;
+     - JAMAIS plus d'un adsbygoogle.push() par emplacement et par
+       chargement de page (voir le garde-fou adRendered ci-dessous) ;
+     - JAMAIS de pub en position:fixed/overlay ni adjacente à la
+       navigation ou à un bouton d'action.
    ---------------------------------------------------------------- */
-const AD_COOLDOWN_MS = 3 * 60 * 1000; // espacement mini entre deux bannières si plusieurs films notés d'affilée
 const SANS_PUB_CACHE_KEY = "bobineSansPubCache";
 let adScriptLoaded = false;
-let lastAdShownAt = 0;
+// Garde-fou de conformité : garantit qu'une annonce n'est demandée qu'une
+// seule fois par chargement de page. applyAdsStatusToUI() peut être appelée
+// plusieurs fois (au démarrage, puis au retour de la session cloud) — sans
+// ce drapeau, chaque appel re-générerait un <ins> et un nouveau push(),
+// c'est-à-dire exactement le rechargement d'annonce que Google interdit.
+let adRendered = false;
 // Reflète users/{uid}.sansPub (voir initCloudSession). Mis en cache local
 // pour ne jamais dépendre d'un aller-retour réseau au moment précis où on
 // déciderait d'afficher une pub, et pour rester correct hors-ligne.
@@ -4822,9 +5267,17 @@ function setSansPubCache(value){
 function applyAdsStatusToUI(){
   const active = document.getElementById("adsStatusActive");
   const inactive = document.getElementById("adsStatusInactive");
-  if(!active || !inactive) return;
-  active.hidden = !isSansPub();
-  inactive.hidden = isSansPub();
+  if(active && inactive){
+    active.hidden = !isSansPub();
+    inactive.hidden = isSansPub();
+  }
+  // Le statut sansPub ne fait que MASQUER ou AFFICHER l'emplacement déjà
+  // rendu : il ne redéclenche jamais une demande d'annonce (voir adRendered).
+  if(isSansPub()){
+    document.getElementById("adPermanent").classList.remove("show");
+  }else{
+    showAd();
+  }
 }
 
 function loadAdSenseScript(){
@@ -4837,12 +5290,10 @@ function loadAdSenseScript(){
   document.head.appendChild(script);
 }
 
-// Générique : utilisé par la bannière (#adSlotContent) et l'interstitiel
-// (#interstitialAdSlotContent), même bloc AdSense pour l'instant — pas
-// besoin d'un second ID de bloc publicitaire pour démarrer, AdSense
-// dimensionne l'annonce selon le conteneur (data-full-width-responsive).
-function renderAdInto(elId){
-  const slot = document.getElementById(elId);
+// Insère le bloc AdSense dans l'emplacement unique. N'est appelée qu'une
+// fois grâce au garde-fou adRendered posé par showAd().
+function renderAd(){
+  const slot = document.getElementById("adPermanentSlot");
   if(!slot) return;
   if(!ADSENSE_CONFIGURED){
     slot.innerHTML = `<div style="font-size:11px; color:var(--ink-faint); text-align:center; letter-spacing:0.04em; padding:18px 0;">Emplacement publicitaire — compte AdSense à configurer</div>`;
@@ -4858,65 +5309,23 @@ function renderAdInto(elId){
   }
 }
 
-const AD_CLOSE_DELAY_MS = 4000; // le X reste inerte le temps que la pub soit au moins vue
-let adCloseDelayTimer = null;
-
-function maybeShowAdBanner(){
+// Affiche l'emplacement publicitaire tant que le compte n'est pas sans-pub.
+// L'annonce elle-même n'est demandée qu'au tout premier appel : les appels
+// suivants ne font que réafficher le bloc déjà en place.
+function showAd(){
   if(isSansPub()) return;
-  const now = Date.now();
-  if(now - lastAdShownAt < AD_COOLDOWN_MS) return;
-  lastAdShownAt = now;
-  loadAdSenseScript();
-  renderAdInto("adSlotContent");
-  const closeBtn = document.getElementById("btnCloseAdBanner");
-  closeBtn.classList.remove("can-dismiss");
-  clearTimeout(adCloseDelayTimer);
-  adCloseDelayTimer = setTimeout(() => closeBtn.classList.add("can-dismiss"), AD_CLOSE_DELAY_MS);
-  document.getElementById("adBanner").classList.add("show");
+  if(!adRendered){
+    adRendered = true;
+    loadAdSenseScript();
+    renderAd();
+  }
+  document.getElementById("adPermanent").classList.add("show");
 }
 
-function dismissAdBanner(){
-  document.getElementById("adBanner").classList.remove("show");
-}
-
-/* ----------------------------------------------------------------
-   14quater. INTERSTITIEL — plein écran, UNIQUEMENT entre deux pages.
-   Jamais sur une action serveur (🎲, notation) : voir la garde côté
-   switchView(), qui est le SEUL appelant de maybeShowInterstitialAd.
-   Occasionnel (pas à chaque changement d'onglet) + cooldown temporel,
-   les deux conditions doivent être réunies pour qu'il s'affiche.
-   ---------------------------------------------------------------- */
-const INTERSTITIAL_EVERY_N_NAV = 4;   // se déclenche au mieux 1 changement d'onglet sur 4
-const INTERSTITIAL_COOLDOWN_MS = 4 * 60 * 1000; // et jamais plus d'une fois toutes les 4 min
-const INTERSTITIAL_CLOSE_DELAY_MS = 5000;
-let navCountSinceLastInterstitial = 0;
-let lastInterstitialShownAt = 0;
-let interstitialCloseDelayTimer = null;
-
-function maybeShowInterstitialAd(){
-  if(isSansPub()) return;
-  navCountSinceLastInterstitial++;
-  if(navCountSinceLastInterstitial < INTERSTITIAL_EVERY_N_NAV) return;
-  const now = Date.now();
-  if(now - lastInterstitialShownAt < INTERSTITIAL_COOLDOWN_MS) return;
-  // Ne jamais empiler deux overlays plein écran / quasi plein écran en
-  // même temps — la modale d'install (décision ponctuelle, plus rare)
-  // et la bannière pub gardent la priorité si l'une d'elles est déjà ouverte.
-  if(document.getElementById("installScrim").classList.contains("show")) return;
-
-  navCountSinceLastInterstitial = 0;
-  lastInterstitialShownAt = now;
-  loadAdSenseScript();
-  renderAdInto("interstitialAdSlotContent");
-  const closeBtn = document.getElementById("btnCloseInterstitial");
-  closeBtn.classList.remove("can-dismiss");
-  clearTimeout(interstitialCloseDelayTimer);
-  interstitialCloseDelayTimer = setTimeout(() => closeBtn.classList.add("can-dismiss"), INTERSTITIAL_CLOSE_DELAY_MS);
-  document.getElementById("interstitialScrim").classList.add("show");
-}
-
-function dismissInterstitialAd(){
-  document.getElementById("interstitialScrim").classList.remove("show");
+// Fermeture manuelle (bouton ×) : masque l'emplacement sans jamais
+// redemander d'annonce ensuite (adRendered reste vrai).
+function closeAdStrip(){
+  document.getElementById("adPermanent").classList.remove("show");
 }
 
 /* ----------------------------------------------------------------

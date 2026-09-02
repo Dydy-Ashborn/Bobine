@@ -20,7 +20,7 @@ admin.initializeApp();
 const db = admin.firestore();
 
 const REGION = "europe-west1"; // cohérent avec le choix de région du reste du projet
-const PRIX_SANS_PUB_CENTIMES = 299; // 2,99 € — voir décision produit
+const PRIX_SANS_PUB_CENTIMES = 199; // 1,99 € — décision produit d'Ash le 01/09 (baisse depuis 2,99 €)
 
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) {
