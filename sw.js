@@ -11,7 +11,15 @@
      si hors-ligne, pour garder l'appli utilisable sans connexion.
    ================================================================ */
 
-const CACHE_VERSION = "bobine-v2";
+// ⚠️ À INCRÉMENTER À CHAQUE DÉPLOIEMENT qui change le shell (index.html,
+// sw.js). Le handler "activate" supprime tous les caches "bobine-*" dont le
+// nom ne correspond plus : tant que cette valeur ne bouge pas, l'ancien
+// cache survit et continue de servir une version périmée de l'app.
+// Cas vécu le 02/09 : la PWA installée d'Ash servait encore un index.html
+// d'avant le 30/08 (pubs empilées au changement d'onglet, prix à 2,99 €)
+// alors que le site déployé ET le fichier local étaient à jour — le
+// CACHE_VERSION n'avait jamais été incrémenté depuis la v2.
+const CACHE_VERSION = "bobine-v3";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const TMDB_CACHE = `${CACHE_VERSION}-tmdb`;
 

@@ -582,14 +582,26 @@ main{ max-width:1280px; margin:0 auto; }
 .modal-overlay{
   position:fixed; inset:0; z-index:150;
   background: rgba(10,10,11,0.72); backdrop-filter: blur(6px);
-  display:flex; align-items:center; justify-content:center; padding:20px;
+  display:flex; align-items:center; justify-content:center;
+  /* Padding qui tient compte des encoches : sur un téléphone en paysage,
+     les insets gauche/droite ne sont pas nuls. */
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+           max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
   opacity:0; pointer-events:none; transition: opacity 0.3s var(--ease);
+  overflow-y:auto;
 }
 .modal-overlay.show{ opacity:1; pointer-events:auto; }
 .modal-card{
   background: var(--bg-raised); border:1px solid var(--line-strong);
   border-radius: var(--radius-lg); padding: 36px 32px;
   max-width: 420px; width:100%; text-align:center;
+  /* Sans ces deux lignes, une modale plus haute que l'écran (notation sur
+     petit téléphone, ou n'importe quelle modale en paysage) débordait sans
+     possibilité de défiler : le bouton de validation devenait littéralement
+     inatteignable. dvh d'abord pour suivre la barre d'URL mobile. */
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
+  overflow-y:auto; overscroll-behavior:contain;
   transform: translateY(16px) scale(0.97); transition: transform 0.35s var(--ease);
 }
 .modal-overlay.show .modal-card{ transform: translateY(0) scale(1); }
@@ -680,45 +692,69 @@ main{ max-width:1280px; margin:0 auto; }
 .modal-card h3{ font-family:var(--font-display); font-size:22px; margin-bottom:6px; }
 .modal-card .modal-sub{ color:var(--ink-faint); font-size:13.5px; margin-bottom:24px; }
 
-.rating-value-label{
-  font-size:32px; color:var(--ink); font-family:var(--font-display); margin-bottom:14px; height:40px;
-  display:flex; align-items:baseline; justify-content:center; gap:6px;
-}
-.rating-value-label b{ color:var(--gold); font-weight:700; font-size:36px; }
-.rating-value-label .unit{ font-size:15px; color:var(--ink-faint); }
-.rating-value-label.placeholder{ font-size:14px; color:var(--ink-dim); font-family:inherit; height:20px; }
-
 /* ================================================================
-   SLIDER DE NOTATION — /10 par pas de 0.5, plus facile qu'un clic
-   précis dans une moitié d'étoile de 19px de large.
+   NOTATION — 5 étoiles cliquables, demi-étoiles comprises
+
+   L'échelle affichée est /5, exactement celle du stockage (myRating) :
+   plus aucune conversion, ce qu'on voit est ce qui est enregistré.
+
+   Mécanique du demi : chaque étoile est un bouton de 52px dont la
+   MOITIÉ GAUCHE vaut n−0,5 et la moitié droite n. C'est ce que faisait
+   l'ancien widget en étoiles, mais sur des étoiles de 19px — d'où des
+   demi-étoiles impossibles à viser en pratique. Ici la demi-cible fait
+   26px, et on peut aussi glisser le doigt sur la rangée pour ajuster.
+
+   Le remplissage est un calque doré en position absolue, découpé à 0 /
+   50 / 100 % par overflow:hidden. L'icône à l'intérieur garde une
+   largeur figée (--star-size) : sans ça elle se recentrerait dans le
+   calque rétréci et la moitié affichée ne serait pas la bonne.
    ================================================================ */
-.rating-slider{
-  -webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:99px;
-  background: linear-gradient(90deg, var(--gold) var(--rating-fill, 0%), var(--line-strong) var(--rating-fill, 0%));
-  margin:4px 0 6px; cursor:pointer; outline:none;
+.rating-readout{
+  min-height:58px; margin-bottom:18px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
 }
-.rating-slider::-webkit-slider-thumb{
-  -webkit-appearance:none; appearance:none; width:24px; height:24px; border-radius:50%;
-  background: var(--gold); border:3px solid var(--bg-raised); box-shadow:0 1px 4px rgba(0,0,0,0.4);
-  cursor:pointer;
+.rating-readout-value{
+  font-family:var(--font-display); font-size:38px; line-height:1;
+  color:var(--gold); font-weight:700;
+  display:flex; align-items:baseline; gap:5px;
 }
-.rating-slider::-moz-range-thumb{
-  width:24px; height:24px; border-radius:50%; background: var(--gold);
-  border:3px solid var(--bg-raised); box-shadow:0 1px 4px rgba(0,0,0,0.4); cursor:pointer;
+.rating-readout-value .unit{ font-size:15px; color:var(--ink-faint); font-weight:400; }
+.rating-readout-word{
+  font-size:12px; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-dim);
 }
-.rating-slider-scale{
-  display:flex; justify-content:space-between; font-size:11px; color:var(--ink-faint); margin-bottom:18px;
+.rating-readout-placeholder{ font-size:14px; color:var(--ink-dim); }
+
+.rating-stars{
+  --star-size:52px;
+  --star-glyph:41px;
+  display:flex; justify-content:center; gap:6px; margin-bottom:24px;
+  /* Le glissement du doigt sur la rangée sert à ajuster la note : il ne
+     doit surtout pas faire défiler la page en même temps. */
+  touch-action:none;
+  -webkit-user-select:none; user-select:none;
+  -webkit-tap-highlight-color:transparent;
 }
-.rating-quick-picks{
-  display:flex; justify-content:center; flex-wrap:wrap; gap:6px; margin-bottom:22px;
+.rating-star{
+  position:relative; flex-shrink:0;
+  width:var(--star-size); height:var(--star-size);
+  display:flex; align-items:center; justify-content:center;
+  font-size:var(--star-glyph); line-height:1;
+  background:none; border:none; padding:0;
+  color:var(--line-strong);
+  transition: transform 0.12s var(--ease);
 }
-.rating-quick-pick{
-  padding:6px 12px; border-radius:99px; border:1px solid var(--line-strong);
-  background:rgba(255,255,255,0.03); color:var(--ink-dim); font-size:12.5px; font-family:inherit;
-  cursor:pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+.rating-star:active{ transform:scale(0.9); }
+.rating-star .star-fill{
+  position:absolute; top:0; left:0; height:100%; width:0;
+  overflow:hidden; pointer-events:none;
+  display:flex; align-items:center;
+  color:var(--gold);
+  transition: width 0.12s var(--ease);
 }
-.rating-quick-pick:hover{ border-color: var(--ink-faint); }
-.rating-quick-pick.active{ background: var(--gold); border-color: var(--gold); color:#1a1408; font-weight:600; }
+.rating-star .star-fill i{
+  width:var(--star-size); font-size:var(--star-glyph); line-height:1;
+  display:flex; align-items:center; justify-content:center;
+}
 .modal-actions{ display:flex; gap:12px; justify-content:center; }
 .btn-ghost{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
@@ -1208,17 +1244,30 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   transition: color 0.2s var(--ease), background 0.2s var(--ease);
 }
 .ad-strip-close:hover{ color:var(--ink); background: var(--bg-hover, rgba(255,255,255,0.06)); }
+/* Pas de min-height : tant qu'AdSense ne sert rien (compte non validé,
+   bloqueur, pas de remplissage), le slot doit se réduire à zéro au lieu de
+   laisser un vide sombre de 90px qui donne l'impression d'un bloc cassé et
+   noie l'offre d'achat en dessous. Une annonce réellement servie impose
+   d'elle-même sa hauteur. */
 .ad-slot{
-  width:100%; max-width:468px; min-height:90px;
+  width:100%; max-width:468px;
   display:flex; align-items:center; justify-content:center;
-  margin: 14px auto 0;
+  margin: 0 auto;
+}
+.ad-slot:not(:empty){ margin-top:14px; }
+.ad-offer{
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  margin-top:22px;
+}
+.ad-offer-text{
+  font-size:12.5px; color:var(--ink-faint); text-align:center; line-height:1.5;
 }
 .ad-strip-remove-link{
   display:inline-flex; align-items:center; justify-content:center; gap:6px;
-  /* 26px de marge au-dessus : sépare franchement ce bouton du slot
-     d'annonce, pour qu'un doigt qui le vise ne puisse pas retomber sur la
-     pub (clic accidentel = violation AdSense). */
-  margin:26px auto 16px; padding:11px 22px; border-radius:999px;
+  /* La séparation d'avec le slot d'annonce est portée par .ad-offer
+     (margin-top:22px) : elle garantit qu'un doigt visant ce bouton ne
+     retombe pas sur la pub (clic accidentel = violation AdSense). */
+  margin:0 auto 4px; padding:13px 24px; border-radius:999px;
   background: var(--gold); color:#1a1408; font-size:13px; font-weight:600;
   box-shadow: 0 6px 20px rgba(207,168,85,0.3);
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
@@ -1312,6 +1361,48 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
 }
 @media (min-width: 641px) and (max-width: 900px){
   .movie-stage{ max-width:560px; margin:0 auto; }
+}
+
+/* ================================================================
+   RESPONSIVE — correctifs du 03/09/2026 (tailles intermédiaires)
+   ================================================================ */
+
+/* Tablettes et grands téléphones en paysage. Au-dessus de 640px la
+   bottom-nav disparaît et les 4 onglets du haut réapparaissent : à leur
+   taille normale ils réclament ~670px (logo + onglets + 2 icônes + marges)
+   et débordaient donc entre 641 et ~760px. On les compacte sur cette
+   bande plutôt que de basculer toute la mise en page en mode mobile. */
+@media (min-width: 641px) and (max-width: 860px){
+  .topnav{ padding-left:20px; padding-right:20px; gap:12px; }
+  .brand{ font-size:17px; }
+  .nav-tabs{ padding:3px; gap:2px; }
+  .nav-tab{ font-size:11px; padding:7px 10px; letter-spacing:0.04em; }
+}
+
+/* Petits téléphones (iPhone SE et assimilés) : les 5 étoiles et les modales
+   doivent rester confortables sans déborder. */
+@media (max-width: 380px){
+  .modal-card{ padding: 28px 18px; }
+  /* Étoiles réduites via les variables plutôt qu'en empilant des règles :
+     la demi-cible reste à 23px, ce qui se vise encore correctement. */
+  .rating-stars{ --star-size:46px; --star-glyph:36px; gap:4px; }
+  .rating-readout-value{ font-size:33px; }
+  .modal-card h3{ font-size:20px; }
+  .movie-title{ font-size:26px; }
+  .history-grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:14px; }
+  .stats-grid{ grid-template-columns:1fr; }
+}
+
+/* Écrans courts (téléphone en paysage, fenêtre réduite) : on récupère de
+   la hauteur là où elle coûte le moins, la modale restant défilable grâce
+   au max-height/overflow posés sur .modal-card. */
+@media (max-height: 560px){
+  .modal-card{ padding: 22px 24px; }
+  .modal-poster-mini{ width:52px; height:78px; margin-bottom:10px; }
+  .modal-card .modal-sub{ margin-bottom:14px; }
+  .rating-readout{ min-height:46px; margin-bottom:12px; }
+  .rating-readout-value{ font-size:30px; }
+  .rating-stars{ --star-size:46px; --star-glyph:36px; margin-bottom:16px; }
 }
 </style>
 </head>
@@ -1489,7 +1580,14 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   <div class="ad-strip-inner">
     <span class="ad-strip-label">Publicité</span>
     <div class="ad-slot" id="adPermanentSlot"></div>
-    <button class="ad-strip-remove-link" id="btnRemoveAdsFromPermanent">Retirer les pubs · 1,99&nbsp;€</button>
+    <!-- L'offre d'achat est un bloc autonome, volontairement lisible même
+         quand aucune annonce n'est servie (compte AdSense pas encore validé,
+         bloqueur de pub actif, ou simple absence de remplissage) : quelqu'un
+         doit pouvoir acheter le retrait des pubs dans tous les cas. -->
+    <div class="ad-offer">
+      <p class="ad-offer-text">Bobine reste gratuit grâce à la publicité.</p>
+      <button class="ad-strip-remove-link" id="btnRemoveAdsFromPermanent">Retirer les pubs · 1,99&nbsp;€</button>
+    </div>
   </div>
 </div>
 
@@ -1548,11 +1646,10 @@ footer.app-footer a{ color:var(--ink-dim); text-decoration:underline; text-under
   <div class="modal-card">
     <div class="modal-poster-mini"><img id="modalPoster" src="" alt=""></div>
     <h3 id="modalTitle">Note ce film</h3>
-    <p class="modal-sub">Ta note personnelle sur 10, par demi-point — indépendante de TMDB</p>
-    <div class="rating-value-label" id="ratingValueLabel">Choisis une note</div>
-    <input type="range" class="rating-slider" id="ratingSlider" min="0" max="10" step="0.5" value="0">
-    <div class="rating-slider-scale"><span>0</span><span>5</span><span>10</span></div>
-    <div class="rating-quick-picks" id="ratingQuickPicks"></div>
+    <p class="modal-sub">Ta note sur 5 — indépendante de celle de TMDB</p>
+    <div class="rating-readout" id="ratingReadout"></div>
+    <div class="rating-stars" id="ratingStars" role="slider" tabindex="0"
+         aria-label="Note sur 5" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="btnSkipRating">Plus tard</button>
       <button class="btn-primary" id="btnSaveRating" disabled>Enregistrer</button>
@@ -3086,20 +3183,30 @@ function handleSkipMovie(){
 /* ----------------------------------------------------------------
    7. RATING MODAL
    ---------------------------------------------------------------- */
-// Puces de raccourci sous le slider : les notes qu'on donne le plus souvent
-// en pratique, pour éviter à l'utilisateur de devoir glisser à chaque fois —
-// le slider reste là pour tout le reste (demi-points compris, 0 à 10).
-const RATING_QUICK_PICKS = [10, 9, 8, 7, 6, 5];
+// Mot qualitatif affiché sous la note. Clé = la note /5 elle-même, demi-
+// étoiles comprises, pour que chaque cran ait sa nuance.
+const RATING_WORDS = {
+  0.5: "À fuir",   1: "Très mauvais", 1.5: "Mauvais",   2: "Faible",
+  2.5: "Moyen",    3: "Correct",      3.5: "Bien",      4: "Très bon",
+  4.5: "Excellent", 5: "Chef-d'œuvre"
+};
+
+// Note courante sur 5, par pas de 0,5 (0 = pas encore notée). C'est
+// directement l'échelle de stockage (myRating) : aucune conversion.
+let ratingValue = 0;
+// Aperçu au survol souris uniquement — jamais enregistré, remis à null dès
+// que le pointeur quitte la rangée.
+let ratingPreview = null;
+let ratingDragging = false;
 
 function openRatingFlow(movie){
   pendingRatingMovie = movie;
-  pendingRatingValue = 0;
   const posterUrl = movie.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${movie.poster_path}` : "";
   document.getElementById("modalPoster").src = posterUrl;
   document.getElementById("modalPoster").alt = `Affiche de ${movie.title}`;
   document.getElementById("modalTitle").textContent = movie.title;
-  buildRatingPicker();
-  document.getElementById("btnSaveRating").disabled = true;
+  buildRatingStars();
+  setRatingValue(0); // aucune note pré-sélectionnée
   document.getElementById("ratingModal").classList.add("show");
 }
 
@@ -3111,46 +3218,110 @@ function closeRatingModal(skip){
   pendingRatingMovie = null;
 }
 
-// Construit les puces de raccourci une fois pour toutes (le slider, lui,
-// existe déjà dans le HTML — pas besoin de le regénérer à chaque ouverture).
-function buildRatingPicker(){
-  const picks = document.getElementById("ratingQuickPicks");
-  picks.innerHTML = RATING_QUICK_PICKS.map(v =>
-    `<button class="rating-quick-pick" data-ten="${v}" type="button">${v}</button>`
-  ).join("");
-  picks.querySelectorAll(".rating-quick-pick").forEach(btn => {
-    btn.addEventListener("click", () => setRatingFromTen(parseFloat(btn.dataset.ten)));
+// Construit les 5 étoiles et pose les écouteurs une seule fois pour toute la
+// vie de la page — inutile de les recréer (et de les empiler) à chaque
+// ouverture de la modale.
+function buildRatingStars(){
+  const wrap = document.getElementById("ratingStars");
+  if(wrap.dataset.built === "1") return;
+
+  wrap.innerHTML = Array.from({ length: 5 }, (_, i) => `
+    <button class="rating-star" type="button" data-index="${i + 1}"
+            aria-label="${i + 1} étoile${i ? "s" : ""}">
+      <i class="fa-regular fa-star"></i>
+      <span class="star-fill"><i class="fa-solid fa-star"></i></span>
+    </button>`).join("");
+
+  // Pointer Events : un seul jeu d'écouteurs couvre le tap, le clic et le
+  // glissement du doigt/souris sur la rangée. La capture du pointeur permet
+  // de continuer à ajuster même si le doigt sort de la zone en glissant.
+  wrap.addEventListener("pointerdown", (e) => {
+    ratingDragging = true;
+    wrap.setPointerCapture?.(e.pointerId);
+    setRatingValue(ratingValueFromPointer(e.clientX));
   });
-  document.getElementById("ratingSlider").value = 0;
-  updateRatingLabel();
+  wrap.addEventListener("pointermove", (e) => {
+    if(ratingDragging){
+      setRatingValue(ratingValueFromPointer(e.clientX));
+    }else if(e.pointerType === "mouse"){
+      ratingPreview = ratingValueFromPointer(e.clientX);
+      renderRatingUI();
+    }
+  });
+  const endDrag = (e) => {
+    ratingDragging = false;
+    wrap.releasePointerCapture?.(e.pointerId);
+  };
+  wrap.addEventListener("pointerup", endDrag);
+  wrap.addEventListener("pointercancel", endDrag);
+  wrap.addEventListener("pointerleave", () => {
+    if(ratingDragging) return;
+    ratingPreview = null;
+    renderRatingUI();
+  });
+
+  // Accessibilité clavier : la rangée est un role="slider", les flèches
+  // ajustent d'un demi-cran comme sur n'importe quel curseur.
+  wrap.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowLeft" || e.key === "ArrowDown"){
+      e.preventDefault();
+      setRatingValue(Math.max(0.5, ratingValue - 0.5));
+    }else if(e.key === "ArrowRight" || e.key === "ArrowUp"){
+      e.preventDefault();
+      setRatingValue(Math.min(5, (ratingValue || 0) + 0.5));
+    }
+  });
+
+  wrap.dataset.built = "1";
 }
 
-// Note interne stockée sur 0–5 (myRating, historique existant) : le slider,
-// lui, travaille directement en /10 par pas de 0.5 — plus simple à viser
-// qu'un clic précis dans une moitié d'étoile de 19px, tout en gardant la
-// possibilité des demi-points (6.5, 7.5…) que l'ancien système ne permettait
-// pas vraiment (il ne produisait que des dixièmes pairs : 1, 2, 3…10).
-function setRatingFromTen(tenValue){
-  pendingRatingValue = tenValue / 2;
-  document.getElementById("ratingSlider").value = tenValue;
-  updateRatingLabel();
-  document.getElementById("btnSaveRating").disabled = false;
+// Traduit une position horizontale en note : moitié gauche d'une étoile =
+// n−0,5, moitié droite = n. Le clic à gauche de la première étoile donne le
+// minimum (0,5) plutôt que 0, pour qu'un geste un peu court ne se traduise
+// jamais par "pas de note".
+function ratingValueFromPointer(clientX){
+  const stars = document.querySelectorAll("#ratingStars .rating-star");
+  if(!stars.length) return 0;
+  if(clientX < stars[0].getBoundingClientRect().left) return 0.5;
+  for(let i = 0; i < stars.length; i++){
+    const rect = stars[i].getBoundingClientRect();
+    if(clientX <= rect.right || i === stars.length - 1){
+      return (i + 1) - ((clientX - rect.left) < rect.width / 2 ? 0.5 : 0);
+    }
+  }
+  return 5;
 }
 
-function updateRatingLabel(){
-  const label = document.getElementById("ratingValueLabel");
-  const tenValue = pendingRatingValue > 0 ? parseFloat(toTen(pendingRatingValue)) : 0;
-  const slider = document.getElementById("ratingSlider");
-  slider.style.setProperty("--rating-fill", (tenValue / 10 * 100) + "%");
+// Point d'entrée unique pour fixer la note, utilisé aussi bien par les
+// gestes que par la ré-ouverture depuis l'historique. pendingRatingValue
+// (ce qui sera réellement enregistré) suit exactement la même valeur.
+function setRatingValue(value){
+  ratingValue = Math.max(0, Math.min(5, value));
+  ratingPreview = null;
+  pendingRatingValue = ratingValue;
+  renderRatingUI();
+}
 
-  label.className = pendingRatingValue > 0 ? "rating-value-label" : "rating-value-label placeholder";
-  label.innerHTML = pendingRatingValue > 0
-    ? `<b>${toTen(pendingRatingValue)}</b><span class="unit">/ 10</span>`
-    : "Choisis une note";
+function renderRatingUI(){
+  const shown = ratingPreview != null ? ratingPreview : ratingValue;
 
-  document.querySelectorAll(".rating-quick-pick").forEach(btn => {
-    btn.classList.toggle("active", parseFloat(btn.dataset.ten) === tenValue);
+  document.querySelectorAll("#ratingStars .rating-star").forEach((star, i) => {
+    const remaining = shown - i;
+    star.querySelector(".star-fill").style.width =
+      remaining >= 1 ? "100%" : remaining >= 0.5 ? "50%" : "0";
   });
+
+  document.getElementById("ratingReadout").innerHTML = shown > 0
+    ? `<span class="rating-readout-value">${formatRating(shown)}<span class="unit">/ 5</span></span>
+       <span class="rating-readout-word">${RATING_WORDS[shown] || ""}</span>`
+    : `<span class="rating-readout-placeholder">Touche les étoiles pour noter</span>`;
+
+  const wrap = document.getElementById("ratingStars");
+  wrap.setAttribute("aria-valuenow", ratingValue);
+  wrap.setAttribute("aria-valuetext", ratingValue ? `${formatRating(ratingValue)} sur 5` : "Pas de note");
+
+  // Le bouton d'enregistrement suit la note réelle, jamais l'aperçu au survol.
+  document.getElementById("btnSaveRating").disabled = ratingValue === 0;
 }
 
 async function finalizeMarkWatched(movie, rating){
@@ -3958,7 +4129,7 @@ function renderHistoryCard(m){
         <div class="history-year">${year}</div>
         <div class="history-ratings">
           <span class="history-tmdb"><i class="fa-solid fa-star"></i> ${m.vote_average?.toFixed(1) ?? "—"}</span>
-          <span class="history-mine">${m.myRating != null ? `<i class="fa-solid fa-star"></i> ${toTen(m.myRating)}` : "Non noté"}</span>
+          <span class="history-mine">${m.myRating != null ? `<i class="fa-solid fa-star"></i> ${formatRating(m.myRating)}` : "Non noté"}</span>
         </div>
         <div class="history-date">Vu le ${watchedDate}</div>
         <div class="history-actions">
@@ -4087,7 +4258,7 @@ async function openPublicProfile(uid){
     content.innerHTML = `
       <h3 style="font-family:var(--font-display); font-size:20px; margin-bottom:4px;">${escapeHtml(profile.pseudo)}</h3>
       <p style="font-size:12.5px; color:var(--ink-faint); margin-bottom:18px;">
-        ${profile.watched.length} film${profile.watched.length !== 1 ? "s" : ""} vu${profile.watched.length !== 1 ? "s" : ""}${avg != null ? ` · note moyenne ${toTen(avg)}/10` : ""}
+        ${profile.watched.length} film${profile.watched.length !== 1 ? "s" : ""} vu${profile.watched.length !== 1 ? "s" : ""}${avg != null ? ` · note moyenne ${formatRating(avg)}/5` : ""}
       </p>
       ${favorites.length === 0 ? "" : `
         <div style="margin-bottom:22px;">
@@ -4125,7 +4296,7 @@ function renderPublicHistoryCard(m){
         <div class="history-year">${year}</div>
         <div class="history-ratings">
           <span class="history-tmdb"><i class="fa-solid fa-star"></i> ${m.vote_average?.toFixed(1) ?? "—"}</span>
-          <span class="history-mine">${m.myRating != null ? `<i class="fa-solid fa-star"></i> ${toTen(m.myRating)}` : "Non noté"}</span>
+          <span class="history-mine">${m.myRating != null ? `<i class="fa-solid fa-star"></i> ${formatRating(m.myRating)}` : "Non noté"}</span>
         </div>
       </div>
     </div>`;
@@ -4252,15 +4423,14 @@ function openRatingFromHistory(movieId, mediaType = "movie"){
   const record = movieAppData.watched.find(m => m.id === movieId && (m.mediaType || "movie") === mediaType);
   if(!record) return;
   pendingRatingMovie = { ...record, fromHistory: true };
-  pendingRatingValue = record.myRating || 0;
   const posterUrl = record.poster_path ? `${IMG_BASE}/${POSTER_SIZE}${record.poster_path}` : "";
   document.getElementById("modalPoster").src = posterUrl;
   document.getElementById("modalPoster").alt = `Affiche de ${record.title}`;
   document.getElementById("modalTitle").textContent = record.title;
-  buildRatingPicker();
-  document.getElementById("ratingSlider").value = pendingRatingValue > 0 ? parseFloat(toTen(pendingRatingValue)) : 0;
-  updateRatingLabel();
-  document.getElementById("btnSaveRating").disabled = pendingRatingValue === 0;
+  buildRatingStars();
+  // Ré-édition : les étoiles s'allument sur la note déjà donnée, sans
+  // conversion — l'affichage et le stockage sont sur la même échelle.
+  setRatingValue(record.myRating || 0);
   document.getElementById("ratingModal").classList.add("show");
 }
 
@@ -4282,7 +4452,7 @@ async function renderStats(){
   }
 
   const rated = watched.filter(m => m.myRating != null);
-  const avgRatingTen = rated.length ? (rated.reduce((s,m) => s + (m.myRating * 2), 0) / rated.length) : 0;
+  const avgRating = rated.length ? (rated.reduce((s,m) => s + m.myRating, 0) / rated.length) : 0;
   const perfectScores = rated.filter(m => m.myRating === 5).length;
   const topMovie = rated.slice().sort((a,b) => b.myRating - a.myRating)[0];
 
@@ -4306,12 +4476,12 @@ async function renderStats(){
         <div class="stat-label">Films vus</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${avgRatingTen.toFixed(1)}<span class="unit"><i class="fa-solid fa-star"></i></span></div>
+        <div class="stat-value">${avgRating.toFixed(1).replace(".", ",")}<span class="unit"><i class="fa-solid fa-star"></i></span></div>
         <div class="stat-label">Moyenne de mes notes</div>
       </div>
       <div class="stat-card">
         <div class="stat-value">${perfectScores}</div>
-        <div class="stat-label">Films notés 10 / 10</div>
+        <div class="stat-label">Films notés 5 / 5</div>
       </div>
       <div class="stat-card">
         <div class="stat-value">${rated.length}</div>
@@ -4325,7 +4495,7 @@ async function renderStats(){
       <div>
         <div class="label">Mon film le mieux noté</div>
         <div class="title">${escapeHtml(topMovie.title)}</div>
-        <div class="rating"><i class="fa-solid fa-star"></i> ${toTen(topMovie.myRating)} / 10</div>
+        <div class="rating"><i class="fa-solid fa-star"></i> ${formatRating(topMovie.myRating)} / 5</div>
       </div>
     </div>` : ""}
 
@@ -4783,8 +4953,14 @@ async function handleForgotPassword(){
    ---------------------------------------------------------------- */
 // La saisie reste en étoiles (0.5–5, plus intuitif à cliquer), mais on
 // affiche toujours le résultat sur 10 pour rester cohérent avec TMDB.
-function toTen(fiveScaleRating){
-  return (fiveScaleRating * 2).toFixed(1);
+// Affichage d'une note personnelle. L'échelle est /5 partout — celle du
+// stockage (myRating) comme celle des étoiles : "4,5" et non "4,0" quand
+// il n'y a pas de décimale utile.
+function formatRating(fiveScaleRating){
+  return Number(fiveScaleRating).toLocaleString("fr-FR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1
+  });
 }
 
 // TMDB nomme ses champs différemment entre /movie (title, release_date,
@@ -4856,10 +5032,8 @@ function wireEvents(){
     if(e.key === "Enter") handleOnboardingPseudoOnly();
   });
 
-  // Rating modal
-  document.getElementById("ratingSlider").addEventListener("input", (e) => {
-    setRatingFromTen(parseFloat(e.target.value));
-  });
+  // Rating modal — la grille et le bouton demi-point posent leurs propres
+  // écouteurs une seule fois dans buildRatingStars().
   document.getElementById("btnSkipRating").addEventListener("click", () => closeRatingModal(true));
   document.getElementById("btnSaveRating").addEventListener("click", () => {
     document.getElementById("ratingModal").classList.remove("show");
@@ -5286,6 +5460,12 @@ function applyAdsStatusToUI(){
 function loadAdSenseScript(){
   if(adScriptLoaded || !ADSENSE_CONFIGURED) return;
   adScriptLoaded = true;
+  // Le snippet AdSense standard est désormais posé en dur dans le <head>
+  // (c'est ce que demande Google pour la vérification du site). Charger
+  // adsbygoogle.js une seconde fois provoque des TagError et des demandes
+  // d'annonces en double : on ne l'injecte donc que s'il est réellement
+  // absent de la page.
+  if(document.querySelector('script[src*="adsbygoogle.js"]')) return;
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
